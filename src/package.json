@@ -1,0 +1,34 @@
+{
+  "name": "pm6-30",
+  "version": "1.0.0",
+  "description": "task management tool to finish your job until 6:30 pm.",
+  "main": "./app/javascripts/main/main.js",
+  "author": "ktp",
+  "dependencies": {
+    "babel": "^6.5.2",
+    "babel-plugin-transform-react-jsx": "^6.8.0",
+    "babel-register": "^6.16.3",
+    "gulp": "^3.9.1",
+    "gulp-combine-media-queries": "^0.2.0",
+    "gulp-plumber": "^1.1.0",
+    "gulp-sass": "^2.3.2",
+    "gulp-sourcemaps": "^1.7.3",
+    "react": "^15.3.2",
+    "react-dom": "^15.3.2"
+  },
+  "babel": {
+    "sourceMaps": "inline",
+    "presets": [
+      [
+        "es2015",
+        "react"
+      ]
+    ]
+  },
+  "devDependencies": {
+    "babel-preset-es2015": "^6.18.0",
+    "draft-js": "^0.9.1",
+    "draft-js-export-markdown": "^0.2.2",
+    "lodash": "^4.17.2"
+  }
+}

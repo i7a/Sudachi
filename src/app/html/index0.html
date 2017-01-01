@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PM6:30</title>
+    <link rel="stylesheet" href="./../stylesheets/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="./../stylesheets/assets/styles.css">
+    <script type="text/javascript" src="./../../lib/jquery-3.1.1.min.js"></script>
+    <script src="./../../lib/bootstrap.min.js"></script>
+  </head>
+  <body>
+    <!-- <header style="background-color:#e6f7ff"> -->
+    <header>
+      <button type="button" class="btn btn-primary btn-google">Google Login</button>
+    </header>
+    <div class="wrapper" role="main" id="task-board">
+      <div class="container-fluid">
+        <div class="row">
+          <!-- <div id="calendar-viewport" class="col-md-2 hidden-sm hidden-xs" style="background-color:#cdeff6;"> -->
+          <div id="calendar-viewport" class="col-md-2 hidden-sm hidden-xs">
+            <!-- <div class="dayname">2016.10.18 Tue.</div>
+            <div class="dayname">2016.10.19 Wed.</div>
+            <div class="dayname">2016.10.20 Thu.</div>
+            <div class="dayname">2016.10.21 Fri.</div>
+            <div class="dayname">2016.10.22 Sat.</div> -->
+          </div>
+          <div id="task-viewport" contenteditable="true" class="col-md-5 col-sm-6">
+            <div class="ace-line" contenteditable="false"><span>20161018</span></div>
+            <div class="ace-line" data-placeholder="Now write something brilliant.">・【調査】Googleアカウント連駅のパッケージと実装方法</div>
+            <div class="ace-line" data-placeholder="Now write something brilliant.">・【実装】カレンダー予定部分のボックス要素デザイン</div>
+            <div class="ace-line" data-placeholder="Now write something brilliant.">・【調査】カレンダー部分のテンプレート</div>
+            <div class="ace-line" data-placeholder="Now write something brilliant.">・【デザイン】レイアウトの見直し</div>
+            <div class="ace-line" data-placeholder="Now write something brilliant.">・【実装】予定入力時にタイムラインに予定を入れる部分のreact実装</div>
+            <div class="ace-line" data-placeholder="Now write something brilliant.">・【実装】タイムラインの予定を移動できるようreact-DnDを導入</div>
+            <div class="ace-line" data-placeholder="Now write something brilliant.">・【デザイン】タスクにチェックボックスをつける</div>
+            <div class="ace-line" data-placeholder="Now write something brilliant.">・【デザイン】現在時間が分かるマーカーを追加</div>
+            <div class="ace-line" data-placeholder="Now write something brilliant.">・【デザイン】溢れたタスクをに移動するための機能を追加</div>
+            <div class="ace-line" data-placeholder="Now write something brilliant."></div>
+          </div>
+          <!-- <div id="timeline-viewport" class="col-md-5 col-sm-6 hidden-xs" style="background-color:#244365;">Timeline</div> -->
+          <div id="timeline-viewport" class="col-md-5 col-sm-6 hidden-xs">
+            <table>
+              <tbody>
+                <tr class="" height="1">
+                  <td class="tv-time"></td>
+                  <td class="tv-marker">
+                    <div class="markercell"></div>
+                    <div class="markercell"></div>
+                    <div class="markercell"></div>
+                    <div class="markercell"></div>
+                    <div class="markercell"></div>
+                    <div class="markercell"></div>
+                    <div class="markercell"></div>
+                    <div class="markercell"></div>
+                    <div class="markercell"></div>
+                    <div class="markercell"></div>
+                    <div class="markercell"></div>
+                    <div class="markercell"></div>
+                    <div class="markercell"></div>
+                    <div class="markercell"></div>
+                  </td>
+                </tr>
+                <tr class="">
+                  <td class="tv-time">
+                    <div class="time">08:00</div>
+                    <div class="time">09:00</div>
+                    <div class="time">10:00</div>
+                    <div class="time">11:00</div>
+                    <div class="time">12:00</div>
+                    <div class="time">13:00</div>
+                    <div class="time">14:00</div>
+                    <div class="time">15:00</div>
+                    <div class="time">16:00</div>
+                    <div class="time">17:00</div>
+                    <div class="time">18:00</div>
+                    <div class="time">19:00</div>
+                    <div class="time">20:00</div>
+                    <div class="time">21:00</div>
+                  </td>
+                  <td class="tv-task">
+                    <div class="task done" style="top:75px;"><span>【調査】Googleアカウント連駅のパッケージと実装方法</span></div>
+                    <div class="task done" style="top:125px;"><span>【実装】カレンダー予定部分のボックス要素デザイン</span></div>
+                    <div class="task done" style="top:250px;"><span>【調査】カレンダー部分のテンプレート</span></div>
+                    <div class="task" style="top:300px;"><span>【デザイン】レイアウトの見直し</span></div>
+                    <div class="task" style="top:350px;"><span>【実装】予定入力時にタイムラインに予定を入れる部分のreact実装</span></div>
+                    <div class="task" style="top:425px;"><span>【実装】タイムラインの予定を移動できるようreact-DnDを導入</span></div>
+                    <div class="task" style="top:475px;"><span>【デザイン】タスクにチェックボックスをつける</span></div>
+                    <div class="task alert" style="top:525px;"><span>【デザイン】現在時間が分かるマーカーを追加</span></div>
+                    <div class="task alert" style="top:575px;"><span>【デザイン】溢れたタスクをに移動するための機能を追加</span></div>
+                    <div class="nowmarker"></div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- <footer style="background-color:#3d4f36">Footer</footer> -->
+    <footer></footer>
+  </body>
+</html>
