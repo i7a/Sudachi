@@ -25,6 +25,9 @@ header {
   #task-viewport {
     outline: none;
     ul.public-DraftStyleDefault-ul {
+      li {
+        pointer-events: none;
+      }
       li::before {
         content: ' ';
         display: inline-block;
@@ -33,6 +36,7 @@ header {
         width: 14px;
         height: 14px;
         cursor: pointer;
+        pointer-events: auto;
         background-image: url("../../images/not_done.png");
       }
       li.done::before {
@@ -44,10 +48,12 @@ header {
       }
     }
     .ace-line, .public-DraftStyleDefault-block {
+      pointer-events: none;
       color: $t-black;
       line-height: 1.1;
       font-size: $font-medium;
       padding: 5px 0;
+      margin-left: 20px;
     }
     div.ace-line:first-child {
       font-size: $font-large;
