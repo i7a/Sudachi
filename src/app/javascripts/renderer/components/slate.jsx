@@ -9,17 +9,20 @@ import initialState from './state.json'
  * @type {Object}
  */
 
-const schema = {
-  nodes: {
-    'block-quote': props => <blockquote>{props.children}</blockquote>,
-    'bulleted-list': props => <ul>{props.children}</ul>,
-    'heading-one': props => <h1>{props.children}</h1>,
-    'heading-two': props => <h2>{props.children}</h2>,
-    'heading-three': props => <h3>{props.children}</h3>,
-    'heading-four': props => <h4>{props.children}</h4>,
-    'heading-five': props => <h5>{props.children}</h5>,
-    'heading-six': props => <h6>{props.children}</h6>,
-    'list-item': props => <li>{props.children}</li>,
+const schema = function (onClick) {
+  return {
+    nodes: {
+      'block-quote': props => <blockquote>{props.children}</blockquote>,
+      'bulleted-list': props => <ul>{props.children}</ul>,
+      'heading-one': props => <h1>{props.children}</h1>,
+      'heading-two': props => <h2>{props.children}</h2>,
+      'heading-three': props => <h3>{props.children}</h3>,
+      'heading-four': props => <h4>{props.children}</h4>,
+      'heading-five': props => <h5>{props.children}</h5>,
+      'heading-six': props => <h6>{props.children}</h6>,
+      'list-item': props => <li>{props.children}</li>,
+      'task-list' : props => <ul className="public-DraftStyleDefault-ul" onClick={onClick(props.state)}><li><div>{props.children}</div></li></ul>
+    }
   }
 }
 
@@ -57,6 +60,7 @@ class AutoMarkdown extends React.Component {
       case '*':
       case '-':
       case '+': return 'list-item'
+      case '[]': return 'task-list'
       case '>': return 'block-quote'
       case '#': return 'heading-one'
       case '##': return 'heading-two'
@@ -79,7 +83,7 @@ class AutoMarkdown extends React.Component {
     return (
       <div className="editor">
         <Editor
-          schema={schema}
+          schema={schema(this.onClick.bind(this))}
           state={this.state.state}
           onChange={this.onChange.bind(this)}
           onKeyDown={this.onKeyDown.bind(this)}
@@ -93,6 +97,11 @@ class AutoMarkdown extends React.Component {
     this.setState({ state })
   }
 
+  onClick(state){
+    return function(e){
+      console.log(state)
+    }
+  }
 
   /**
    * On key down, check for our specific key shortcuts.
