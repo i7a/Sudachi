@@ -1,5 +1,5 @@
-// Import React!
-import React from 'react'
+import React from 'react';
+// import {Editor, EditorState, RichUtils} from 'draft-js';
 import { Editor, Raw } from 'slate'
 import initialState from './state.json'
 
@@ -26,13 +26,7 @@ const schema = function (onClick) {
   }
 }
 
-/**
- * The auto-markdown example.
- *
- * @type {Component}
- */
-
-class AutoMarkdown extends React.Component {
+const TaskEditor = class TaskEditor extends React.Component {
 
   /**
    * Deserialize the raw initial state.
@@ -213,15 +207,33 @@ class AutoMarkdown extends React.Component {
       .setBlock('paragraph')
       .apply()
   }
+
+  // constructor(props) {
+  //   super(props);
+  //   this.state = {
+  //     editorState: RichUtils.toggleBlockType(EditorState.createEmpty(), 'unordered-list-item')
+  //   };
+  // }
+  //
+  // componentDidMount() {
+  //   this.refs.editor.focus();
+  // }
+  //
+  // onChange(editorState) {
+  //   this.setState({editorState});
+  //   this.props.callbackToTv(editorState.getCurrentContent());
+  // }
+  //
+  // render() {
+  //   const {editorState} = this.state;
+  //   return (
+  //     <Editor
+  //       editorState={editorState}
+  //       onChange={this.onChange.bind(this)}
+  //       ref="editor"
+  //     />
+  //   )
+  // }
 }
 
-module.exports = class MainContent extends React.Component {
-  componentDidMount() {
-
-  }
-  render() {
-    return(
-      <AutoMarkdown></AutoMarkdown>
-    );
-  }
-};
+module.exports = TaskEditor;
