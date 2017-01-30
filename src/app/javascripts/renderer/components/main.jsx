@@ -1,5 +1,4 @@
 import React from 'react';
-import {Editor, EditorState, RichUtils} from 'draft-js';
 import _ from 'lodash';
 import Header from './header';
 import Footer from './footer';
@@ -31,19 +30,17 @@ class TaskBoard extends React.Component {
     });
   }
 
-  onUpdateTask(contentState) {
-    let blockMap = contentState.getBlockMap();
+  onUpdateTask(state) {
     this.state.taskList = [];
-    blockMap.map((bm) => {
+    state.document.nodes.map((block) => {
       this.state.taskList.push({
-        key: bm.getKey(),
-        description: bm.getText(),
+        key: block.key,
+        description: block.text,
         done: false
       });
     });
     let taskList = this.state.taskList;
     this.setState({taskList: taskList});
-    this.setClickEventForListObject();
   }
 
   render() {

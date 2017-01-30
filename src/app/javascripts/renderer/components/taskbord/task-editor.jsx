@@ -89,11 +89,12 @@ const TaskEditor = class TaskEditor extends React.Component {
   // On change, update the app's React state with the new editor state.
   onChange(state){
     this.setState({ state })
+    this.props.callbackToTv(state);
   }
 
   onClick(state){
     return function(e){
-      console.log(state)
+      console.log(state.startBlock.text)
     }
   }
 

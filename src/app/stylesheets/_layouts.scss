@@ -25,20 +25,23 @@ header {
   #task-viewport {
     outline: none;
     ul.public-DraftStyleDefault-ul {
-      li::before {
+      li {
+        margin-left: 20px;
+      }
+      li div::before {
         content: ' ';
         display: inline-block;
         float: left;
-        margin: 6px 10px 0 0px;
+        margin: 0px 10px 0 -20px;
         width: 14px;
         height: 14px;
         cursor: pointer;
         background-image: url("../../images/not_done.png");
       }
-      li.done::before {
+      li.done div::before {
         background-image: url("../../images/done.png");
       }
-      li.done {
+      li.done div{
         text-decoration: line-through;
         color: $t-black;
       }
@@ -127,5 +130,28 @@ header {
         }
       }
     }
+  }
+}
+
+ul.public-DraftStyleDefault-ul {
+  li {
+    margin-left: 20px;
+  }
+  li div::before {
+    content: ' ';
+    display: inline-block;
+    float: left;
+    margin: 0px 10px 0 -20px;
+    width: 14px;
+    height: 14px;
+    cursor: pointer;
+    background-image: url("../../images/not_done.png");
+  }
+  li.done div::before {
+    background-image: url("../../images/done.png");
+  }
+  li.done div{
+    text-decoration: line-through;
+    color: $t-black;
   }
 }

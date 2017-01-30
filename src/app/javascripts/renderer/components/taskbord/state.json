@@ -49,6 +49,16 @@
           "text": "Try it out for yourself! Try starting a new line with \">\", \"-\", or \"#\"s."
         }
       ]
+    },
+    {
+      "kind": "block",
+      "type": "task-list",
+      "nodes": [
+        {
+          "kind": "text",
+          "text": "I'll ship pm6:30 until february!!"
+        }
+      ]
     }
   ]
 }
