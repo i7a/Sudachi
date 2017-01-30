@@ -25,29 +25,38 @@ header {
   #task-viewport {
     outline: none;
     ul.public-DraftStyleDefault-ul {
+      li {
+        margin-left: 20px;
+      }
+      li div::before {
+        pointer-events: none;
+      }
       li::before {
         content: ' ';
         display: inline-block;
         float: left;
-        margin: 6px 10px 0 0px;
+        margin: 0px 10px 0 -20px;
         width: 14px;
         height: 14px;
         cursor: pointer;
+        pointer-events: auto;
         background-image: url("../../images/not_done.png");
       }
-      li.done::before {
+      li.done div::before {
         background-image: url("../../images/done.png");
       }
-      li.done {
+      li.done div{
         text-decoration: line-through;
         color: $t-black;
       }
     }
     .ace-line, .public-DraftStyleDefault-block {
+      pointer-events: none;
       color: $t-black;
       line-height: 1.1;
       font-size: $font-medium;
       padding: 5px 0;
+      margin-left: 20px;
     }
     div.ace-line:first-child {
       font-size: $font-large;
@@ -127,5 +136,28 @@ header {
         }
       }
     }
+  }
+}
+
+ul.public-DraftStyleDefault-ul {
+  li {
+    margin-left: 20px;
+  }
+  li div::before {
+    content: ' ';
+    display: inline-block;
+    float: left;
+    margin: 0px 10px 0 -20px;
+    width: 14px;
+    height: 14px;
+    cursor: pointer;
+    background-image: url("../../images/not_done.png");
+  }
+  li.done div::before {
+    background-image: url("../../images/done.png");
+  }
+  li.done div{
+    text-decoration: line-through;
+    color: $t-black;
   }
 }
