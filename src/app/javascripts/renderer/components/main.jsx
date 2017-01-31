@@ -12,24 +12,6 @@ class TaskBoard extends React.Component {
     this.state = {taskList: []};
   }
 
-  setClickEventForListObject() {
-    let listObject = document.getElementsByClassName("public-DraftStyleDefault-unorderedListItem");
-    let taskList = this.state.taskList;
-    let _this = this;
-    _.each(listObject, (lo, i) => {
-      lo.addEventListener('click', function(){
-        let offsetKey = this.dataset.offsetKey.substring(0, 5);
-        _.each(taskList, (tl, i) => {
-          if (offsetKey == taskList[i].key) {
-            taskList[i].done = !(taskList[i].done);
-          }
-        });
-        this.classList.toggle('done');
-        _this.setState({taskList: taskList});
-      }, false);
-    });
-  }
-
   onUpdateTask(state) {
     this.state.taskList = [];
     state.document.nodes.map((block) => {
@@ -39,8 +21,16 @@ class TaskBoard extends React.Component {
         done: false
       });
     });
-    let taskList = this.state.taskList;
-    this.setState({taskList: taskList});
+    this.setState({taskList: this.state.taskList});
+  }
+
+  onClickTask(state) {
+    _.each(this.state.taskList, (tl, i) => {
+      if (state.startBlock.key == tl.key) {
+        this.state.taskList[i].done = !(this.state.taskList[i].done);
+      }
+    });
+    this.setState({taskList: this.state.taskList});
   }
 
   render() {
@@ -49,7 +39,10 @@ class TaskBoard extends React.Component {
         <div className="container-fluid">
           <div className="row">
             <CalendarViewport></CalendarViewport>
-            <TaskViewport callbackToTb={this.onUpdateTask.bind(this)}></TaskViewport>
+            <TaskViewport
+              callbackToTb={this.onUpdateTask.bind(this)}
+              callbackClickToTb={this.onClickTask.bind(this)}
+            />
             <TimelineViewport taskList={this.state.taskList}></TimelineViewport>
           </div>
         </div>
