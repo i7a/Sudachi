@@ -2,51 +2,11 @@
   "nodes": [
     {
       "kind": "block",
-      "type": "paragraph",
+      "type": "task-list",
       "nodes": [
         {
           "kind": "text",
-          "text": "The editor gives you full control over the logic you can add. For example, it's fairly common to want to add markdown-like shortcuts to editors. So that, when you start a line with \"> \" you get a blockquote that looks like this:"
-        }
-      ]
-    },
-    {
-      "kind": "block",
-      "type": "block-quote",
-      "nodes": [
-        {
-          "kind": "text",
-          "text": "A wise quote."
-        }
-      ]
-    },
-    {
-      "kind": "block",
-      "type": "paragraph",
-      "nodes": [
-        {
-          "kind": "text",
-          "text": "Order when you start a line with \"## \" you get a level-two heading, like this:"
-        }
-      ]
-    },
-    {
-      "kind": "block",
-      "type": "heading-two",
-      "nodes": [
-        {
-          "kind": "text",
-          "text": "Try it out!"
-        }
-      ]
-    },
-    {
-      "kind": "block",
-      "type": "paragraph",
-      "nodes": [
-        {
-          "kind": "text",
-          "text": "Try it out for yourself! Try starting a new line with \">\", \"-\", or \"#\"s."
+          "text": "I'll ship pm6:30 until february!!"
         }
       ]
     },
@@ -56,7 +16,87 @@
       "nodes": [
         {
           "kind": "text",
-          "text": "I'll ship pm6:30 until february!!"
+          "text": "チェックリストのon/offとカレンダーへの動機、onChange時のデータ維持実装"
+        }
+      ]
+    },
+    {
+      "kind": "block",
+      "type": "task-list",
+      "nodes": [
+        {
+          "kind": "text",
+          "text": "マークダウンで所要時間を指定できるようにする"
+        }
+      ]
+    },
+    {
+      "kind": "block",
+      "type": "task-list",
+      "nodes": [
+        {
+          "kind": "text",
+          "text": "各タスクをドラッグ&ドロップで順番を入れ替えられるようにする"
+        }
+      ]
+    },
+    {
+      "kind": "block",
+      "type": "task-list",
+      "nodes": [
+        {
+          "kind": "text",
+          "text": "dailyでデータをローカル保存できるようにする"
+        }
+      ]
+    },
+    {
+      "kind": "block",
+      "type": "task-list",
+      "nodes": [
+        {
+          "kind": "text",
+          "text": "「明日に繰り越し」のボタン・エリアを実装"
+        }
+      ]
+    },
+    {
+      "kind": "block",
+      "type": "task-list",
+      "nodes": [
+        {
+          "kind": "text",
+          "text": "Yesterday/Tomorrowボタン追加"
+        }
+      ]
+    },
+    {
+      "kind": "block",
+      "type": "task-list",
+      "nodes": [
+        {
+          "kind": "text",
+          "text": "エディタを開いた状態でオートフォーカス"
+        }
+      ]
+    },
+    {
+      "kind": "block",
+      "type": "task-list",
+      "nodes": [
+        {
+          "kind": "text",
+          "text": "GoogleCalendar連携"
+        }
+      ]
+    },
+    {
+      "kind": "block",
+      "type": "task-list",
+      "nodes": [
+        {
+          "kind": "text",
+          "text": "ボーダーライン機能実装"
         }
       ]
     }
