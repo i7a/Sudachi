@@ -20,12 +20,10 @@ class TaskBoard extends React.Component {
         done: false
       };
     });
-    console.log(this.state.taskList);
     this.setState({taskList: this.state.taskList});
   }
 
   onClickTask(state) {
-    console.log()
     this.state.taskList[state.startBlock.key].done = !(this.state.taskList[state.startBlock.key].done)
     this.setState({taskList: this.state.taskList});
   }
