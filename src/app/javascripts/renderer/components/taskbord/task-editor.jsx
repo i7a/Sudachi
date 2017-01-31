@@ -21,7 +21,7 @@ const schema = function (onClick) {
       'heading-five': props => <h5>{props.children}</h5>,
       'heading-six': props => <h6>{props.children}</h6>,
       'list-item': props => <li>{props.children}</li>,
-      'task-list' : props => <ul className="public-DraftStyleDefault-ul" onClick={onClick(props.state)}><li><div>{props.children}</div></li></ul>
+      'task-list' : props => <ul className="task-line" onClick={onClick(props.state)}><li><div>{props.children}</div></li></ul>
     }
   }
 }

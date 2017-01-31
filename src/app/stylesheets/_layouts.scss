@@ -24,12 +24,11 @@ header {
   }
   #task-viewport {
     outline: none;
-    ul.public-DraftStyleDefault-ul {
+    ul.task-line {
+      pointer-events: none;
       li {
         margin-left: 20px;
-      }
-      li div::before {
-        pointer-events: none;
+        div { pointer-events: none }
       }
       li::before {
         content: ' ';
@@ -42,15 +41,15 @@ header {
         pointer-events: auto;
         background-image: url("../../images/not_done.png");
       }
-      li.done div::before {
+      li.done::before {
         background-image: url("../../images/done.png");
       }
-      li.done div{
+      li.done div {
         text-decoration: line-through;
         color: $t-black;
       }
     }
-    .ace-line, .public-DraftStyleDefault-block {
+    .ace-line {
       pointer-events: none;
       color: $t-black;
       line-height: 1.1;
@@ -108,9 +107,7 @@ header {
           &.done {
             background-color: #DBE7FA;
             color: #777777;
-            span {
-              font-weight: 400;
-            }
+            span { font-weight: 400 }
           }
           &.alert {
             top:575px;
@@ -136,28 +133,5 @@ header {
         }
       }
     }
-  }
-}
-
-ul.public-DraftStyleDefault-ul {
-  li {
-    margin-left: 20px;
-  }
-  li div::before {
-    content: ' ';
-    display: inline-block;
-    float: left;
-    margin: 0px 10px 0 -20px;
-    width: 14px;
-    height: 14px;
-    cursor: pointer;
-    background-image: url("../../images/not_done.png");
-  }
-  li.done div::before {
-    background-image: url("../../images/done.png");
-  }
-  li.done div{
-    text-decoration: line-through;
-    color: $t-black;
   }
 }
