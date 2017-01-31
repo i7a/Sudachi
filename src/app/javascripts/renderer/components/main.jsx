@@ -9,27 +9,24 @@ import TaskViewport from './taskbord/task-viewport';
 class TaskBoard extends React.Component {
   constructor(props){
     super(props);
-    this.state = {taskList: []};
+    this.state = {taskList: {}};
   }
 
   onUpdateTask(state) {
-    this.state.taskList = [];
+    this.state.taskList = {};
     state.document.nodes.map((block) => {
-      this.state.taskList.push({
-        key: block.key,
+      this.state.taskList[block.key] = {
         description: block.text,
         done: false
-      });
+      };
     });
+    console.log(this.state.taskList);
     this.setState({taskList: this.state.taskList});
   }
 
   onClickTask(state) {
-    _.each(this.state.taskList, (tl, i) => {
-      if (state.startBlock.key == tl.key) {
-        this.state.taskList[i].done = !(this.state.taskList[i].done);
-      }
-    });
+    console.log()
+    this.state.taskList[state.startBlock.key].done = !(this.state.taskList[state.startBlock.key].done)
     this.setState({taskList: this.state.taskList});
   }
 
