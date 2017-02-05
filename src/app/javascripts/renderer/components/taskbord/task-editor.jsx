@@ -1,30 +1,7 @@
 import React from 'react';
-// import {Editor, EditorState, RichUtils} from 'draft-js';
+import Children from 'react';
 import { Editor, Raw } from 'slate'
 import initialState from './state.json'
-
-/**
- * Define a schema.
- *
- * @type {Object}
- */
-
-const schema = function (onClick) {
-  return {
-    nodes: {
-      'block-quote': props => <blockquote>{props.children}</blockquote>,
-      'bulleted-list': props => <ul>{props.children}</ul>,
-      'heading-one': props => <h1>{props.children}</h1>,
-      'heading-two': props => <h2>{props.children}</h2>,
-      'heading-three': props => <h3>{props.children}</h3>,
-      'heading-four': props => <h4>{props.children}</h4>,
-      'heading-five': props => <h5>{props.children}</h5>,
-      'heading-six': props => <h6>{props.children}</h6>,
-      'list-item': props => <li>{props.children}</li>,
-      'task-list' : props => <ul className="task-line" onClick={onClick(props.state)}><li><div>{props.children}</div></li></ul>
-    }
-  }
-}
 
 const TaskEditor = class TaskEditor extends React.Component {
 
@@ -38,7 +15,22 @@ const TaskEditor = class TaskEditor extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      state: Raw.deserialize(initialState, { terse: true })
+      state: Raw.deserialize(initialState, { terse: true }),
+      schema: {
+        nodes: {
+          'block-quote': props => <blockquote>{props.children}</blockquote>,
+          'bulleted-list': props => <ul>{props.children}</ul>,
+          'heading-one': props => <h1>{props.children}</h1>,
+          'heading-two': props => <h2>{props.children}</h2>,
+          'heading-three': props => <h3>{props.children}</h3>,
+          'heading-four': props => <h4>{props.children}</h4>,
+          'heading-five': props => <h5>{props.children}</h5>,
+          'heading-six': props => <h6>{props.children}</h6>,
+          'list-item': props => <li>{props.children}</li>,
+          'task-list-done' : props => <ul className="task-line" onClick={this.onClick.bind(this)}><li className="done"><div>{props.children}</div></li></ul>,
+          'task-list' : props => <ul className="task-line" onClick={this.onClick.bind(this)}><li><div>{props.children}</div></li></ul>
+        }
+      }
     }
   }
 
@@ -55,6 +47,7 @@ const TaskEditor = class TaskEditor extends React.Component {
       case '-':
       case '+': return 'list-item'
       case '[]': return 'task-list'
+      case '[X]': return 'task-list-done'
       case '>': return 'block-quote'
       case '#': return 'heading-one'
       case '##': return 'heading-two'
@@ -77,7 +70,7 @@ const TaskEditor = class TaskEditor extends React.Component {
     return (
       <div className="editor">
         <Editor
-          schema={schema(this.onClick.bind(this))}
+          schema={this.state.schema}
           state={this.state.state}
           onChange={this.onChange.bind(this)}
           onKeyDown={this.onKeyDown.bind(this)}
@@ -92,11 +85,29 @@ const TaskEditor = class TaskEditor extends React.Component {
     this.props.callbackToTv(state);
   }
 
-  onClick(state){
-    let props = this.props;
-    return function() {
-      props.callbackClicktoTv(state);
+  // On Click toggle task list status
+  onClick(e){
+    let state = this.state.state
+    this.props.callbackClicktoTv(state)
+
+    let newState = state
+    if (state.startBlock.type == 'task-list') {
+
+      newState = state
+        .transform()
+        .setBlock('task-list-done')
+        .apply()
+
+    } else {
+
+      newState = state
+        .transform()
+        .setBlock('task-list')
+        .apply()
+
     }
+    e.preventDefault()
+    this.setState({ state: newState })
   }
 
   /**
