@@ -15,9 +15,10 @@ class TaskBoard extends React.Component {
   onUpdateTask(state) {
     this.state.taskList = {};
     state.document.nodes.map((block) => {
+      let done = block.type == 'task-list-done' ? true : false
       this.state.taskList[block.key] = {
         description: block.text,
-        done: false
+        done: done
       };
     });
     this.setState({taskList: this.state.taskList});

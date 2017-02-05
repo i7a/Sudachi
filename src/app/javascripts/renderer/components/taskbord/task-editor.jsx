@@ -1,5 +1,4 @@
 import React from 'react';
-import Children from 'react';
 import { Editor, Raw } from 'slate'
 import initialState from './state.json'
 
@@ -85,29 +84,18 @@ const TaskEditor = class TaskEditor extends React.Component {
     this.props.callbackToTv(state);
   }
 
-  // On Click toggle task list status
+  // On click toggle task list status.
   onClick(e){
     let state = this.state.state
     this.props.callbackClicktoTv(state)
 
-    let newState = state
-    if (state.startBlock.type == 'task-list') {
+    let type = state.startBlock.type == 'task-list' ? 'task-list-done' : 'task-list'
+    let transform = state
+      .transform()
+      .setBlock(type)
 
-      newState = state
-        .transform()
-        .setBlock('task-list-done')
-        .apply()
-
-    } else {
-
-      newState = state
-        .transform()
-        .setBlock('task-list')
-        .apply()
-
-    }
     e.preventDefault()
-    this.setState({ state: newState })
+    this.setState({ state: transform.apply() })
   }
 
   /**
