@@ -18,7 +18,8 @@ class TaskBoard extends React.Component {
       let done = block.type == 'task-list-done' ? true : false
       this.state.taskList[block.key] = {
         description: block.text,
-        done: done
+        done: done,
+        time: block.data.get("requiredTime")
       };
     });
     this.setState({taskList: this.state.taskList});

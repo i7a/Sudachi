@@ -1,6 +1,7 @@
 import React from 'react';
 import { Editor, Raw } from 'slate'
 import initialState from './state.json'
+import {Data} from 'slate'
 
 const TaskEditor = class TaskEditor extends React.Component {
 
@@ -41,19 +42,19 @@ const TaskEditor = class TaskEditor extends React.Component {
    */
 
   getType(chars){
-    switch (chars) {
-      case '*':
-      case '-':
-      case '+': return 'list-item'
-      case '[]': return 'task-list'
-      case '[X]': return 'task-list-done'
-      case '>': return 'block-quote'
-      case '#': return 'heading-one'
-      case '##': return 'heading-two'
-      case '###': return 'heading-three'
-      case '####': return 'heading-four'
-      case '#####': return 'heading-five'
-      case '######': return 'heading-six'
+    switch (true) {
+      case /\*/.test(chars):
+      case /-/.test(chars):
+      case /\+/.test(chars): return 'list-item'
+      case /\[\]/.test(chars): return 'task-list'
+      case /\[X\]/.test(chars): return 'task-list-done'
+      case />/.test(chars): return 'block-quote'
+      case /#/.test(chars): return 'heading-one'
+      case /##/.test(chars): return 'heading-two'
+      case /###/.test(chars): return 'heading-three'
+      case /####/.test(chars): return 'heading-four'
+      case /#####/.test(chars): return 'heading-five'
+      case /######/.test(chars): return 'heading-six'
       default: return null
     }
   }
@@ -134,9 +135,16 @@ const TaskEditor = class TaskEditor extends React.Component {
     if (type == 'list-item' && startBlock.type == 'list-item') return
     e.preventDefault()
 
+    let time = 60
+    if (type == 'task-list' || type == 'task-list-done'){
+      let inputTime = chars.match(/\d{1,3}/)
+      if (inputTime.length > 0) time = inputTime[0]
+    }
+
     let transform = state
       .transform()
       .setBlock(type)
+      .setBlock({ data: Data.create({ requiredTime: time }) })
 
     if (type == 'list-item') transform.wrapBlock('bulleted-list')
 
