@@ -1,30 +1,7 @@
 import React from 'react';
-// import {Editor, EditorState, RichUtils} from 'draft-js';
 import { Editor, Raw } from 'slate'
 import initialState from './state.json'
-
-/**
- * Define a schema.
- *
- * @type {Object}
- */
-
-const schema = function (onClick) {
-  return {
-    nodes: {
-      'block-quote': props => <blockquote>{props.children}</blockquote>,
-      'bulleted-list': props => <ul>{props.children}</ul>,
-      'heading-one': props => <h1>{props.children}</h1>,
-      'heading-two': props => <h2>{props.children}</h2>,
-      'heading-three': props => <h3>{props.children}</h3>,
-      'heading-four': props => <h4>{props.children}</h4>,
-      'heading-five': props => <h5>{props.children}</h5>,
-      'heading-six': props => <h6>{props.children}</h6>,
-      'list-item': props => <li>{props.children}</li>,
-      'task-list' : props => <ul className="task-line" onClick={onClick(props.state)}><li><div>{props.children}</div></li></ul>
-    }
-  }
-}
+import {Data} from 'slate'
 
 const TaskEditor = class TaskEditor extends React.Component {
 
@@ -38,7 +15,22 @@ const TaskEditor = class TaskEditor extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      state: Raw.deserialize(initialState, { terse: true })
+      state: Raw.deserialize(initialState, { terse: true }),
+      schema: {
+        nodes: {
+          'block-quote': props => <blockquote>{props.children}</blockquote>,
+          'bulleted-list': props => <ul>{props.children}</ul>,
+          'heading-one': props => <h1>{props.children}</h1>,
+          'heading-two': props => <h2>{props.children}</h2>,
+          'heading-three': props => <h3>{props.children}</h3>,
+          'heading-four': props => <h4>{props.children}</h4>,
+          'heading-five': props => <h5>{props.children}</h5>,
+          'heading-six': props => <h6>{props.children}</h6>,
+          'list-item': props => <li>{props.children}</li>,
+          'task-list-done' : props => <ul className="task-line" onClick={this.onClick.bind(this)}><li className="done"><div>{props.children}</div></li></ul>,
+          'task-list' : props => <ul className="task-line" onClick={this.onClick.bind(this)}><li><div>{props.children}</div></li></ul>
+        }
+      }
     }
   }
 
@@ -50,18 +42,19 @@ const TaskEditor = class TaskEditor extends React.Component {
    */
 
   getType(chars){
-    switch (chars) {
-      case '*':
-      case '-':
-      case '+': return 'list-item'
-      case '[]': return 'task-list'
-      case '>': return 'block-quote'
-      case '#': return 'heading-one'
-      case '##': return 'heading-two'
-      case '###': return 'heading-three'
-      case '####': return 'heading-four'
-      case '#####': return 'heading-five'
-      case '######': return 'heading-six'
+    switch (true) {
+      case /\*/.test(chars):
+      case /-/.test(chars):
+      case /\+/.test(chars): return 'list-item'
+      case /\[\]/.test(chars): return 'task-list'
+      case /\[X\]/.test(chars): return 'task-list-done'
+      case />/.test(chars): return 'block-quote'
+      case /#/.test(chars): return 'heading-one'
+      case /##/.test(chars): return 'heading-two'
+      case /###/.test(chars): return 'heading-three'
+      case /####/.test(chars): return 'heading-four'
+      case /#####/.test(chars): return 'heading-five'
+      case /######/.test(chars): return 'heading-six'
       default: return null
     }
   }
@@ -77,7 +70,7 @@ const TaskEditor = class TaskEditor extends React.Component {
     return (
       <div className="editor">
         <Editor
-          schema={schema(this.onClick.bind(this))}
+          schema={this.state.schema}
           state={this.state.state}
           onChange={this.onChange.bind(this)}
           onKeyDown={this.onKeyDown.bind(this)}
@@ -88,14 +81,22 @@ const TaskEditor = class TaskEditor extends React.Component {
 
   // On change, update the app's React state with the new editor state.
   onChange(state){
-    this.setState({ state })
+    this.setState({ state });
     this.props.callbackToTv(state);
   }
 
-  onClick(state){
-    return function(e){
-      console.log(state.startBlock.text)
-    }
+  // On click toggle task list status.
+  onClick(e){
+    let state = this.state.state
+    this.props.callbackClicktoTv(state)
+
+    let type = state.startBlock.type == 'task-list' ? 'task-list-done' : 'task-list'
+    let transform = state
+      .transform()
+      .setBlock(type)
+
+    e.preventDefault()
+    this.setState({ state: transform.apply() })
   }
 
   /**
@@ -134,9 +135,16 @@ const TaskEditor = class TaskEditor extends React.Component {
     if (type == 'list-item' && startBlock.type == 'list-item') return
     e.preventDefault()
 
+    let time = 60
+    if (type == 'task-list' || type == 'task-list-done'){
+      let inputTime = chars.match(/\d{1,3}/)
+      if (inputTime.length > 0) time = inputTime[0]
+    }
+
     let transform = state
       .transform()
       .setBlock(type)
+      .setBlock({ data: Data.create({ requiredTime: time }) })
 
     if (type == 'list-item') transform.wrapBlock('bulleted-list')
 

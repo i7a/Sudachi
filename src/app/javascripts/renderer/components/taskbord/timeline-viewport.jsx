@@ -50,15 +50,16 @@ class TvTask extends React.Component {
   render() {
     let index = 1;
     let tasks = [];
+    let taskList = this.props.taskList;
+    let keys = Object.keys(taskList);
 
-    let tasksList = this.props.taskList
-    if (tasksList) {
-      for(let index in tasksList) {
-        if(tasksList[index].description != "") {
+    if (keys.length > 0) {
+      keys.forEach((key, index) =>{
+        if (taskList[key].description != "" ){
           let style = {top: (50*(parseInt(index) + 1)).toString() + 'px'};
-          tasks.push(<div key={index} className={tasksList[index].done ? "task done" : "task"} style={style}><span>{tasksList[index].description}</span></div>);
+          tasks.push(<div key={key} className={taskList[key].done ? "task done" : "task"} style={style}><span>{taskList[key].description}</span></div>);
         }
-      }
+      });
     }
 
     if (tasks) {
