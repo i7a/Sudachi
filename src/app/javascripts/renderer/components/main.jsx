@@ -19,7 +19,7 @@ class TaskBoard extends React.Component {
       this.state.taskList[block.key] = {
         description: block.text,
         done: done,
-        time: block.data.get("requiredTime")
+        requiredTime: block.data.get("requiredTime", 60)
       };
     });
     this.setState({taskList: this.state.taskList});

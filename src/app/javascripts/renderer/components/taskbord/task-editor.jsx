@@ -138,7 +138,7 @@ const TaskEditor = class TaskEditor extends React.Component {
     let time = 60
     if (type == 'task-list' || type == 'task-list-done'){
       let inputTime = chars.match(/\d{1,3}/)
-      if (inputTime.length > 0) time = inputTime[0]
+      if (inputTime !== null) time = Number(inputTime[0])
     }
 
     let transform = state
