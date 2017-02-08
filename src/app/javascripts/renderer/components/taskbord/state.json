@@ -22,7 +22,7 @@
     },
     {
       "kind": "block",
-      "type": "task-list",
+      "type": "task-list-done",
       "nodes": [
         {
           "kind": "text",
@@ -42,7 +42,7 @@
     },
     {
       "kind": "block",
-      "type": "task-list",
+      "type": "task-list-done",
       "nodes": [
         {
           "kind": "text",

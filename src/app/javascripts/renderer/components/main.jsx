@@ -1,5 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
+import taskListStorage from '../../modules/task-list-storage';
+import moment from 'moment'
 import Header from './header';
 import Footer from './footer';
 import TimelineViewport from './taskbord/timeline-viewport';
@@ -10,6 +12,7 @@ class TaskBoard extends React.Component {
   constructor(props){
     super(props);
     this.state = {taskList: {}};
+    this.storage = new taskListStorage(this.state.taskList)
   }
 
   onUpdateTask(state) {
@@ -23,6 +26,7 @@ class TaskBoard extends React.Component {
       };
     });
     this.setState({taskList: this.state.taskList});
+    this.storage.set(moment().format("YYYYMMDD"), this.state.taskList)
   }
 
   onClickTask(state) {
