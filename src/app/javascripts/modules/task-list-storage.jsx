@@ -5,7 +5,7 @@ const taskListStorage = class taskListStorage {
     this.taskList = data
   }
 
-  // save task list json file to local strage.
+  // save task list json file to local storage.
   set(date, dailyTaskList){
     storage.set('taskList/' + date, dailyTaskList, (err) => {
       if (err) {
@@ -14,7 +14,7 @@ const taskListStorage = class taskListStorage {
     })
   }
 
-  // get task list json file from local strage.
+  // get task list json file from local storage.
   get(date){
     storage.get('taskList/' + date, (err, data) => {
       if (err) {
