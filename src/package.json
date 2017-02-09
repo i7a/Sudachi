@@ -2,7 +2,7 @@
   "name": "pm6-30",
   "version": "1.0.0",
   "description": "task management tool to finish your job until 6:30 pm.",
-  "main": "./app/javascripts/main/main.js",
+  "main": "./app/javascripts/main/main.jsx",
   "author": "ktp",
   "dependencies": {
     "babel": "^6.5.2",

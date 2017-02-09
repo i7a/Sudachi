@@ -1,7 +1,12 @@
 import React from 'react';
 import { Editor, Raw } from 'slate'
-import initialState from './state.json'
+// import initialState from './state.json'
 import {Data} from 'slate'
+import taskListStorage from '../../../modules/task-list-storage';
+import moment from 'moment'
+import {ipcRenderer} from 'electron'
+
+const initialState = ipcRenderer.sendSync('getTaskList', moment().format("YYYYMMDD"))
 
 const TaskEditor = class TaskEditor extends React.Component {
 
@@ -32,6 +37,7 @@ const TaskEditor = class TaskEditor extends React.Component {
         }
       }
     }
+    this.storage = new taskListStorage()
   }
 
   /**
@@ -83,6 +89,7 @@ const TaskEditor = class TaskEditor extends React.Component {
   onChange(state){
     this.setState({ state });
     this.props.callbackToTv(state);
+    this.storage.set(moment().format("YYYYMMDD"), Raw.serialize(state).document)
   }
 
   // On click toggle task list status.

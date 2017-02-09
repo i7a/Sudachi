@@ -1,8 +1,8 @@
-import storage from 'electron-storage';
+const storage = require('electron-storage')
 
 const taskListStorage = class taskListStorage {
-  constructor(data){
-    this.taskList = data
+  constructor(){
+    this.taskList = {}
   }
 
   // save task list json file to local storage.
@@ -24,7 +24,6 @@ const taskListStorage = class taskListStorage {
         this.taskList = data
       }
     })
-    return this.taskList
   }
 }
 

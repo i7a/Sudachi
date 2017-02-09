@@ -1,8 +1,12 @@
 {
+  "kind": "document",
   "nodes": [
     {
       "kind": "block",
       "type": "task-list",
+      "data": {
+        "requiredTime": 60
+      },
       "nodes": [
         {
           "kind": "text",
@@ -13,6 +17,9 @@
     {
       "kind": "block",
       "type": "task-list-done",
+      "data": {
+        "requiredTime": 60
+      },
       "nodes": [
         {
           "kind": "text",
@@ -23,6 +30,9 @@
     {
       "kind": "block",
       "type": "task-list-done",
+      "data": {
+        "requiredTime": 60
+      },
       "nodes": [
         {
           "kind": "text",
@@ -33,6 +43,9 @@
     {
       "kind": "block",
       "type": "task-list",
+      "data": {
+        "requiredTime": 120
+      },
       "nodes": [
         {
           "kind": "text",
@@ -43,6 +56,9 @@
     {
       "kind": "block",
       "type": "task-list-done",
+      "data": {
+        "requiredTime": 60
+      },
       "nodes": [
         {
           "kind": "text",
@@ -53,6 +69,22 @@
     {
       "kind": "block",
       "type": "task-list",
+      "data": {
+        "requiredTime": 60
+      },
+      "nodes": [
+        {
+          "kind": "text",
+          "text": "保存したデータを読み込んでレンダリングできるようにする"
+        }
+      ]
+    },
+    {
+      "kind": "block",
+      "type": "task-list",
+      "data": {
+        "requiredTime": 60
+      },
       "nodes": [
         {
           "kind": "text",
@@ -63,6 +95,9 @@
     {
       "kind": "block",
       "type": "task-list",
+      "data": {
+        "requiredTime": 60
+      },
       "nodes": [
         {
           "kind": "text",
@@ -73,6 +108,9 @@
     {
       "kind": "block",
       "type": "task-list",
+      "data": {
+        "requiredTime": 60
+      },
       "nodes": [
         {
           "kind": "text",
@@ -83,6 +121,9 @@
     {
       "kind": "block",
       "type": "task-list",
+      "data": {
+        "requiredTime": 60
+      },
       "nodes": [
         {
           "kind": "text",
@@ -93,6 +134,9 @@
     {
       "kind": "block",
       "type": "task-list",
+      "data": {
+        "requiredTime": 60
+      },
       "nodes": [
         {
           "kind": "text",
@@ -103,6 +147,9 @@
     {
       "kind": "block",
       "type": "task-list",
+      "data": {
+        "requiredTime": 60
+      },
       "nodes": [
         {
           "kind": "text",
@@ -113,6 +160,9 @@
     {
       "kind": "block",
       "type": "task-list",
+      "data": {
+        "requiredTime": 60
+      },
       "nodes": [
         {
           "kind": "text",
