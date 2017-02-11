@@ -1,5 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
+import moment from 'moment'
 import Header from './header';
 import Footer from './footer';
 import TimelineViewport from './taskbord/timeline-viewport';
@@ -19,7 +20,7 @@ class TaskBoard extends React.Component {
       this.state.taskList[block.key] = {
         description: block.text,
         done: done,
-        time: block.data.get("requiredTime")
+        requiredTime: block.data.get("requiredTime", 60)
       };
     });
     this.setState({taskList: this.state.taskList});
