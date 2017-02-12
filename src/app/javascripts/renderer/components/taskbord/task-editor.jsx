@@ -99,7 +99,6 @@ const TaskEditor = class TaskEditor extends React.Component {
 
   // On change, update the app's React state with the new editor state.
   onChange(state){
-    console.log("on change!")
     this.setState({ state });
     this.props.callbackToTv(state);
     this.storage.set(this.props.date, Raw.serialize(state).document)
@@ -107,7 +106,6 @@ const TaskEditor = class TaskEditor extends React.Component {
 
   // On click toggle task list status.
   onClick(e){
-    console.log("hoge!")
     let state = this.state.state
     this.props.callbackClicktoTv(state)
 
