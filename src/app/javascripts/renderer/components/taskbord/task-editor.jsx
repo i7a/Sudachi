@@ -92,6 +92,7 @@ const TaskEditor = class TaskEditor extends React.Component {
           state={this.state.state}
           onChange={this.onChange.bind(this)}
           onKeyDown={this.onKeyDown.bind(this)}
+          ref='editor'
         />
       </div>
     )
@@ -236,32 +237,10 @@ const TaskEditor = class TaskEditor extends React.Component {
       .apply()
   }
 
-  // constructor(props) {
-  //   super(props);
-  //   this.state = {
-  //     editorState: RichUtils.toggleBlockType(EditorState.createEmpty(), 'unordered-list-item')
-  //   };
-  // }
-  //
-  // componentDidMount() {
-  //   this.refs.editor.focus();
-  // }
-  //
-  // onChange(editorState) {
-  //   this.setState({editorState});
-  //   this.props.callbackToTv(editorState.getCurrentContent());
-  // }
-  //
-  // render() {
-  //   const {editorState} = this.state;
-  //   return (
-  //     <Editor
-  //       editorState={editorState}
-  //       onChange={this.onChange.bind(this)}
-  //       ref="editor"
-  //     />
-  //   )
-  // }
+  componentDidMount() {
+    this.props.callbackToTv(this.state.state)
+    this.refs.editor.focus()
+  }
 }
 
 module.exports = TaskEditor;
