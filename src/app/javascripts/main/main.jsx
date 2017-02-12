@@ -5,6 +5,7 @@
 const electron = require("electron");
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
+const initialData = require("../../data/initial.json")
 let mainWindow;
 
 // rennderer process との通信を行う
@@ -12,13 +13,28 @@ const {ipcMain} = require('electron');
 const storage = require('electron-storage');
 
 ipcMain.on('getTaskList', (event, date) => {
-  storage.get('taskList/' + date, (err, data) => {
-    if (err) {
-      console.error(err)
+  let path = 'taskList/' + date + '.json'
+  storage.isPathExists(path, (itDoes) => {
+    if (itDoes) {
+      storage.get(path, (err, data) => {
+        if (err) {
+          console.error(err)
+        } else {
+          // success.
+          event.returnValue = data;
+        }
+      })
     } else {
-      // success.
-      event.returnValue = data;
+      storage.set(path, initialData, (err) => {
+        if (err) {
+          console.error(err)
+        } else {
+          // success.
+          event.returnValue = initialData;
+        }
+      })
     }
+
   })
 })
 

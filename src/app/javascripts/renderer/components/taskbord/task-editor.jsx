@@ -1,12 +1,10 @@
 import React from 'react';
 import { Editor, Raw } from 'slate'
-// import initialState from './state.json'
+import initialState from './state.json'
 import {Data} from 'slate'
 import taskListStorage from '../../../modules/task-list-storage';
 import moment from 'moment'
 import {ipcRenderer} from 'electron'
-
-const initialState = ipcRenderer.sendSync('getTaskList', moment().format("YYYYMMDD"))
 
 const TaskEditor = class TaskEditor extends React.Component {
 
@@ -20,7 +18,7 @@ const TaskEditor = class TaskEditor extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      state: Raw.deserialize(initialState, { terse: true }),
+      state: Raw.deserialize(this.getState(this.props.date), { terse: true }),
       schema: {
         nodes: {
           'block-quote': props => <blockquote>{props.children}</blockquote>,
@@ -40,6 +38,20 @@ const TaskEditor = class TaskEditor extends React.Component {
     this.storage = new taskListStorage()
   }
 
+  // get state via main process
+  getState(date){
+    return ipcRenderer.sendSync('getTaskList', date)
+  }
+
+  // update task list
+  componentWillReceiveProps(nextProps){
+    if (nextProps.date !== this.props.date) {
+      let nextState = Raw.deserialize(this.getState(nextProps.date), { terse: true })
+      this.setState({state: nextState})
+      this.props.callbackToTv(nextState)
+    }
+  }
+
   /**
    * Get the block type for a series of auto-markdown shortcut `chars`.
    *
@@ -55,12 +67,12 @@ const TaskEditor = class TaskEditor extends React.Component {
       case /\[\]/.test(chars): return 'task-list'
       case /\[X\]/.test(chars): return 'task-list-done'
       case />/.test(chars): return 'block-quote'
-      case /#/.test(chars): return 'heading-one'
-      case /##/.test(chars): return 'heading-two'
-      case /###/.test(chars): return 'heading-three'
-      case /####/.test(chars): return 'heading-four'
-      case /#####/.test(chars): return 'heading-five'
       case /######/.test(chars): return 'heading-six'
+      case /#####/.test(chars): return 'heading-five'
+      case /####/.test(chars): return 'heading-four'
+      case /###/.test(chars): return 'heading-three'
+      case /##/.test(chars): return 'heading-two'
+      case /#/.test(chars): return 'heading-one'
       default: return null
     }
   }
@@ -87,13 +99,15 @@ const TaskEditor = class TaskEditor extends React.Component {
 
   // On change, update the app's React state with the new editor state.
   onChange(state){
+    console.log("on change!")
     this.setState({ state });
     this.props.callbackToTv(state);
-    this.storage.set(moment().format("YYYYMMDD"), Raw.serialize(state).document)
+    this.storage.set(this.props.date, Raw.serialize(state).document)
   }
 
   // On click toggle task list status.
   onClick(e){
+    console.log("hoge!")
     let state = this.state.state
     this.props.callbackClicktoTv(state)
 
@@ -124,13 +138,13 @@ const TaskEditor = class TaskEditor extends React.Component {
   }
 
   /**
- * On space, if it was after an auto-markdown shortcut, convert the current
- * node into the shortcut's corresponding type.
- *
- * @param {Event} e
- * @param {State} state
- * @return {State or Null} state
- */
+   * On space, if it was after an auto-markdown shortcut, convert the current
+   * node into the shortcut's corresponding type.
+   *
+   * @param {Event} e
+   * @param {State} state
+   * @return {State or Null} state
+   */
 
   onSpace(e, state) {
     if (state.isExpanded) return

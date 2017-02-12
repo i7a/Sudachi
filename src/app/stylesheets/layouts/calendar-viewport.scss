@@ -1,0 +1,10 @@
+#calendar-viewport {
+  div.dayname:first-child {
+    margin-top: 100px;
+  }
+  div.dayname {
+    line-height: 1.1;
+    font-size: $font-medium;
+    margin: 10px 0;
+  }
+}

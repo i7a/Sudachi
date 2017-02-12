@@ -1,0 +1,64 @@
+#timeline-viewport {
+  margin-top: 20px;
+  table { table-layout: fixed }
+  table tbody {
+    tr td.tv-marker {
+      position: absolute;
+      width: 100%;
+      .markercell {
+        width: 60%;
+        height: 25px;
+        margin-bottom: 25px;
+        border-bottom: 1px dotted #ddd;
+        border-top: 1px solid #ddd;
+        font-size: 1px;
+      }
+    }
+    tr td.tv-time {
+      padding-right: 10px;
+      position: relative;
+      .time {
+        text-align: right;
+        height: 50px;
+      }
+    }
+    tr td.tv-task {
+      position: relative;
+      width: 100%;
+      .task {
+        position: absolute;
+        left: -1px;
+        width: 55%;
+        height: 49px;
+        background-color: #4986E7;
+        color: #FFF;
+        &.done {
+          background-color: #DBE7FA;
+          color: #777777;
+          span { font-weight: 400 }
+        }
+        &.alert {
+          top:575px;
+          background-color:#E57373;
+          border-radius: 0px;
+          padding: 0px;
+        }
+        span {
+          display: block;
+          padding: 5px 0 0 5px;
+          font-size: $font-small;
+          font-weight: 600;
+        }
+      }
+      .nowmarker {
+        position: absolute;
+        left: 0;
+        width: 400px;
+        top: 320px;
+        height: 0;
+        border-top: 2px solid #ff7f6e;
+        overflow: hidden;
+      }
+    }
+  }
+}
