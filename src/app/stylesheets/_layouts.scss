@@ -1,5 +1,5 @@
 body { height:100%; }
-header,footer { height:10%; }
+header,footer { height:0; }
 header {
   .btn-google {
     float: right;
@@ -8,10 +8,8 @@ header {
 }
 #root, .window, .window-content{ height: 100%; }
 .wrapper#task-board {
-  height:80%;
-  .container-fluid, .row, #calendar-viewport, #task-viewport, #timeline-viewport {
-    height: 100%;
-  }
+  height:100%;
+  .container-fluid, .row, #calendar-viewport, #task-viewport, #timeline-viewport { height: 100%; }
 }
 
 @import "layouts/task-viewport";

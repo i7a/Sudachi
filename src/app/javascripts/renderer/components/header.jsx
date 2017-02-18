@@ -4,7 +4,7 @@ const Header = class Header extends React.Component {
   render() {
     return (
       <header>
-        <button className="btn btn-primary btn-google">Google Login</button>
+        {/* <button className="btn btn-primary btn-google">Google Login</button> */}
       </header>
     );
   }
