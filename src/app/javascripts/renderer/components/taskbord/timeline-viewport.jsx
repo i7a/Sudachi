@@ -1,5 +1,8 @@
 import React from 'react';
 import _ from 'lodash';
+import TvTask from './timeline-task'
+import HTML5Backend from 'react-dnd-html5-backend';
+import { DragDropContext } from 'react-dnd';
 
 const TimelineViewport = class TimelineViewport extends React.Component {
   render() {
@@ -46,38 +49,4 @@ class TvTime extends React.Component {
   }
 }
 
-class TvTask extends React.Component {
-  render() {
-    let index = 1;
-    let tasks = [];
-    let taskList = this.props.taskList;
-    let keys = Object.keys(taskList);
-    let top = 50
-    if (keys.length > 0) {
-      keys.forEach((key, index) =>{
-        if (taskList[key].description != "" ){
-          let height = 49 * taskList[key].requiredTime / 60
-          let style = {
-            top: top.toString() + 'px',
-            height: height.toString() + 'px'
-          };
-          tasks.push(<div key={key} className={taskList[key].done ? "task done" : "task"} style={style}><span>{taskList[key].description}</span></div>);
-          top = top + height + 1
-        }
-      });
-    }
-
-    if (tasks) {
-      return (
-        <td className="tv-task">
-          {tasks}
-          <div className="nowmarker"></div>
-        </td>
-      );
-    } else {
-      return null;
-    }
-  }
-}
-
-module.exports = TimelineViewport;
+module.exports = DragDropContext(HTML5Backend)(TimelineViewport);
