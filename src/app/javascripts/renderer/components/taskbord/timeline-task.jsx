@@ -37,22 +37,19 @@ const TimelineTask = class TvTask extends React.Component {
     const { isDragging, connectDragSource, text } = this.props
     let index = 1;
     let tasks = [];
-    let taskList = this.props.taskList;
-    let keys = Object.keys(taskList);
     let top = 50
-    if (keys.length > 0) {
-      keys.forEach((key, index) =>{
-        if (taskList[key].description != "" ){
-          let height = 49 * taskList[key].requiredTime / 60
-          let style = {
-            top: top.toString() + 'px',
-            height: height.toString() + 'px'
-          };
-          tasks.push(<div key={key} className={taskList[key].done ? "task done" : "task"} style={style}><span>{taskList[key].description}</span></div>);
-          top = top + height + 1
-        }
-      });
-    }
+
+    this.props.taskList.document.nodes.map((block) => {
+      if (block.text != "") {
+        let height = 49 * block.data.get("requiredTime", 60) / 60
+        let style = {
+          top: top.toString() + 'px',
+          height: height.toString() + 'px'
+        };
+        tasks.push(<div key={block.key} className={block.data.get("done", false) ? "task done" : "task"} style={style}><span>{block.text}</span></div>);
+        top = top + height + 1
+      }
+    })
 
     if (tasks) {
       return connectDragSource(

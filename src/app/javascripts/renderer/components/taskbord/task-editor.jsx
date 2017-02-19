@@ -1,10 +1,9 @@
 import React from 'react';
 import { Editor, Raw } from 'slate'
-import initialState from './state.json'
-import {Data} from 'slate'
+import { Data } from 'slate'
 import taskListStorage from '../../../modules/task-list-storage';
 import moment from 'moment'
-import {ipcRenderer} from 'electron'
+import { ipcRenderer } from 'electron'
 
 const TaskEditor = class TaskEditor extends React.Component {
 
@@ -18,7 +17,7 @@ const TaskEditor = class TaskEditor extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      state: Raw.deserialize(this.getState(this.props.date), { terse: true }),
+      state: this.props.taskList,
       schema: {
         nodes: {
           'block-quote': props => <blockquote>{props.children}</blockquote>,
@@ -38,18 +37,18 @@ const TaskEditor = class TaskEditor extends React.Component {
     this.storage = new taskListStorage()
   }
 
-  // get state via main process
-  getState(date){
-    return ipcRenderer.sendSync('getTaskList', date)
-  }
-
-  // update task list
+  // when props.date changed update task list
   componentWillReceiveProps(nextProps){
     if (nextProps.date !== this.props.date) {
       let nextState = Raw.deserialize(this.getState(nextProps.date), { terse: true })
       this.setState({state: nextState})
       this.props.callbackToTv(nextState)
     }
+  }
+
+  // get task list json data via main process
+  getState(date){
+    return ipcRenderer.sendSync('getTaskList', date)
   }
 
   /**
@@ -100,7 +99,7 @@ const TaskEditor = class TaskEditor extends React.Component {
 
   // On change, update the app's React state with the new editor state.
   onChange(state){
-    this.setState({ state });
+    this.setState({ state })
     this.props.callbackToTv(state);
     this.storage.set(this.props.date, Raw.serialize(state).document)
   }
@@ -108,14 +107,14 @@ const TaskEditor = class TaskEditor extends React.Component {
   // On click toggle task list status.
   onClick(e){
     let state = this.state.state
-    this.props.callbackClicktoTv(state)
-
     let type = state.startBlock.type == 'task-list' ? 'task-list-done' : 'task-list'
     let transform = state
       .transform()
       .setBlock(type)
+      .setBlock({ data: state.startBlock.data.set('done', type == 'task-list-done') })
 
     e.preventDefault()
+    this.props.callbackToTv(transform.apply())
     this.setState({ state: transform.apply() })
   }
 

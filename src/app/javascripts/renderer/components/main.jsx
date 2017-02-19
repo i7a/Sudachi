@@ -1,6 +1,8 @@
 import React from 'react';
 import _ from 'lodash';
 import moment from 'moment'
+import { Raw } from 'slate'
+import { ipcRenderer } from 'electron'
 import Header from './header';
 import Footer from './footer';
 import TimelineViewport from './taskbord/timeline-viewport';
@@ -8,26 +10,23 @@ import CalendarViewport from './taskbord/calendar-viewport';
 import TaskViewport from './taskbord/task-viewport';
 
 class TaskBoard extends React.Component {
+
   constructor(props){
     super(props);
-    this.state = {taskList: {}};
+    this.state = {
+      date: moment().format("YYYYMMDD"),
+      taskList: Raw.deserialize(this.getState(moment().format("YYYYMMDD")), { terse: true })
+    };
   }
 
+  // get state via main process.
+  getState(date){
+    return ipcRenderer.sendSync('getTaskList', date)
+  }
+
+  // called child component when task changed.
   onUpdateTask(state) {
-    this.state.taskList = {};
-    state.document.nodes.map((block) => {
-      this.state.taskList[block.key] = {
-        description: block.text,
-        done: block.data.get("done", false),
-        requiredTime: block.data.get("requiredTime", 60)
-      };
-    });
-    this.setState({taskList: this.state.taskList});
-  }
-
-  onClickTask(state) {
-    this.state.taskList[state.startBlock.key].done = !(this.state.taskList[state.startBlock.key].done)
-    this.setState({taskList: this.state.taskList});
+    this.setState({taskList: state});
   }
 
   render() {
@@ -35,12 +34,15 @@ class TaskBoard extends React.Component {
       <div id="task-board" className="wrapper">
         <div className="container-fluid">
           <div className="row">
-            <CalendarViewport></CalendarViewport>
+            <CalendarViewport/>
             <TaskViewport
+              date={this.state.date}
+              taskList={this.state.taskList}
               callbackToTb={this.onUpdateTask.bind(this)}
-              callbackClickToTb={this.onClickTask.bind(this)}
             />
-            <TimelineViewport taskList={this.state.taskList}></TimelineViewport>
+            <TimelineViewport
+              taskList={this.state.taskList}
+            />
           </div>
         </div>
       </div>
