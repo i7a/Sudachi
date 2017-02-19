@@ -164,7 +164,12 @@ const TaskEditor = class TaskEditor extends React.Component {
     let transform = state
       .transform()
       .setBlock(type)
-      .setBlock({ data: Data.create({ requiredTime: time }) })
+      .setBlock({
+        data: Data.create({
+          requiredTime: time,
+          done: type == 'task-list-done'
+        })
+      })
 
     if (type == 'list-item') transform.wrapBlock('bulleted-list')
 
@@ -202,6 +207,7 @@ const TaskEditor = class TaskEditor extends React.Component {
     state = transform.apply()
     return state
   }
+
   /**
    * On return, if at the end of a node type that should not be extended,
    * create a new paragraph below it.
