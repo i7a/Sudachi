@@ -42,6 +42,7 @@ class TaskBoard extends React.Component {
             />
             <TimelineViewport
               taskList={this.state.taskList}
+              callbackToTb={this.onUpdateTask.bind(this)}
             />
           </div>
         </div>

@@ -242,6 +242,23 @@ const TaskEditor = class TaskEditor extends React.Component {
       .apply()
   }
 
+  // set timeline posion top.
+  componentDidUpdate(prevProps, prevState) {
+    let size = this.state.state.document.nodes.size
+    let prevSize = prevState.state.document.nodes.size
+    if (! this.state.state.startBlock.data.has("positionTop") || size != prevSize) {
+
+      let nextTop = this.state.state.document.nodes.size * 50
+      let state = this.state.state
+      let transform = state
+        .transform()
+        .setBlock({data: state.startBlock.data.set("positionTop", nextTop)})
+
+      this.props.callbackToTv(transform.apply())
+      this.setState({ state: transform.apply() })
+    }
+  }
+
   componentDidMount() {
     this.props.callbackToTv(this.state.state)
     this.refs.editor.focus()
