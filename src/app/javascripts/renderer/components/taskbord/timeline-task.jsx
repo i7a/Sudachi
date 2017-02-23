@@ -1,14 +1,14 @@
 import React, { PropTypes } from 'react';
-import { DragSource } from "react-dnd";
+import { DragSource, DropTarget } from "react-dnd";
 
 const Types = {
-  CARD: 'card'
+  TASK: 'task'
 }
 
 const taskSource = {
   beginDrag(props) {
     return {
-      text: "hoge"
+      taskKey: props.taskKey
     };
   }
   // endDrag(props, monitor) {
@@ -18,33 +18,39 @@ const taskSource = {
   // }
 }
 
-function collect(connect, monitor){
+const taskTarget = {
+  hover(props, monitor, component) {
+    const dragKey = monitor.getItem().key
+    const hoverKey = props.taskKey
+    console.log(hoverKey)
+  }
+}
+
+function sourceCollect(connect, monitor){
   return {
     connectDragSource: connect.dragSource(),
     isDragging: monitor.isDragging()
   }
 }
 
-const propTypes = {
-  text: PropTypes.string.isRequired,
-  // Injected by React DnD:
-  isDragging: PropTypes.bool.isRequired,
-  connectDragSource: PropTypes.func.isRequired
+function targetCollect(connect){
+  return {
+    connectDropTarget: connect.dropTarget()
+  }
 }
 
 const timelineTask = class TimelineTask extends React.Component {
   render() {
-    const { isDragging, connectDragSource, text } = this.props
+    const { isDragging, connectDragSource, connectDropTarget, text } = this.props
 
-    return connectDragSource(
+    return connectDragSource(connectDropTarget(
       <div
-        key={this.props.block.key}
         className={this.props.block.data.get("done", false) ? "task done" : "task"}
         style={this.props.style}>
         <span>{this.props.block.text}</span>
       </div>
-    )
+    ))
   }
 }
 
-module.exports = DragSource(Types.CARD, taskSource, collect)(timelineTask);
+module.exports = DragSource(Types.TASK, taskSource, sourceCollect)(DropTarget(Types.TASK, taskTarget, targetCollect)(timelineTask));
