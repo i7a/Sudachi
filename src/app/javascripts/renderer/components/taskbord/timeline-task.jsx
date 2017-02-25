@@ -8,7 +8,8 @@ const Types = {
 const taskSource = {
   beginDrag(props) {
     return {
-      taskKey: props.taskKey
+      taskKey: props.taskKey,
+      block: props.block
     };
   }
   // endDrag(props, monitor) {
@@ -20,9 +21,10 @@ const taskSource = {
 
 const taskTarget = {
   hover(props, monitor, component) {
-    const dragKey = monitor.getItem().key
+    const dragKey = monitor.getItem().taskKey
     const hoverKey = props.taskKey
-    console.log(hoverKey)
+    if (dragKey == hoverKey) return
+    props.moveTask(dragKey, hoverKey)
   }
 }
 
