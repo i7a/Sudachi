@@ -44,6 +44,9 @@ const TaskEditor = class TaskEditor extends React.Component {
       this.setState({state: nextState})
       this.props.callbackToTv(nextState)
     }
+    if (nextProps.taskList !== this.props.taskList) {
+      this.setState({state: nextProps.taskList})
+    }
   }
 
   // get task list json data via main process

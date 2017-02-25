@@ -30,7 +30,7 @@ const TimelineViewport = class TimelineViewport extends React.Component {
 
     let dragPositionTop = dragBlock.data.get("positionTop")
     let hoverPositionTop = hoverBlock.data.get("positionTop")
-    let moveUpList = []
+    let moveTargetList = []
     let operation
 
     if (dragPositionTop > hoverPositionTop) {
@@ -39,47 +39,47 @@ const TimelineViewport = class TimelineViewport extends React.Component {
       operation = Operations.DOWN
     }
 
-    // push move block list.
-    this.props.taskList.document.nodes.map((block) => {
+    // push target block list.
+    this.props.taskList.document.nodes.map((block, i) => {
       let blockPositionTop = block.data.get("positionTop")
       if (operation == Operations.UP) {
         if (blockPositionTop < dragPositionTop && blockPositionTop >= hoverPositionTop) {
-          moveUpList.push(block)
+          moveTargetList.push({block: block, index: i})
         }
       }
       if (operation == Operations.DOWN) {
         if (blockPositionTop > dragPositionTop && blockPositionTop <= hoverPositionTop) {
-          moveUpList.push(block)
+          moveTargetList.push({block: block, index: i})
         }
       }
     })
 
-    // move down target blocks.
+    // move target blocks.
     let dragBlockHeight = 50 * dragBlock.data.get("requiredTime", 60) / 60
     let size = this.props.taskList.document.nodes.size
     let transform = this.props.taskList.transform()
 
-    moveUpList.forEach((block) => {
+    moveTargetList.forEach((target) => {
       let newPositionTop
       if (operation == Operations.UP) {
-        newPositionTop = block.data.get("positionTop") + dragBlockHeight
+        newPositionTop = target.block.data.get("positionTop") + dragBlockHeight
       }
       if (operation == Operations.DOWN) {
-        newPositionTop = block.data.get("positionTop") - dragBlockHeight
+        newPositionTop = target.block.data.get("positionTop") - dragBlockHeight
       }
       let targetBlock = Block.create({
-        data: block.data.set("positionTop", newPositionTop),
-        isVoid: block.isVoid,
-        key: block.key,
-        nodes: block.nodes,
-        type: block.type
+        data: target.block.data.set("positionTop", newPositionTop),
+        isVoid: target.block.isVoid,
+        key: target.block.key,
+        nodes: target.block.nodes,
+        type: target.block.type
       })
       transform = transform
-        .removeNodeByKey(block.key)
-        .insertNodeByKey(this.props.taskList.document.key, size - 1, targetBlock)
+        .removeNodeByKey(target.block.key)
+        .insertNodeByKey(this.props.taskList.document.key, target.index, targetBlock)
     })
 
-    // move up drop block.
+    // move drop block.
     let dropBlock = Block.create({
       data: dragBlock.data.set("positionTop", hoverPositionTop),
       isVoid: dragBlock.isVoid,
@@ -89,7 +89,7 @@ const TimelineViewport = class TimelineViewport extends React.Component {
     })
     transform = transform
       .removeNodeByKey(dragKey)
-      .insertNodeByKey(this.props.taskList.document.key, size - 1, dropBlock)
+      .insertNodeByKey(this.props.taskList.document.key, this.props.taskList.document.nodes.indexOf(dragBlock), dropBlock)
 
     // apply.
     this.props.callbackToTb(transform.apply())
