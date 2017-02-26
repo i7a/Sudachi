@@ -6,7 +6,7 @@ const TaskViewport = class TaskViewport extends React.Component {
 
   constructor(props){
     super(props)
-    this.state = { date: moment().format("YYYYMMDD") }
+    this.state = { date: this.props.date }
   }
 
   onClick(e){
@@ -28,8 +28,8 @@ const TaskViewport = class TaskViewport extends React.Component {
         <div className="ace-line"><span>{this.state.date}</span></div>
         <TaskEditor
           date={this.state.date}
+          taskList={this.props.taskList}
           callbackToTv={this.props.callbackToTb}
-          callbackClicktoTv={this.props.callbackClickToTb}
         />
         <div className="task-viewport-buttons">
           <div className="yesterday" onClick={this.onClick.bind(this)}>{"< Yesterday"}</div>
