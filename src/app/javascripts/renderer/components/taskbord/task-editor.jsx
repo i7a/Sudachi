@@ -249,14 +249,26 @@ const TaskEditor = class TaskEditor extends React.Component {
   componentDidUpdate(prevProps, prevState) {
     let size = this.state.state.document.nodes.size
     let prevSize = prevState.state.document.nodes.size
-    if (! this.state.state.startBlock.data.has("positionTop") || size != prevSize) {
+    if (! this.state.state.startBlock.data.has("positionTop") || size > prevSize) {
 
-      let nextTop = this.state.state.document.nodes.size * 50
+      // get bottom task and it's required time.
+      let bottom = 50
+      let requiredTime = 0
+      this.state.state.document.nodes.map((block) => {
+        if (block.data.get("positionTop") >= bottom) {
+          bottom = block.data.get("positionTop")
+          requiredTime = block.data.get("requiredTime")
+        }
+      })
+
+      // set position top of current task.
+      let nextTop = bottom + (49 * (requiredTime / 60)) + 1
       let state = this.state.state
       let transform = state
         .transform()
         .setBlock({data: state.startBlock.data.set("positionTop", nextTop)})
 
+      // apply.
       this.props.callbackToTv(transform.apply())
       this.setState({ state: transform.apply() })
     }

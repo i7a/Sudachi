@@ -55,17 +55,26 @@ const TimelineViewport = class TimelineViewport extends React.Component {
     })
 
     // move target blocks.
-    let dragBlockHeight = 50 * dragBlock.data.get("requiredTime", 60) / 60
-    let size = this.props.taskList.document.nodes.size
+    let dragBlockHeight = (49 * dragBlock.data.get("requiredTime", 60) / 60) + 1
     let transform = this.props.taskList.transform()
+    let targetEdge = operation == Operations.UP ? 9999999999999 : 0
+    let dropPositionTop
 
     moveTargetList.forEach((target) => {
       let newPositionTop
       if (operation == Operations.UP) {
         newPositionTop = target.block.data.get("positionTop") + dragBlockHeight
+        if (targetEdge > newPositionTop) {
+          targetEdge = newPositionTop
+          dropPositionTop = targetEdge - ((49 * dragBlock.data.get("requiredTime") / 60) + 1)
+        }
       }
       if (operation == Operations.DOWN) {
         newPositionTop = target.block.data.get("positionTop") - dragBlockHeight
+        if (targetEdge < newPositionTop) {
+          targetEdge = newPositionTop
+          dropPositionTop = targetEdge + ((49 * target.block.data.get("requiredTime") / 60) + 1)
+        }
       }
       let targetBlock = Block.create({
         data: target.block.data.set("positionTop", newPositionTop),
@@ -81,7 +90,7 @@ const TimelineViewport = class TimelineViewport extends React.Component {
 
     // move drop block.
     let dropBlock = Block.create({
-      data: dragBlock.data.set("positionTop", hoverPositionTop),
+      data: dragBlock.data.set("positionTop", dropPositionTop),
       isVoid: dragBlock.isVoid,
       key: dragBlock.key,
       nodes: dragBlock.nodes,
