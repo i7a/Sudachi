@@ -9,15 +9,17 @@
       .markercell {
         width: 60%;
         height: 25px;
-        margin-bottom: 25px;
+        font-size: 1px;
+      }
+      .marker-border {
         border-bottom: 1px dotted #ddd;
         border-top: 1px solid #ddd;
-        font-size: 1px;
       }
     }
     tr td.tv-time {
       padding-right: 10px;
       position: relative;
+      vertical-align: top;
       .time {
         text-align: right;
         height: 50px;

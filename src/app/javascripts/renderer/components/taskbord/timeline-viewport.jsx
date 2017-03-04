@@ -4,6 +4,7 @@ import HTML5Backend from 'react-dnd-html5-backend';
 import { DragDropContext } from 'react-dnd';
 import { Raw, Block} from 'slate'
 import Task from './timeline-task'
+import Marker from './timeline-marker'
 
 const Operations = {
   UP: 'up',
@@ -19,8 +20,32 @@ const TimelineViewport = class TimelineViewport extends React.Component {
     }
   }
 
-  // transform task state and callback main component.
-  moveTask(dragKey, hoverKey){
+  // when drag task and drop to timeline marker
+  moveTask(dragKey, moveTo){
+    let dragBlock
+    this.props.taskList.document.nodes.map((block) => {
+      if (block.key == dragKey) dragBlock = block
+    })
+
+    let dropBlock = Block.create({
+      data: dragBlock.data.set("positionTop", moveTo),
+      isVoid: dragBlock.isVoid,
+      key: dragBlock.key,
+      nodes: dragBlock.nodes,
+      type: dragBlock.type
+    })
+
+    let transform = this.props.taskList.transform()
+      .removeNodeByKey(dragKey)
+      .insertNodeByKey(this.props.taskList.document.key, this.props.taskList.document.nodes.indexOf(dragBlock), dropBlock)
+
+    // apply.
+    this.props.callbackToTb(transform.apply())
+    this.setState({ taskList: transform.apply() })
+  }
+
+  // when drag task and drop to other task.
+  sortTask(dragKey, hoverKey){
     let dragBlock
     let hoverBlock
     this.props.taskList.document.nodes.map((block) => {
@@ -121,7 +146,7 @@ const TimelineViewport = class TimelineViewport extends React.Component {
           top: block.data.get("positionTop").toString() + 'px',
           height: height.toString() + 'px'
         };
-        tasks.push(<Task key={i} taskKey={block.key} block={block} style={style} moveTask={this.moveTask.bind(this)}/>)
+        tasks.push(<Task key={i} taskKey={block.key} block={block} style={style} sortTask={this.sortTask.bind(this)}/>)
       }
     })
     return tasks.length > 0 ? tasks : null
@@ -132,21 +157,22 @@ const TimelineViewport = class TimelineViewport extends React.Component {
       <div id="timeline-viewport" className="col-md-5 col-sm-6 hidden-xs">
         <table>
           <tbody>
-            <tr height="1">
-              <td className="tv-time"></td>
-              <td className="tv-marker">
-                {_.map(_.range(1, 14), (m, i) => {
-                  return <div key={i} className="markercell"></div>;
-                })}
-              </td>
-            </tr>
             <tr className="">
               <td className="tv-time">
                 {_.map(_.range(8, 21), (t, i) => {
                   return <div key={i} className="time">{t + ":" + "00"}</div>
                 })}
               </td>
-              <td className="tv-task">
+              <td className="tv-task tv-marker">
+                {_.map(_.range(1, 28), (m, i) => {
+                  return (
+                    <Marker
+                      key={i}
+                      className={i % 2 == 0 ? "markercell marker-border" : "markercell"}
+                      moveTask={this.moveTask.bind(this)}
+                    />
+                  );
+                })}
                 {this.renderTasks()}
                 <div className="nowmarker"></div>
               </td>
