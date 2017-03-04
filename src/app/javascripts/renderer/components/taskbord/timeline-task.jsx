@@ -1,9 +1,6 @@
 import React, { PropTypes } from 'react';
 import { DragSource, DropTarget } from "react-dnd";
-
-const Types = {
-  TASK: 'task'
-}
+import * as Constants from '../constants'
 
 const taskSource = {
   beginDrag(props) {
@@ -24,7 +21,7 @@ const taskTarget = {
     const dragKey = monitor.getItem().taskKey
     const hoverKey = props.taskKey
     if (dragKey == hoverKey) return
-    props.moveTask(dragKey, hoverKey)
+    props.sortTask(dragKey, hoverKey)
   }
 }
 
@@ -55,4 +52,4 @@ const timelineTask = class TimelineTask extends React.Component {
   }
 }
 
-module.exports = DragSource(Types.TASK, taskSource, sourceCollect)(DropTarget(Types.TASK, taskTarget, targetCollect)(timelineTask));
+module.exports = DragSource(Constants.Types.TASK, taskSource, sourceCollect)(DropTarget(Constants.Types.TASK, taskTarget, targetCollect)(timelineTask));

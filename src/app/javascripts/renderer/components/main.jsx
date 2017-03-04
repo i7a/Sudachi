@@ -1,8 +1,9 @@
 import React from 'react';
 import _ from 'lodash';
 import moment from 'moment'
-import { Raw } from 'slate'
-import { ipcRenderer } from 'electron'
+import { Raw } from 'slate';
+import { ipcRenderer } from 'electron';
+import taskListStorage from '../../modules/task-list-storage';
 import Header from './header';
 import Footer from './footer';
 import TimelineViewport from './taskbord/timeline-viewport';
@@ -17,6 +18,7 @@ class TaskBoard extends React.Component {
       date: moment().format("YYYYMMDD"),
       taskList: Raw.deserialize(this.getState(moment().format("YYYYMMDD")), { terse: true })
     };
+    this.storage = new taskListStorage()
   }
 
   // get state via main process.
@@ -27,6 +29,12 @@ class TaskBoard extends React.Component {
   // called child component when task changed.
   onUpdateTask(state) {
     this.setState({taskList: state});
+    this.storage.set(this.state.date, Raw.serialize(state).document)
+  }
+
+  // called child component when date changed.
+  onUpdateDate(date) {
+    this.setState({date: date})
   }
 
   render() {
@@ -38,11 +46,12 @@ class TaskBoard extends React.Component {
             <TaskViewport
               date={this.state.date}
               taskList={this.state.taskList}
-              callbackToTb={this.onUpdateTask.bind(this)}
+              onUpdateTask={this.onUpdateTask.bind(this)}
+              onUpdateDate={this.onUpdateDate.bind(this)}
             />
             <TimelineViewport
               taskList={this.state.taskList}
-              callbackToTb={this.onUpdateTask.bind(this)}
+              onUpdateTask={this.onUpdateTask.bind(this)}
             />
           </div>
         </div>
