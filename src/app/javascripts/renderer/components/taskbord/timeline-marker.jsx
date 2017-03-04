@@ -22,7 +22,7 @@ const timelineMarker = class TimelineMarker extends React.Component {
     const { connectDropTarget } = this.props
 
     return connectDropTarget(
-      <div key={this.props.key} className={this.props.className}>{this.props.key}</div>
+      <div key={this.props.key} className={this.props.className}></div>
     )
   }
 }
