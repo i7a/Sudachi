@@ -3,6 +3,7 @@ import _ from 'lodash';
 import HTML5Backend from 'react-dnd-html5-backend';
 import { DragDropContext } from 'react-dnd';
 import { Raw, Block} from 'slate'
+import * as Constants from '../constants'
 import Task from './timeline-task'
 import Marker from './timeline-marker'
 
@@ -140,7 +141,7 @@ const TimelineViewport = class TimelineViewport extends React.Component {
   renderTasks(){
     let tasks = []
     this.state.taskList.document.nodes.map((block, i) => {
-      if (block.text != "") {
+      if (Constants.showInTimeline.indexOf(block.type) >= 0 && block.text != "") {
         let height = 49 * block.data.get("requiredTime", 60) / 60
         let style = {
           top: block.data.get("positionTop").toString() + 'px',
