@@ -13,12 +13,18 @@ const TaskViewport = class TaskViewport extends React.Component {
     switch(e.target.className) {
       case "tomorrow":
         e.preventDefault()
-        this.setState({date: moment(this.state.date).add('d', 1).format("YYYYMMDD")})
+        this.props.onUpdateDate(moment(this.state.date).add('d', 1).format("YYYYMMDD"))
         break
       case "yesterday":
         e.preventDefault()
-        this.setState({date: moment(this.state.date).add('d', -1).format("YYYYMMDD")})
+        this.props.onUpdateDate(moment(this.state.date).add('d', -1).format("YYYYMMDD"))
         break
+    }
+  }
+
+  componentWillReceiveProps(nextProps){
+    if (nextProps.date !== this.props.date) {
+      this.setState({ date: nextProps.date })
     }
   }
 
@@ -29,7 +35,7 @@ const TaskViewport = class TaskViewport extends React.Component {
         <TaskEditor
           date={this.state.date}
           taskList={this.props.taskList}
-          callbackToTv={this.props.callbackToTb}
+          callbackToTv={this.props.onUpdateTask}
         />
         <div className="task-viewport-buttons">
           <div className="yesterday" onClick={this.onClick.bind(this)}>{"< Yesterday"}</div>

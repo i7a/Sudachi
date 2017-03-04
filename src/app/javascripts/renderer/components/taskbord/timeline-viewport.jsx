@@ -40,7 +40,7 @@ const TimelineViewport = class TimelineViewport extends React.Component {
       .insertNodeByKey(this.props.taskList.document.key, this.props.taskList.document.nodes.indexOf(dragBlock), dropBlock)
 
     // apply.
-    this.props.callbackToTb(transform.apply())
+    this.props.onUpdateTask(transform.apply())
     this.setState({ taskList: transform.apply() })
   }
 
@@ -126,7 +126,7 @@ const TimelineViewport = class TimelineViewport extends React.Component {
       .insertNodeByKey(this.props.taskList.document.key, this.props.taskList.document.nodes.indexOf(dragBlock), dropBlock)
 
     // apply.
-    this.props.callbackToTb(transform.apply())
+    this.props.onUpdateTask(transform.apply())
     this.setState({ taskList: transform.apply() })
   }
 

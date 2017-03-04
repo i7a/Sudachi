@@ -1,7 +1,6 @@
 import React from 'react';
 import { Editor, Raw } from 'slate'
 import { Data } from 'slate'
-import taskListStorage from '../../../modules/task-list-storage';
 import moment from 'moment'
 import { ipcRenderer } from 'electron'
 
@@ -34,7 +33,6 @@ const TaskEditor = class TaskEditor extends React.Component {
         }
       }
     }
-    this.storage = new taskListStorage()
   }
 
   // when props.date changed update task list
@@ -104,7 +102,6 @@ const TaskEditor = class TaskEditor extends React.Component {
   onChange(state){
     this.setState({ state })
     this.props.callbackToTv(state);
-    this.storage.set(this.props.date, Raw.serialize(state).document)
   }
 
   // On click toggle task list status.
