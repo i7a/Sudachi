@@ -90,6 +90,7 @@ const TaskEditor = class TaskEditor extends React.Component {
     return (
       <div className="editor">
         <Editor
+          placeholder={"Time is an illusion..."}
           schema={this.state.schema}
           state={this.state.state}
           onChange={this.onChange.bind(this)}
