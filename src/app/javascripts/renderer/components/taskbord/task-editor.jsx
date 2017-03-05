@@ -252,7 +252,7 @@ const TaskEditor = class TaskEditor extends React.Component {
     if (! this.state.state.startBlock.data.has("positionTop") || size > prevSize) {
 
       // get bottom task and it's required time.
-      let bottom = 50
+      let bottom = 450
       let requiredTime = 0
       this.state.state.document.nodes.map((block) => {
         if (block.data.get("positionTop") >= bottom) {

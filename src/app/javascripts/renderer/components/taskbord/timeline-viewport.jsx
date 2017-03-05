@@ -163,12 +163,12 @@ const TimelineViewport = class TimelineViewport extends React.Component {
           <tbody>
             <tr className="">
               <td className="tv-time">
-                {_.map(_.range(8, 21), (t, i) => {
+                {_.map(_.range(0, 25), (t, i) => {
                   return <div key={i} className="time">{t + ":" + "00"}</div>
                 })}
               </td>
               <td className="tv-task tv-marker">
-                {_.map(_.range(1, 28), (m, i) => {
+                {_.map(_.range(1, 50), (m, i) => {
                   return (
                     <Marker
                       key={i}

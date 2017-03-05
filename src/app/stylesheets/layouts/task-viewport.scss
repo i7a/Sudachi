@@ -1,8 +1,14 @@
 #task-viewport {
   padding: 60px 30px;
   outline: none;
+  .editor-area {
+    height: 90%;
+    overflow-y: scroll;
+    overflow-x: hidden;
+  }
   ul.task-line {
     pointer-events: none;
+    font-size: $font-medium;
     li {
       margin-left: 20px;
       div { pointer-events: none }
@@ -11,7 +17,7 @@
       content: ' ';
       display: inline-block;
       float: left;
-      margin: 0px 10px 0 -20px;
+      margin: 1px 10px 0 -20px;
       width: 14px;
       height: 14px;
       cursor: pointer;
@@ -47,7 +53,7 @@
     margin-left: 5px;
   }
   div.task-viewport-buttons {
-    margin-top: 200px;
+    margin-top: 40px;
     width: 100%;
     bottom: 0;
     div {
