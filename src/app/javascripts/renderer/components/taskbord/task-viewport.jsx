@@ -31,12 +31,14 @@ const TaskViewport = class TaskViewport extends React.Component {
   render() {
     return (
       <div id="task-viewport" className="col-md-5 col-sm-6">
-        <div className="ace-line"><span>{this.state.date}</span></div>
-        <TaskEditor
-          date={this.state.date}
-          taskList={this.props.taskList}
-          callbackToTv={this.props.onUpdateTask}
-        />
+        <div className="editor-area">
+          <div className="ace-line"><span>{this.state.date}</span></div>
+          <TaskEditor
+            date={this.state.date}
+            taskList={this.props.taskList}
+            callbackToTv={this.props.onUpdateTask}
+          />
+        </div>
         <div className="task-viewport-buttons">
           <div className="yesterday" onClick={this.onClick.bind(this)}>{"< Yesterday"}</div>
           <div className="tomorrow" onClick={this.onClick.bind(this)}>{"Tomorrow >"}</div>

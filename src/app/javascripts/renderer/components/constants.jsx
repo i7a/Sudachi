@@ -5,5 +5,6 @@ export const Types = {
 export const showInTimeline = [
   "paragraph",
   "task-list",
-  "task-list-done"
+  "task-list-done",
+  "separator"
 ]

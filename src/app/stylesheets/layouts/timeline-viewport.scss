@@ -1,6 +1,9 @@
 #timeline-viewport {
-  margin-top: 20px;
-  padding: 60px 0 0 70px;
+  margin-top: 80px;
+  padding: 0 0 0 70px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  height: 80%;
   table { table-layout: fixed }
   table tbody {
     tr td.tv-marker {
@@ -12,8 +15,8 @@
         font-size: 1px;
       }
       .marker-border {
-        border-bottom: 1px dotted #ddd;
-        border-top: 1px solid #ddd;
+        border-bottom: 1px dotted #efefef;
+        border-top: 1px solid #efefef;
       }
     }
     tr td.tv-time {
@@ -21,12 +24,12 @@
       position: relative;
       vertical-align: top;
       .time {
+        color: $t-light;
         text-align: right;
         height: 50px;
       }
     }
     tr td.tv-task {
-      position: relative;
       width: 100%;
       .task {
         cursor: move;

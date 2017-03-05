@@ -9,7 +9,7 @@ header {
 #root, .window, .window-content{ height: 100%; }
 .wrapper#task-board {
   height:100%;
-  .container-fluid, .row, #calendar-viewport, #task-viewport, #timeline-viewport { height: 100%; }
+  .container-fluid, .row, #calendar-viewport, #task-viewport { height: 100%; }
 }
 
 @import "layouts/task-viewport";
