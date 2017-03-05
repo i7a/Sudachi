@@ -1,10 +1,8 @@
 import React from 'react';
 import { Editor, Raw } from 'slate'
-import initialState from './state.json'
-import {Data} from 'slate'
-import taskListStorage from '../../../modules/task-list-storage';
+import { Data } from 'slate'
 import moment from 'moment'
-import {ipcRenderer} from 'electron'
+import { ipcRenderer } from 'electron'
 
 const TaskEditor = class TaskEditor extends React.Component {
 
@@ -18,7 +16,7 @@ const TaskEditor = class TaskEditor extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      state: Raw.deserialize(this.getState(this.props.date), { terse: true }),
+      state: this.props.taskList,
       schema: {
         nodes: {
           'block-quote': props => <blockquote>{props.children}</blockquote>,
@@ -35,21 +33,23 @@ const TaskEditor = class TaskEditor extends React.Component {
         }
       }
     }
-    this.storage = new taskListStorage()
   }
 
-  // get state via main process
-  getState(date){
-    return ipcRenderer.sendSync('getTaskList', date)
-  }
-
-  // update task list
+  // when props.date changed update task list
   componentWillReceiveProps(nextProps){
     if (nextProps.date !== this.props.date) {
       let nextState = Raw.deserialize(this.getState(nextProps.date), { terse: true })
       this.setState({state: nextState})
       this.props.callbackToTv(nextState)
     }
+    if (nextProps.taskList !== this.props.taskList) {
+      this.setState({state: nextProps.taskList})
+    }
+  }
+
+  // get task list json data via main process
+  getState(date){
+    return ipcRenderer.sendSync('getTaskList', date)
   }
 
   /**
@@ -100,22 +100,21 @@ const TaskEditor = class TaskEditor extends React.Component {
 
   // On change, update the app's React state with the new editor state.
   onChange(state){
-    this.setState({ state });
+    this.setState({ state })
     this.props.callbackToTv(state);
-    this.storage.set(this.props.date, Raw.serialize(state).document)
   }
 
   // On click toggle task list status.
   onClick(e){
     let state = this.state.state
-    this.props.callbackClicktoTv(state)
-
     let type = state.startBlock.type == 'task-list' ? 'task-list-done' : 'task-list'
     let transform = state
       .transform()
       .setBlock(type)
+      .setBlock({ data: state.startBlock.data.set('done', type == 'task-list-done') })
 
     e.preventDefault()
+    this.props.callbackToTv(transform.apply())
     this.setState({ state: transform.apply() })
   }
 
@@ -164,7 +163,12 @@ const TaskEditor = class TaskEditor extends React.Component {
     let transform = state
       .transform()
       .setBlock(type)
-      .setBlock({ data: Data.create({ requiredTime: time }) })
+      .setBlock({
+        data: Data.create({
+          requiredTime: time,
+          done: type == 'task-list-done'
+        })
+      })
 
     if (type == 'list-item') transform.wrapBlock('bulleted-list')
 
@@ -202,6 +206,7 @@ const TaskEditor = class TaskEditor extends React.Component {
     state = transform.apply()
     return state
   }
+
   /**
    * On return, if at the end of a node type that should not be extended,
    * create a new paragraph below it.
@@ -235,6 +240,35 @@ const TaskEditor = class TaskEditor extends React.Component {
       .splitBlock()
       .setBlock('paragraph')
       .apply()
+  }
+
+  // set timeline posion top.
+  componentDidUpdate(prevProps, prevState) {
+    let size = this.state.state.document.nodes.size
+    let prevSize = prevState.state.document.nodes.size
+    if (! this.state.state.startBlock.data.has("positionTop") || size > prevSize) {
+
+      // get bottom task and it's required time.
+      let bottom = 50
+      let requiredTime = 0
+      this.state.state.document.nodes.map((block) => {
+        if (block.data.get("positionTop") >= bottom) {
+          bottom = block.data.get("positionTop")
+          requiredTime = block.data.get("requiredTime")
+        }
+      })
+
+      // set position top of current task.
+      let nextTop = bottom + (49 * (requiredTime / 60)) + 1
+      let state = this.state.state
+      let transform = state
+        .transform()
+        .setBlock({data: state.startBlock.data.set("positionTop", nextTop)})
+
+      // apply.
+      this.props.callbackToTv(transform.apply())
+      this.setState({ state: transform.apply() })
+    }
   }
 
   componentDidMount() {

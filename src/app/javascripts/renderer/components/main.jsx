@@ -1,6 +1,9 @@
 import React from 'react';
 import _ from 'lodash';
 import moment from 'moment'
+import { Raw } from 'slate';
+import { ipcRenderer } from 'electron';
+import taskListStorage from '../../modules/task-list-storage';
 import Header from './header';
 import Footer from './footer';
 import TimelineViewport from './taskbord/timeline-viewport';
@@ -8,27 +11,30 @@ import CalendarViewport from './taskbord/calendar-viewport';
 import TaskViewport from './taskbord/task-viewport';
 
 class TaskBoard extends React.Component {
+
   constructor(props){
     super(props);
-    this.state = {taskList: {}};
+    this.state = {
+      date: moment().format("YYYYMMDD"),
+      taskList: Raw.deserialize(this.getState(moment().format("YYYYMMDD")), { terse: true })
+    };
+    this.storage = new taskListStorage()
   }
 
+  // get state via main process.
+  getState(date){
+    return ipcRenderer.sendSync('getTaskList', date)
+  }
+
+  // called child component when task changed.
   onUpdateTask(state) {
-    this.state.taskList = {};
-    state.document.nodes.map((block) => {
-      let done = block.type == 'task-list-done' ? true : false
-      this.state.taskList[block.key] = {
-        description: block.text,
-        done: done,
-        requiredTime: block.data.get("requiredTime", 60)
-      };
-    });
-    this.setState({taskList: this.state.taskList});
+    this.setState({taskList: state});
+    this.storage.set(this.state.date, Raw.serialize(state).document)
   }
 
-  onClickTask(state) {
-    this.state.taskList[state.startBlock.key].done = !(this.state.taskList[state.startBlock.key].done)
-    this.setState({taskList: this.state.taskList});
+  // called child component when date changed.
+  onUpdateDate(date) {
+    this.setState({date: date})
   }
 
   render() {
@@ -36,12 +42,17 @@ class TaskBoard extends React.Component {
       <div id="task-board" className="wrapper">
         <div className="container-fluid">
           <div className="row">
-            <CalendarViewport></CalendarViewport>
+            <CalendarViewport/>
             <TaskViewport
-              callbackToTb={this.onUpdateTask.bind(this)}
-              callbackClickToTb={this.onClickTask.bind(this)}
+              date={this.state.date}
+              taskList={this.state.taskList}
+              onUpdateTask={this.onUpdateTask.bind(this)}
+              onUpdateDate={this.onUpdateDate.bind(this)}
             />
-            <TimelineViewport taskList={this.state.taskList}></TimelineViewport>
+            <TimelineViewport
+              taskList={this.state.taskList}
+              onUpdateTask={this.onUpdateTask.bind(this)}
+            />
           </div>
         </div>
       </div>

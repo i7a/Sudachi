@@ -50,9 +50,13 @@ app.on('ready', () => {
   mainWindow = new BrowserWindow({
     width,
     height,
+    show: false,
     webPreferences: {
       nodeIntegration: true
     }
+  });
+  mainWindow.once('ready-to-show', () => {
+    mainWindow.show();
   });
   mainWindow.loadURL(
     'file://' + __dirname + '/../../html/index.html'

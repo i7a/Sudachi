@@ -9,7 +9,6 @@
       .markercell {
         width: 60%;
         height: 25px;
-        margin-bottom: 25px;
         font-size: 1px;
       }
       .marker-border {
@@ -20,6 +19,7 @@
     tr td.tv-time {
       padding-right: 10px;
       position: relative;
+      vertical-align: top;
       .time {
         color: $t-light;
         text-align: right;
@@ -30,6 +30,7 @@
       position: relative;
       width: 100%;
       .task {
+        cursor: move;
         position: absolute;
         left: -1px;
         width: 55%;
