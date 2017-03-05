@@ -58,4 +58,15 @@
       &.tomorrow { text-align: right }
     }
   }
+  div.separator-line {
+    margin-bottom: 15px;
+    span.separator {
+      width: 100%;
+      height: 1px;
+      font-size: 1px;
+      line-height: 16px;
+      border-bottom: 1px solid #c1c7cd;
+      display: inline-block;
+    }
+  }
 }

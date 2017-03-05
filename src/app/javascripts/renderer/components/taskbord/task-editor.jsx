@@ -29,7 +29,8 @@ const TaskEditor = class TaskEditor extends React.Component {
           'heading-six': props => <h6>{props.children}</h6>,
           'list-item': props => <li>{props.children}</li>,
           'task-list-done' : props => <ul className="task-line" onClick={this.onClick.bind(this)}><li className="done"><div>{props.children}</div></li></ul>,
-          'task-list' : props => <ul className="task-line" onClick={this.onClick.bind(this)}><li><div>{props.children}</div></li></ul>
+          'task-list' : props => <ul className="task-line" onClick={this.onClick.bind(this)}><li><div>{props.children}</div></li></ul>,
+          'separator' : props => <div className="separator-line"><span className="separator"><span contentEditable={false}></span></span></div>
         }
       }
     }
@@ -61,6 +62,7 @@ const TaskEditor = class TaskEditor extends React.Component {
 
   getType(chars){
     switch (true) {
+      case /---/.test(chars): return 'separator'
       case /\*/.test(chars):
       case /-/.test(chars):
       case /\+/.test(chars): return 'list-item'

@@ -140,7 +140,10 @@ const TimelineViewport = class TimelineViewport extends React.Component {
   // make task panel html.
   renderTasks(){
     let tasks = []
+    let breaker = false
     this.state.taskList.document.nodes.map((block, i) => {
+      if (block.type == "separator") breaker = true;
+      if (breaker) return
       if (Constants.showInTimeline.indexOf(block.type) >= 0 && block.text != "") {
         let height = 49 * block.data.get("requiredTime", 60) / 60
         let style = {
