@@ -6,6 +6,7 @@ import { Raw, Block} from 'slate'
 import * as Constants from '../constants'
 import Task from './timeline-task'
 import Marker from './timeline-marker'
+import moment from 'moment'
 
 const Operations = {
   UP: 'up',
@@ -17,7 +18,8 @@ const TimelineViewport = class TimelineViewport extends React.Component {
   constructor(props){
     super(props)
     this.state = {
-      taskList: this.props.taskList
+      taskList: this.props.taskList,
+      nowMarkerTop: this.nowMarkerTop()
     }
   }
 
@@ -158,6 +160,18 @@ const TimelineViewport = class TimelineViewport extends React.Component {
     return tasks.length > 0 ? tasks : null
   }
 
+  nowMarkerTop(){
+    return (parseInt(moment().format("H")) + parseFloat(moment().format("m") / 60)) * 50
+  }
+
+  componentDidMount(){
+    setInterval(() => {
+      this.setState({
+        nowMarkerTop: this.nowMarkerTop()
+      })
+    }, 2000)
+  }
+
   render() {
     return (
       <div id="timeline-viewport" className="col-md-5 col-sm-6 hidden-xs">
@@ -181,7 +195,7 @@ const TimelineViewport = class TimelineViewport extends React.Component {
                   );
                 })}
                 {this.renderTasks()}
-                <div className="nowmarker"></div>
+                <div className="nowmarker" style={{top: this.state.nowMarkerTop.toString() + 'px'}} />
               </td>
             </tr>
           </tbody>
