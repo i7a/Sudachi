@@ -5,9 +5,7 @@ import * as Constants from '../constants'
 
 const markerTarget = {
   hover(props, monitor, component) {
-    const hoverBoundingRect = findDOMNode(component).getBoundingClientRect();
-    let moveTo = hoverBoundingRect.top - 80
-    props.moveTask(monitor.getItem().taskKey, moveTo)
+    props.moveTask(monitor.getItem().taskKey, props.positionTop)
   }
 }
 
