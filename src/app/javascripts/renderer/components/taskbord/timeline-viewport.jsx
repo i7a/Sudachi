@@ -28,6 +28,8 @@ const TimelineViewport = class TimelineViewport extends React.Component {
       if (block.key == dragKey) dragBlock = block
     })
 
+    if (dragBlock.data.get("positionTop") == moveTo) return
+
     let dropBlock = Block.create({
       data: dragBlock.data.set("positionTop", moveTo),
       isVoid: dragBlock.isVoid,
@@ -174,6 +176,7 @@ const TimelineViewport = class TimelineViewport extends React.Component {
                       key={i}
                       className={i % 2 == 0 ? "markercell marker-border" : "markercell"}
                       moveTask={this.moveTask.bind(this)}
+                      positionTop={i*25}
                     />
                   );
                 })}
