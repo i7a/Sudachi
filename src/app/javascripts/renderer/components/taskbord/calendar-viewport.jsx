@@ -23,10 +23,21 @@ const CalendarViewport = class CalendarViewport extends React.Component {
     this.setState({ open: !this.state.open });
   }
 
+  updateDate(e) {
+    let date = e.currentTarget.childNodes[0].childNodes[1].childNodes[3].innerHTML
+    this.props.onUpdateDate(date)
+    e.preventDefault()
+  }
+
   renderMenuItem() {
     let items = []
+    let date
+    let style = {}
+
     _.map(_.range(1, 30), (d, i) => {
-      items.push(<MenuItem>{moment().add('d', d - 15).format("YYYY.M.D ddd")}</MenuItem>)
+      date = moment().add('d', d - 15).format("YYYYMMDD")
+      style = date == this.props.date ? {fontWeight: "bold", backgroundColor: "rgba(255, 255, 255, 0.2)"} : {}
+      items.push(<MenuItem innerDivStyle={style} onTouchTap={this.updateDate.bind(this)}>{moment().add('d', d - 15).format("YYYY.M.D ddd")}<div style={{display: "none"}}>{date}</div></MenuItem>)
       if (d%7 == 0) {items.push(<Divider />)}
     })
     return items
@@ -38,14 +49,16 @@ const CalendarViewport = class CalendarViewport extends React.Component {
       {/* <MuiThemeProvider> */}
         <div id="calendar-viewport" className="col-md-2 hidden-sm hidden-xs">
           <RaiseButton
-            label="menu"
+            label="history"
             onTouchTap={this.handleToggle.bind(this)}
           />
           <Drawer open={this.state.open}>
-            <RaiseButton
-              label="close"
-              onTouchTap={this.handleToggle.bind(this)}
-            />
+            <div style={{textAlign: "right"}}>
+              <RaiseButton
+                label="close"
+                onTouchTap={this.handleToggle.bind(this)}
+              />
+            </div>
             {this.renderMenuItem()}
           </Drawer>
         </div>
