@@ -42,7 +42,10 @@ class TaskBoard extends React.Component {
       <div id="task-board" className="wrapper">
         <div className="container-fluid">
           <div className="row">
-            <CalendarViewport/>
+            <CalendarViewport
+              onUpdateDate={this.onUpdateDate.bind(this)}
+              date={this.state.date}
+            />
             <TaskViewport
               date={this.state.date}
               taskList={this.state.taskList}
