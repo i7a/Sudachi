@@ -255,8 +255,10 @@ const TaskEditor = class TaskEditor extends React.Component {
       // get bottom task and it's required time.
       let bottom = 450
       let requiredTime = 0
+      let breaker = false
       this.state.state.document.nodes.map((block) => {
-        if (block.type == "separator") return
+        if (block.type == "separator") breaker = true
+        if (breaker) return
         if (Constants.showInTimeline.indexOf(block.type) >= 0 && block.text != "") {
           if (block.data.get("positionTop") >= bottom) {
             bottom = block.data.get("positionTop")
