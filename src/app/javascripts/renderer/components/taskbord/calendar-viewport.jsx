@@ -38,7 +38,7 @@ const CalendarViewport = class CalendarViewport extends React.Component {
       date = moment().add('d', d - 15).format("YYYYMMDD")
       style = date == this.props.date ? {fontWeight: "bold", backgroundColor: "rgba(255, 255, 255, 0.2)"} : {}
       items.push(<MenuItem innerDivStyle={style} onTouchTap={this.updateDate.bind(this)}>{moment().add('d', d - 15).format("YYYY.M.D ddd")}<div style={{display: "none"}}>{date}</div></MenuItem>)
-      if (d%7 == 0) {items.push(<Divider />)}
+      if (moment().add('d', d - 15).format("ddd") == "Sun") {items.push(<Divider />)}
     })
     return items
   }

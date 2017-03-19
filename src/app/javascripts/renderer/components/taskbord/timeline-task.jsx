@@ -39,12 +39,23 @@ function targetCollect(connect){
 }
 
 const timelineTask = class TimelineTask extends React.Component {
+
+  taskClass() {
+    let taskClass = "task"
+    if ( this.props.block.data.get("done", false) == true) {
+      taskClass += " done"
+    } else if ( this.props.block.data.get("positionTop", 500) >= 925 ) {
+      taskClass += " alert"
+    }
+    return taskClass
+  }
+
   render() {
     const { isDragging, connectDragSource, connectDropTarget, text } = this.props
 
     return connectDragSource(connectDropTarget(
       <div
-        className={this.props.block.data.get("done", false) ? "task done" : "task"}
+        className={this.taskClass()}
         style={this.props.style}>
         <span>{this.props.block.text}</span>
       </div>
