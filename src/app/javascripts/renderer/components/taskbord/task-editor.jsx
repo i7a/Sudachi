@@ -3,6 +3,7 @@ import { Editor, Raw } from 'slate'
 import { Data } from 'slate'
 import moment from 'moment'
 import { ipcRenderer } from 'electron'
+import * as Constants from '../constants'
 
 const TaskEditor = class TaskEditor extends React.Component {
 
@@ -254,12 +255,18 @@ const TaskEditor = class TaskEditor extends React.Component {
       // get bottom task and it's required time.
       let bottom = 450
       let requiredTime = 0
+      let breaker = false
       this.state.state.document.nodes.map((block) => {
-        if (block.data.get("positionTop") >= bottom) {
-          bottom = block.data.get("positionTop")
-          requiredTime = block.data.get("requiredTime")
+        if (block.type == "separator") breaker = true
+        if (breaker) return
+        if (Constants.showInTimeline.indexOf(block.type) >= 0 && block.text != "") {
+          if (block.data.get("positionTop") >= bottom) {
+            bottom = block.data.get("positionTop")
+            requiredTime = block.data.get("requiredTime")
+          }
         }
       })
+      if (bottom > 1200) bottom = 1200
 
       // set position top of current task.
       let nextTop = bottom + (49 * (requiredTime / 60)) + 1

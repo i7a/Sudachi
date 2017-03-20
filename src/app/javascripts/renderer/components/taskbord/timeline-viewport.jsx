@@ -151,10 +151,18 @@ const TimelineViewport = class TimelineViewport extends React.Component {
       if (Constants.showInTimeline.indexOf(block.type) >= 0 && block.text != "") {
         let height = 49 * block.data.get("requiredTime", 60) / 60
         let style = {
-          top: block.data.get("positionTop").toString() + 'px',
+          top: block.data.get("positionTop", 500).toString() + 'px',
           height: height.toString() + 'px'
         };
-        tasks.push(<Task key={i} taskKey={block.key} block={block} style={style} sortTask={this.sortTask.bind(this)}/>)
+        tasks.push(
+          <Task
+            key={i}
+            taskKey={block.key}
+            block={block}
+            style={style}
+            sortTask={this.sortTask.bind(this)}
+          />
+        )
       }
     })
     return tasks.length > 0 ? tasks : null
