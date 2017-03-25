@@ -55,6 +55,7 @@ class TaskBoard extends React.Component {
               onUpdateDate={this.onUpdateDate.bind(this)}
             />
             <TimelineViewport
+              date={this.state.date}
               taskList={this.state.taskList}
               onUpdateTask={this.onUpdateTask.bind(this)}
             />
