@@ -9,6 +9,8 @@ import Footer from './footer';
 import TimelineViewport from './taskbord/timeline-viewport';
 import CalendarViewport from './taskbord/calendar-viewport';
 import TaskViewport from './taskbord/task-viewport';
+import injectTapEventPlugin from 'react-tap-event-plugin';
+injectTapEventPlugin();
 
 class TaskBoard extends React.Component {
 

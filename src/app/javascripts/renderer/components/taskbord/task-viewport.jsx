@@ -1,6 +1,8 @@
 import React from 'react';
 import TaskEditor from './task-editor';
 import moment from 'moment';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import FlatButton from 'material-ui/FlatButton';
 
 const TaskViewport = class TaskViewport extends React.Component {
 
@@ -9,17 +11,12 @@ const TaskViewport = class TaskViewport extends React.Component {
     this.state = { date: this.props.date }
   }
 
-  onClick(e){
-    switch(e.target.className) {
-      case "tomorrow":
-        e.preventDefault()
-        this.props.onUpdateDate(moment(this.state.date).add(1, 'd').format("YYYYMMDD"))
-        break
-      case "yesterday":
-        e.preventDefault()
-        this.props.onUpdateDate(moment(this.state.date).add(-1, 'd').format("YYYYMMDD"))
-        break
-    }
+  onClickYesterday(){
+    this.props.onUpdateDate(moment(this.state.date).add(-1, 'd').format("YYYYMMDD"))
+  }
+
+  onClickTomorrow(){
+    this.props.onUpdateDate(moment(this.state.date).add(1, 'd').format("YYYYMMDD"))
   }
 
   componentWillReceiveProps(nextProps){
@@ -40,8 +37,20 @@ const TaskViewport = class TaskViewport extends React.Component {
           />
         </div>
         <div className="task-viewport-buttons">
-          <div className="yesterday" onClick={this.onClick.bind(this)}>{"< Yesterday"}</div>
-          <div className="tomorrow" onClick={this.onClick.bind(this)}>{"Tomorrow >"}</div>
+          <MuiThemeProvider>
+            <div>
+              <FlatButton
+                label="<Yesterday"
+                className="yesterday"
+                onTouchTap={this.onClickYesterday.bind(this)}
+              />
+              <FlatButton
+                label="Tomorrow>"
+                className="tomorrow"
+                onTouchTap={this.onClickTomorrow.bind(this)}
+              />
+            </div>
+          </MuiThemeProvider>
         </div>
       </div>
     );
