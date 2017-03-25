@@ -7,3 +7,5 @@ export const showInTimeline = [
   "task-list",
   "task-list-done"
 ]
+
+export const heightPerHour = 50

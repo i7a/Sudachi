@@ -37,9 +37,10 @@
         position: absolute;
         left: -1px;
         width: 55%;
-        height: 49px;
+        height: 50px;
         background-color: $primary-indigo;
         color: #FFF;
+        border-bottom: 2px solid $white;
         &.done {
           background-color: $indigo-lighter;
           color: #777777;

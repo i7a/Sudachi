@@ -85,7 +85,7 @@ const TimelineViewport = class TimelineViewport extends React.Component {
     })
 
     // move target blocks.
-    let dragBlockHeight = (49 * dragBlock.data.get("requiredTime", 60) / 60) + 1
+    let dragBlockHeight = (Constants.heightPerHour * dragBlock.data.get("requiredTime", 60) / 60)
     let transform = this.props.taskList.transform()
     let targetEdge = operation == Operations.UP ? 9999999999999 : 0
     let dropPositionTop
@@ -96,14 +96,14 @@ const TimelineViewport = class TimelineViewport extends React.Component {
         newPositionTop = target.block.data.get("positionTop") + dragBlockHeight
         if (targetEdge > newPositionTop) {
           targetEdge = newPositionTop
-          dropPositionTop = targetEdge - ((49 * dragBlock.data.get("requiredTime") / 60) + 1)
+          dropPositionTop = targetEdge - (Constants.heightPerHour * dragBlock.data.get("requiredTime") / 60)
         }
       }
       if (operation == Operations.DOWN) {
         newPositionTop = target.block.data.get("positionTop") - dragBlockHeight
         if (targetEdge < newPositionTop) {
           targetEdge = newPositionTop
-          dropPositionTop = targetEdge + ((49 * target.block.data.get("requiredTime") / 60) + 1)
+          dropPositionTop = targetEdge + (Constants.heightPerHour * target.block.data.get("requiredTime") / 60)
         }
       }
       let targetBlock = Block.create({
@@ -149,7 +149,7 @@ const TimelineViewport = class TimelineViewport extends React.Component {
       if (block.type == "separator") breaker = true;
       if (breaker) return
       if (Constants.showInTimeline.indexOf(block.type) >= 0 && block.text != "") {
-        let height = 49 * block.data.get("requiredTime", 60) / 60
+        let height = Constants.heightPerHour * block.data.get("requiredTime", 60) / 60
         let style = {
           top: block.data.get("positionTop", 500).toString() + 'px',
           height: height.toString() + 'px'
@@ -169,7 +169,7 @@ const TimelineViewport = class TimelineViewport extends React.Component {
   }
 
   nowMarkerTop(){
-    return (parseInt(moment().format("H")) + parseFloat(moment().format("m") / 60)) * 50
+    return (parseInt(moment().format("H")) + parseFloat(moment().format("m") / 60)) * Constants.heightPerHour
   }
 
   componentDidMount(){
