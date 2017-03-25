@@ -9,6 +9,8 @@ import Footer from './footer';
 import TimelineViewport from './taskbord/timeline-viewport';
 import CalendarViewport from './taskbord/calendar-viewport';
 import TaskViewport from './taskbord/task-viewport';
+import injectTapEventPlugin from 'react-tap-event-plugin';
+injectTapEventPlugin();
 
 class TaskBoard extends React.Component {
 
@@ -53,6 +55,7 @@ class TaskBoard extends React.Component {
               onUpdateDate={this.onUpdateDate.bind(this)}
             />
             <TimelineViewport
+              date={this.state.date}
               taskList={this.state.taskList}
               onUpdateTask={this.onUpdateTask.bind(this)}
             />

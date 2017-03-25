@@ -269,7 +269,7 @@ const TaskEditor = class TaskEditor extends React.Component {
       if (bottom > 1200) bottom = 1200
 
       // set position top of current task.
-      let nextTop = bottom + (49 * (requiredTime / 60)) + 1
+      let nextTop = bottom + (Constants.heightPerHour * (requiredTime / 60))
       let state = this.state.state
       let transform = state
         .transform()

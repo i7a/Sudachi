@@ -85,7 +85,7 @@ const TimelineViewport = class TimelineViewport extends React.Component {
     })
 
     // move target blocks.
-    let dragBlockHeight = (49 * dragBlock.data.get("requiredTime", 60) / 60) + 1
+    let dragBlockHeight = (Constants.heightPerHour * dragBlock.data.get("requiredTime", 60) / 60)
     let transform = this.props.taskList.transform()
     let targetEdge = operation == Operations.UP ? 9999999999999 : 0
     let dropPositionTop
@@ -96,14 +96,14 @@ const TimelineViewport = class TimelineViewport extends React.Component {
         newPositionTop = target.block.data.get("positionTop") + dragBlockHeight
         if (targetEdge > newPositionTop) {
           targetEdge = newPositionTop
-          dropPositionTop = targetEdge - ((49 * dragBlock.data.get("requiredTime") / 60) + 1)
+          dropPositionTop = targetEdge - (Constants.heightPerHour * dragBlock.data.get("requiredTime") / 60)
         }
       }
       if (operation == Operations.DOWN) {
         newPositionTop = target.block.data.get("positionTop") - dragBlockHeight
         if (targetEdge < newPositionTop) {
           targetEdge = newPositionTop
-          dropPositionTop = targetEdge + ((49 * target.block.data.get("requiredTime") / 60) + 1)
+          dropPositionTop = targetEdge + (Constants.heightPerHour * target.block.data.get("requiredTime") / 60)
         }
       }
       let targetBlock = Block.create({
@@ -141,6 +141,10 @@ const TimelineViewport = class TimelineViewport extends React.Component {
     }
   }
 
+  isTodayTimeline(){
+    return this.props.date == moment().format("YYYYMMDD")
+  }
+
   // make task panel html.
   renderTasks(){
     let tasks = []
@@ -149,11 +153,13 @@ const TimelineViewport = class TimelineViewport extends React.Component {
       if (block.type == "separator") breaker = true;
       if (breaker) return
       if (Constants.showInTimeline.indexOf(block.type) >= 0 && block.text != "") {
-        let height = 49 * block.data.get("requiredTime", 60) / 60
+        let top = block.data.get("positionTop", 500)
+        let height = Constants.heightPerHour * block.data.get("requiredTime", 60) / 60
         let style = {
-          top: block.data.get("positionTop", 500).toString() + 'px',
+          top: top.toString() + 'px',
           height: height.toString() + 'px'
         };
+        if (this.state.nowMarkerTop > (top + height) && !block.data.get("done")) style.backgroundColor = "#80CBC4"
         tasks.push(
           <Task
             key={i}
@@ -169,7 +175,7 @@ const TimelineViewport = class TimelineViewport extends React.Component {
   }
 
   nowMarkerTop(){
-    return (parseInt(moment().format("H")) + parseFloat(moment().format("m") / 60)) * 50
+    return (parseInt(moment().format("H")) + parseFloat(moment().format("m") / 60)) * Constants.heightPerHour
   }
 
   componentDidMount(){
@@ -193,17 +199,25 @@ const TimelineViewport = class TimelineViewport extends React.Component {
               </td>
               <td className="tv-task tv-marker">
                 {_.map(_.range(1, 50), (m, i) => {
+                  let style = (this.state.nowMarkerTop > (i+1)*25) && this.isTodayTimeline() ? {backgroundColor: "rgba(250,250,250,0.5)"} : {}
                   return (
                     <Marker
                       key={i}
                       className={i % 2 == 0 ? "markercell marker-border" : "markercell"}
                       moveTask={this.moveTask.bind(this)}
                       positionTop={i*25}
+                      style={style}
                     />
                   );
                 })}
                 {this.renderTasks()}
-                <div className="nowmarker" style={{top: this.state.nowMarkerTop.toString() + 'px'}} />
+                <div
+                  className="nowmarker"
+                  style={{
+                    top: this.state.nowMarkerTop.toString() + 'px',
+                    display: this.isTodayTimeline() ? "inherit" : "none"
+                  }}
+                />
               </td>
             </tr>
           </tbody>

@@ -58,11 +58,9 @@
     bottom: 0;
     div {
       font-size: $font-small;
-      width: 50%;
-      float: left;
       cursor: pointer;
-      &.yesterday {}
-      &.tomorrow { text-align: right }
+      .yesterday {float: left}
+      .tomorrow {float: right}
     }
   }
   div.separator-line {
