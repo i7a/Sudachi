@@ -153,19 +153,12 @@ const TimelineViewport = class TimelineViewport extends React.Component {
       if (block.type == "separator") breaker = true;
       if (breaker) return
       if (Constants.showInTimeline.indexOf(block.type) >= 0 && block.text != "") {
-        let top = block.data.get("positionTop", 500)
-        let height = Constants.heightPerHour * block.data.get("requiredTime", 60) / 60
-        let style = {
-          top: top.toString() + 'px',
-          height: height.toString() + 'px'
-        };
-        if (this.state.nowMarkerTop > (top + height) && !block.data.get("done")) style.backgroundColor = "#80CBC4"
         tasks.push(
           <Task
             key={i}
             taskKey={block.key}
             block={block}
-            style={style}
+            nowMarkerTop={this.state.nowMarkerTop}
             sortTask={this.sortTask.bind(this)}
           />
         )
@@ -183,7 +176,7 @@ const TimelineViewport = class TimelineViewport extends React.Component {
       this.setState({
         nowMarkerTop: this.nowMarkerTop()
       })
-    }, 2000)
+    }, 60000)
   }
 
   render() {
@@ -199,7 +192,7 @@ const TimelineViewport = class TimelineViewport extends React.Component {
               </td>
               <td className="tv-task tv-marker">
                 {_.map(_.range(1, 50), (m, i) => {
-                  let style = (this.state.nowMarkerTop > (i+1)*25) && this.isTodayTimeline() ? {backgroundColor: "rgba(250,250,250,0.5)"} : {}
+                  let style = (this.state.nowMarkerTop > (i+1)*25) && this.isTodayTimeline() ? {backgroundColor: "rgba(250,250,250,0.7)"} : {}
                   return (
                     <Marker
                       key={i}
