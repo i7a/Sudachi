@@ -40,14 +40,54 @@ function targetCollect(connect){
 
 const timelineTask = class TimelineTask extends React.Component {
 
-  taskClass() {
-    let taskClass = "task"
-    if ( this.props.block.data.get("done", false) == true) {
+  constructor(props){
+    super(props)
+    this.state = {
+      style: {},
+      class: ""
+    }
+  }
+
+  setTaskClass(block) {
+    let taskClass = this.state.class
+    taskClass = "task"
+    if ( block.data.get("done", false) == true) {
       taskClass += " done"
-    } else if ( this.props.block.data.get("positionTop", 500) >= 925 ) {
+    } else if ( block.data.get("positionTop", 500) >= 925 ) {
       taskClass += " alert"
     }
-    return taskClass
+    let top = block.data.get("positionTop", 500)
+    let height = Constants.heightPerHour * block.data.get("requiredTime", 60) / 60
+    if (this.props.nowMarkerTop > (top + height) && !block.data.get("done")) taskClass += " past"
+    this.setState({class: taskClass})
+  }
+
+  setTaskStyle(block) {
+    let top = block.data.get("positionTop", 500)
+    let height = Constants.heightPerHour * block.data.get("requiredTime", 60) / 60
+    let style = {
+      top: top.toString() + 'px',
+      height: height.toString() + 'px'
+    };
+    this.setState({style: style})
+  }
+
+  componentWillMount() {
+    this.setTaskStyle(this.props.block)
+    this.setTaskClass(this.props.block)
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.setTaskStyle(nextProps.block)
+    this.setTaskClass(nextProps.block)
+  }
+
+  onMouseOverTask() {
+    this.setState({class: this.state.class += " over"})
+  }
+
+  onMouseOutTask() {
+    this.setState({class: this.state.class.replace( /\ over/g , "")})
   }
 
   render() {
@@ -55,8 +95,10 @@ const timelineTask = class TimelineTask extends React.Component {
 
     return connectDragSource(connectDropTarget(
       <div
-        className={this.taskClass()}
-        style={this.props.style}>
+        className={this.state.class}
+        style={this.state.style}
+        onMouseOver={this.onMouseOverTask.bind(this)}
+        onMouseOut={this.onMouseOutTask.bind(this)}>
         <span>{this.props.block.text}</span>
       </div>
     ))
