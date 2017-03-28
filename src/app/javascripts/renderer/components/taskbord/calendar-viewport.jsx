@@ -34,7 +34,7 @@ const CalendarViewport = class CalendarViewport extends React.Component {
 
     _.map(_.range(1, 30), (d, i) => {
       date = moment().add(d - 15, 'd').format("YYYYMMDD")
-      style = date == this.props.date ? {fontWeight: "bold", backgroundColor: "rgba(255, 255, 255, 0.2)"} : {}
+      style = date == this.props.date ? {fontWeight: "bold", backgroundColor: "rgba(123, 199, 175, 0.2)"} : {}
       items.push(
         <MenuItem
           key={i}
