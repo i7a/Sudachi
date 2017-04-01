@@ -40,7 +40,7 @@ const TaskEditor = class TaskEditor extends React.Component {
   // when props.date changed update task list
   componentWillReceiveProps(nextProps){
     if (nextProps.date !== this.props.date) {
-      let nextState = Raw.deserialize(this.getState(nextProps.date), { terse: true })
+      let nextState = Raw.deserialize(this.getStateSync(nextProps.date), { terse: true })
       this.setState({state: nextState})
       this.props.callbackToTv(nextState)
     }
@@ -50,7 +50,7 @@ const TaskEditor = class TaskEditor extends React.Component {
   }
 
   // get task list json data via main process
-  getState(date){
+  getStateSync(date){
     return ipcRenderer.sendSync('getTaskList', date)
   }
 

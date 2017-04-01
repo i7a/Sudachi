@@ -18,13 +18,13 @@ class TaskBoard extends React.Component {
     super(props);
     this.state = {
       date: moment().format("YYYYMMDD"),
-      taskList: Raw.deserialize(this.getState(moment().format("YYYYMMDD")), { terse: true })
+      taskList: Raw.deserialize(this.getStateSync(moment().format("YYYYMMDD")), { terse: true })
     };
     this.storage = new taskListStorage()
   }
 
-  // get state via main process.
-  getState(date){
+  // get state via main process in sync.
+  getStateSync(date){
     return ipcRenderer.sendSync('getTaskList', date)
   }
 
@@ -45,8 +45,9 @@ class TaskBoard extends React.Component {
         <div className="container-fluid">
           <div className="row">
             <CalendarViewport
-              onUpdateDate={this.onUpdateDate.bind(this)}
               date={this.state.date}
+              taskList={this.state.taskList}
+              onUpdateDate={this.onUpdateDate.bind(this)}
             />
             <TaskViewport
               date={this.state.date}

@@ -34,7 +34,31 @@ ipcMain.on('getTaskList', (event, date) => {
         }
       })
     }
+  })
+})
 
+ipcMain.on('getTaskListAsync', (event, date) => {
+  let path = 'taskList/' + date + '.json'
+  storage.isPathExists(path, (itDoes) => {
+    if (itDoes) {
+      storage.get(path, (err, data) => {
+        if (err) {
+          console.error(err)
+        } else {
+          // success.
+          event.sender.send('getTaskListAsync', {date: date, value: data})
+        }
+      })
+    } else {
+      storage.set(path, initialData, (err) => {
+        if (err) {
+          console.error(err)
+        } else {
+          // success.
+          event.sender.send('getTaskListAsync', {date: date, value: initialData})
+        }
+      })
+    }
   })
 })
 
