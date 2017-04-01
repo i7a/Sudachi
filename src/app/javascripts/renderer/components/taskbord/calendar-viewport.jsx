@@ -2,6 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import moment from 'moment';
 import _ from 'lodash';
+import { Raw } from 'slate';
+import { ipcRenderer } from 'electron';
 import Divider from 'material-ui/Divider';
 import Drawer from 'material-ui/Drawer'
 import MenuItem from 'material-ui/MenuItem'
@@ -14,7 +16,24 @@ const CalendarViewport = class CalendarViewport extends React.Component {
 
   constructor(props) {
     super(props)
-    this.state = { open: false }
+    this.state = {
+      open: false,
+      dateList: this.initialDateList()
+    }
+  }
+
+  initialDateList() {
+    let dateList = []
+    _.map(_.range(1, 30), (d, i) => {
+      dateList.push({
+        date: moment().add(d - 15, 'd').format("YYYYMMDD"),
+        dateFull: moment().add(d - 15, 'd').format("YYYY.M.D ddd"),
+        task: 0,
+        taskDone: 0,
+        complete: false
+      })
+    })
+    return dateList
   }
 
   handleToggle() {
@@ -22,29 +41,61 @@ const CalendarViewport = class CalendarViewport extends React.Component {
   }
 
   updateDate(e) {
-    let date = e.currentTarget.childNodes[0].childNodes[1].childNodes[3].innerHTML
+    let date = e.currentTarget.childNodes[0].childNodes[1].childNodes[4].innerHTML
     this.props.onUpdateDate(date)
     e.preventDefault()
   }
 
+  componentDidMount(){
+    ipcRenderer.on('getTaskListAsync', (event, arg) => {
+      let taskList = Raw.deserialize(arg.value, { terse: true })
+      let task = 0
+      let taskDone = 0
+      taskList.document.nodes.map((block) => {
+        if (block.type == "task-list") {
+          task++
+        } else if (block.type == "task-list-done") {
+          taskDone++
+        }
+      })
+      let dateList = this.state.dateList
+      let targetIndex = _.findIndex(this.state.dateList, {date: arg.date})
+      dateList[targetIndex] = {
+        date: arg.date,
+        dateFull: this.state.dateList[targetIndex].dateFull,
+        task: task,
+        taskDone: taskDone,
+        complete: task + taskDone == taskDone
+      }
+      this.setState({dateList: dateList})
+    })
+    _.map(_.range(1, 30), (d, i) => {
+      ipcRenderer.send('getTaskListAsync', moment().add(d - 15, 'd').format("YYYYMMDD"))
+    })
+  }
+
+  componentWillReceiveProps(nextProps){
+    if (nextProps.taskList !== this.props.taskList) {
+      ipcRenderer.send('getTaskListAsync', this.props.date)
+    }
+  }
+
   renderMenuItem() {
     let items = []
-    let date
     let style = {}
-
-    _.map(_.range(1, 30), (d, i) => {
-      date = moment().add(d - 15, 'd').format("YYYYMMDD")
-      style = date == this.props.date ? {fontWeight: "bold", backgroundColor: "rgba(123, 199, 175, 0.2)"} : {}
+    this.state.dateList.map((date, i) => {
+      style = date.date == this.props.date ? {fontWeight: "bold", backgroundColor: "rgba(123, 199, 175, 0.2)"} : {}
       items.push(
         <MenuItem
           key={i}
           innerDivStyle={style}
           onTouchTap={this.updateDate.bind(this)}>
-          {moment().add(d - 15, 'd').format("YYYY.M.D ddd")}
-          <div style={{display: "none"}}>{date}</div>
+          {date.dateFull}
+          <span style={{float: "right", marginRight: "10px"}}>{date.task > 0 ? date.task : ""}</span>
+          <div style={{display: "none"}}>{date.date}</div>
         </MenuItem>
       )
-      if (moment().add(d - 15, 'd').format("ddd") == "Sun") {items.push(<Divider key={i+99999}/>)}
+      if (date.dateFull.substr(date.dateFull.length-3) == "Sun") {items.push(<Divider key={i+99999}/>)}
     })
     return items
   }
