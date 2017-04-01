@@ -36,12 +36,34 @@ const CalendarViewport = class CalendarViewport extends React.Component {
     return dateList
   }
 
+  nextDateList(taskList, date){
+    let task = 0
+    let taskDone = 0
+    taskList.document.nodes.map((block) => {
+      if (block.type == "task-list") {
+        task++
+      } else if (block.type == "task-list-done") {
+        taskDone++
+      }
+    })
+    let dateList = this.state.dateList
+    let targetIndex = _.findIndex(this.state.dateList, {date: date})
+    dateList[targetIndex] = {
+      date: date,
+      dateFull: this.state.dateList[targetIndex].dateFull,
+      task: task,
+      taskDone: taskDone,
+      complete: task + taskDone == taskDone
+    }
+    return dateList
+  }
+
   handleToggle() {
     this.setState({ open: !this.state.open });
   }
 
   updateDate(e) {
-    let date = e.currentTarget.childNodes[0].childNodes[1].childNodes[4].innerHTML
+    let date = e.currentTarget.childNodes[0].childNodes[1].childNodes[3].innerHTML
     this.props.onUpdateDate(date)
     e.preventDefault()
   }
@@ -49,25 +71,9 @@ const CalendarViewport = class CalendarViewport extends React.Component {
   componentDidMount(){
     ipcRenderer.on('getTaskListAsync', (event, arg) => {
       let taskList = Raw.deserialize(arg.value, { terse: true })
-      let task = 0
-      let taskDone = 0
-      taskList.document.nodes.map((block) => {
-        if (block.type == "task-list") {
-          task++
-        } else if (block.type == "task-list-done") {
-          taskDone++
-        }
+      this.setState({
+        dateList: this.nextDateList(taskList, arg.date)
       })
-      let dateList = this.state.dateList
-      let targetIndex = _.findIndex(this.state.dateList, {date: arg.date})
-      dateList[targetIndex] = {
-        date: arg.date,
-        dateFull: this.state.dateList[targetIndex].dateFull,
-        task: task,
-        taskDone: taskDone,
-        complete: task + taskDone == taskDone
-      }
-      this.setState({dateList: dateList})
     })
     _.map(_.range(1, 30), (d, i) => {
       ipcRenderer.send('getTaskListAsync', moment().add(d - 15, 'd').format("YYYYMMDD"))
@@ -76,7 +82,9 @@ const CalendarViewport = class CalendarViewport extends React.Component {
 
   componentWillReceiveProps(nextProps){
     if (nextProps.taskList !== this.props.taskList) {
-      ipcRenderer.send('getTaskListAsync', this.props.date)
+      this.setState({
+        dateList: this.nextDateList(nextProps.taskList, this.props.date)
+      })
     }
   }
 
@@ -85,14 +93,15 @@ const CalendarViewport = class CalendarViewport extends React.Component {
     let style = {}
     this.state.dateList.map((date, i) => {
       style = date.date == this.props.date ? {fontWeight: "bold", backgroundColor: "rgba(123, 199, 175, 0.2)"} : {}
+      let taskCount = date.task > 0 ? <div className="task-count"><span>{date.task}</span></div> : ""
       items.push(
         <MenuItem
           key={i}
           innerDivStyle={style}
           onTouchTap={this.updateDate.bind(this)}>
           {date.dateFull}
-          <span style={{float: "right", marginRight: "10px"}}>{date.task > 0 ? date.task : ""}</span>
           <div style={{display: "none"}}>{date.date}</div>
+          {taskCount}
         </MenuItem>
       )
       if (date.dateFull.substr(date.dateFull.length-3) == "Sun") {items.push(<Divider key={i+99999}/>)}

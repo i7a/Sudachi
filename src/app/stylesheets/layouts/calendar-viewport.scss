@@ -8,4 +8,19 @@
     font-size: $font-medium;
     margin: 10px 0;
   }
+  div.task-count {
+    float: right;
+    background-color: $primary-indigo;
+    height: 20px;
+    border-radius: 12px;
+    margin-top: 14px;
+    display: inline-block;
+    span {
+      display: table-cell;
+      vertical-align: middle;
+      line-height: 21px;
+      text-align: center;
+      padding: 0 9px;
+    }
+  }
 }
