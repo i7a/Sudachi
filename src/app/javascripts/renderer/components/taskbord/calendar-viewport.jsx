@@ -8,6 +8,7 @@ import Divider from 'material-ui/Divider';
 import Drawer from 'material-ui/Drawer'
 import MenuItem from 'material-ui/MenuItem'
 import RaiseButton from 'material-ui/RaisedButton'
+import FlatButton from 'material-ui/FlatButton';
 import darkBaseTheme from 'material-ui/styles/baseThemes/darkBaseTheme';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
@@ -53,7 +54,7 @@ const CalendarViewport = class CalendarViewport extends React.Component {
       dateFull: this.state.dateList[targetIndex].dateFull,
       task: task,
       taskDone: taskDone,
-      complete: task + taskDone == taskDone
+      complete: (task + taskDone) == taskDone
     }
     return dateList
   }
@@ -90,14 +91,14 @@ const CalendarViewport = class CalendarViewport extends React.Component {
 
   renderMenuItem() {
     let items = []
-    let style = {}
+    let innerDivStyle = {}
     this.state.dateList.map((date, i) => {
-      style = date.date == this.props.date ? {fontWeight: "bold", backgroundColor: "rgba(123, 199, 175, 0.2)"} : {}
+      innerDivStyle = date.date == this.props.date ? {fontWeight: "bold", backgroundColor: "rgba(123, 199, 175, 0.2)"} : {}
       let taskCount = date.task > 0 ? <div className="task-count"><span>{date.task}</span></div> : ""
       items.push(
         <MenuItem
           key={i}
-          innerDivStyle={style}
+          innerDivStyle={innerDivStyle}
           onTouchTap={this.updateDate.bind(this)}>
           {date.dateFull}
           <div style={{display: "none"}}>{date.date}</div>
@@ -118,14 +119,18 @@ const CalendarViewport = class CalendarViewport extends React.Component {
             label="history"
             onTouchTap={this.handleToggle.bind(this)}
           />
-          <Drawer open={this.state.open}>
+          <Drawer
+            open={this.state.open}
+            containerStyle={{overflow: "hidden"}}>
             <div style={{textAlign: "right"}}>
-              <RaiseButton
-                label="close"
+              <FlatButton
+                label="close ✕"
                 onTouchTap={this.handleToggle.bind(this)}
               />
             </div>
-            {this.renderMenuItem()}
+            <div style={{overflow: "scroll", height: "100%"}}>
+              {this.renderMenuItem()}
+            </div>
           </Drawer>
         </div>
       </MuiThemeProvider>
