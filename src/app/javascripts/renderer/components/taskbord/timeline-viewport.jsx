@@ -159,7 +159,7 @@ const TimelineViewport = class TimelineViewport extends React.Component {
             taskKey={block.key}
             block={block}
             nowMarkerTop={this.state.nowMarkerTop}
-            sortTask={this.sortTask.bind(this)}
+            moveTask={this.moveTask.bind(this)}
           />
         )
       }
