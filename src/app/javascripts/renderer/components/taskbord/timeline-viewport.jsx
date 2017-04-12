@@ -13,6 +13,8 @@ const Operations = {
   DOWN: 'down'
 }
 
+const PositionRange = Constants.positionRange()
+
 const TimelineViewport = class TimelineViewport extends React.Component {
 
   constructor(props){
@@ -43,6 +45,91 @@ const TimelineViewport = class TimelineViewport extends React.Component {
     let transform = this.props.taskList.transform()
       .removeNodeByKey(dragKey)
       .insertNodeByKey(this.props.taskList.document.key, this.props.taskList.document.nodes.indexOf(dragBlock), dropBlock)
+
+    // apply.
+    this.props.onUpdateTask(transform.apply())
+    this.setState({ taskList: transform.apply() })
+  }
+
+  resizeTask(dragKey, requiredTime){
+    let dragBlock
+    this.props.taskList.document.nodes.map((block) => {
+      if (block.key == dragKey) dragBlock = block
+    })
+
+    if (dragBlock.data.get("requiredTime") == requiredTime) return
+
+    let resizedBlock = Block.create({
+      data: dragBlock.data.set("requiredTime", requiredTime),
+      isVoid: dragBlock.isVoid,
+      key: dragBlock.key,
+      nodes: dragBlock.nodes,
+      type: dragBlock.type
+    })
+
+    let transform = this.props.taskList.transform()
+      .removeNodeByKey(dragKey)
+      .insertNodeByKey(this.props.taskList.document.key, this.props.taskList.document.nodes.indexOf(dragBlock), resizedBlock)
+
+    // apply.
+    this.props.onUpdateTask(transform.apply())
+    this.setState({ taskList: transform.apply() })
+  }
+
+  resizeTimelineWidth(){
+    let displayTasks = []
+    let breaker = false
+    this.state.taskList.document.nodes.map((block, i) => {
+      if (block.type == "separator") breaker = true;
+      if (breaker) return
+      if (Constants.showInTimeline.indexOf(block.type) >= 0 && block.text != "") displayTasks.push(block)
+    })
+    let taskPositionRange = {}
+    _.each(displayTasks, (block, i) => {
+      taskPositionRange[block.key] = [
+        block.data.get("positionTop"),
+        block.data.get("positionTop") + ((block.data.get("requiredTime") / 60) * Constants.heightPerHour)
+      ]
+    })
+    let prTop, prBottom, tprTop, tprBottom
+    _.each(PositionRange, (pr) => {
+      let resizeWidthKeyList = []
+      prTop = pr[0]
+      prBottom = pr[1]
+      _.map(taskPositionRange, (value, key) => {
+        tprTop = value[0]
+        tprBottom = value[1]
+        if ((prTop > tprTop && prTop < tprBottom) || (prBottom > tprTop && prBottom < tprBottom)) {
+          resizeWidthKeyList.push(key)
+        }
+      })
+      if (resizeWidthKeyList.length >= 1) {
+        _.each(resizeWidthKeyList, (key, i) => {
+          this.resizeTaskWidth(key, 55/resizeWidthKeyList.length, i)
+        })
+      }
+    })
+  }
+
+  resizeTaskWidth(taskKey, width, index) {
+    let taskBlock
+    this.props.taskList.document.nodes.map((block) => {
+      if (block.key == taskKey) taskBlock = block
+    })
+
+    if (taskBlock.data.get("width", 0) == width) return
+
+    let resizedBlock = Block.create({
+      data: taskBlock.data.set("width", width).set("marginLeft", width * index),
+      isVoid: taskBlock.isVoid,
+      key: taskBlock.key,
+      nodes: taskBlock.nodes,
+      type: taskBlock.type
+    })
+
+    let transform = this.props.taskList.transform()
+      .removeNodeByKey(taskKey)
+      .insertNodeByKey(this.props.taskList.document.key, this.props.taskList.document.nodes.indexOf(taskBlock), resizedBlock)
 
     // apply.
     this.props.onUpdateTask(transform.apply())
@@ -147,24 +234,29 @@ const TimelineViewport = class TimelineViewport extends React.Component {
 
   // make task panel html.
   renderTasks(){
-    let tasks = []
+    let displayTasks = []
     let breaker = false
     this.state.taskList.document.nodes.map((block, i) => {
       if (block.type == "separator") breaker = true;
       if (breaker) return
-      if (Constants.showInTimeline.indexOf(block.type) >= 0 && block.text != "") {
-        tasks.push(
-          <Task
-            key={i}
-            taskKey={block.key}
-            block={block}
-            nowMarkerTop={this.state.nowMarkerTop}
-            sortTask={this.sortTask.bind(this)}
-          />
-        )
-      }
+      if (Constants.showInTimeline.indexOf(block.type) >= 0 && block.text != "") displayTasks.push(block)
     })
-    return tasks.length > 0 ? tasks : null
+
+    let taskComponents = []
+    _.each(displayTasks, (block, i) => {
+      taskComponents.push(
+        <Task
+          key={i}
+          taskKey={block.key}
+          block={block}
+          nowMarkerTop={this.state.nowMarkerTop}
+          moveTask={this.moveTask.bind(this)}
+          resizeTask={this.resizeTask.bind(this)}
+          resizeTimelineWidth={this.resizeTimelineWidth.bind(this)}
+        />
+      )
+    })
+    return taskComponents.length > 0 ? taskComponents : null
   }
 
   nowMarkerTop(){
@@ -198,6 +290,7 @@ const TimelineViewport = class TimelineViewport extends React.Component {
                       key={i}
                       className={i % 2 == 0 ? "markercell marker-border" : "markercell"}
                       moveTask={this.moveTask.bind(this)}
+                      resizeTask={this.resizeTask.bind(this)}
                       positionTop={i*25}
                       style={style}
                     />
