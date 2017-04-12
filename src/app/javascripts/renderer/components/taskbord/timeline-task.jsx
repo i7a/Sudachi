@@ -9,12 +9,10 @@ const taskSource = {
       taskKey: props.taskKey,
       block: props.block
     };
+  },
+  endDrag(props, monitor) {
+    props.resizeTimelineWidth()
   }
-  // endDrag(props, monitor) {
-  //   const source = monitor.getItem()
-  //   const target = monitor.getDropResult()
-  //   if (target) props.dropAction(source.id, target.id)
-  // }
 }
 
 const taskTarget = {
@@ -79,9 +77,13 @@ const timelineTask = class TimelineTask extends React.Component {
   setTaskStyle(block) {
     let top = block.data.get("positionTop", 500)
     let height = Constants.heightPerHour * block.data.get("requiredTime", 60) / 60
+    let width = block.data.get("width", 55)
+    let marginLeft = block.data.get("marginLeft", 0)
     let style = {
       top: top.toString() + 'px',
-      height: height.toString() + 'px'
+      height: height.toString() + 'px',
+      width: width.toString() + '%',
+      marginLeft: marginLeft.toString() + '%'
     };
     this.setState({style: style})
   }
@@ -125,6 +127,7 @@ const timelineTask = class TimelineTask extends React.Component {
           taskKey={this.props.taskKey}
           block={this.props.block}
           resizeTask={this.props.resizeTask}
+          resizeTimelineWidth={this.props.resizeTimelineWidth}
         />
       </div>
     ))

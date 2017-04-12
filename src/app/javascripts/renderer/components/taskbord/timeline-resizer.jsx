@@ -10,6 +10,9 @@ const resizerSource = {
       resize: true,
       initialReqiredTime: props.block.data.get("requiredTime")
     };
+  },
+  endDrag(props, monitor) {
+    props.resizeTimelineWidth()
   }
 }
 
