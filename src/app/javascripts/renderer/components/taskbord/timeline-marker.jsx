@@ -5,7 +5,18 @@ import * as Constants from '../constants'
 
 const markerTarget = {
   hover(props, monitor, component) {
-    props.moveTask(monitor.getItem().taskKey, props.positionTop)
+    let taskKey = monitor.getItem().taskKey
+    if (monitor.getItem().resize) {
+      let initialClientOffsetY = monitor.getInitialClientOffset().y
+      let clientOffsetY = monitor.getClientOffset().y
+      let tmp = clientOffsetY - initialClientOffsetY
+      if (tmp <= 0) tmp -= 25
+      let nextRequiredTime = ((Math.floor(tmp / 25) + 1) * 30) + monitor.getItem().initialReqiredTime
+      if (nextRequiredTime <= 0) nextRequiredTime = 30
+      props.resizeTask(taskKey, nextRequiredTime)
+    } else {
+      props.moveTask(taskKey, props.positionTop)
+    }
   }
 }
 

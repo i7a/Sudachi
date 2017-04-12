@@ -1,6 +1,7 @@
 import React, { PropTypes } from 'react';
 import { DragSource, DropTarget } from "react-dnd";
 import * as Constants from '../constants'
+import Resizer from './timeline-resizer'
 
 const taskSource = {
   beginDrag(props) {
@@ -18,12 +19,22 @@ const taskSource = {
 
 const taskTarget = {
   hover(props, monitor, component) {
-    const dragKey = monitor.getItem().taskKey
-    const hoverKey = props.taskKey
-    if (dragKey == hoverKey) return
-    let clientOffsetY = Math.floor(monitor.getClientOffset().y) - 80
-    let moveTo = clientOffsetY - (clientOffsetY % 25)
-    props.moveTask(dragKey, moveTo)
+    if (monitor.getItem().resize) {
+      let taskKey = monitor.getItem().taskKey
+      let initialClientOffsetY = monitor.getInitialClientOffset().y
+      let clientOffsetY = monitor.getClientOffset().y
+      let tmp = clientOffsetY - initialClientOffsetY
+      if (tmp <= 0) tmp -= 25
+      let nextRequiredTime = ((Math.floor(tmp / 25) + 1) * 30) + monitor.getItem().initialReqiredTime
+      if (nextRequiredTime <= 0) nextRequiredTime = 30
+      props.resizeTask(taskKey, nextRequiredTime)
+    } else {
+      const dragKey = monitor.getItem().taskKey
+      const hoverKey = props.taskKey
+      let clientOffsetY = Math.floor(monitor.getClientOffset().y) - 80
+      let moveTo = clientOffsetY - (clientOffsetY % 25)
+      props.moveTask(dragKey, moveTo)
+    }
   }
 }
 
@@ -46,7 +57,8 @@ const timelineTask = class TimelineTask extends React.Component {
     super(props)
     this.state = {
       style: {},
-      class: ""
+      class: "",
+      classResizer: "resizer"
     }
   }
 
@@ -85,11 +97,17 @@ const timelineTask = class TimelineTask extends React.Component {
   }
 
   onMouseOverTask() {
-    this.setState({class: this.state.class += " over"})
+    this.setState({
+      class: this.state.class += " over",
+      classResizer: this.state.classResizer += " hover"
+    })
   }
 
   onMouseOutTask() {
-    this.setState({class: this.state.class.replace( /\ over/g , "")})
+    this.setState({
+      class: this.state.class.replace( /\ over/g , ""),
+      classResizer: this.state.classResizer.replace( /\ hover/g , "")
+    })
   }
 
   render() {
@@ -102,6 +120,12 @@ const timelineTask = class TimelineTask extends React.Component {
         onMouseOver={this.onMouseOverTask.bind(this)}
         onMouseOut={this.onMouseOutTask.bind(this)}>
         <span>{this.props.block.text}</span>
+        <Resizer
+          className={this.state.classResizer}
+          taskKey={this.props.taskKey}
+          block={this.props.block}
+          resizeTask={this.props.resizeTask}
+        />
       </div>
     ))
   }

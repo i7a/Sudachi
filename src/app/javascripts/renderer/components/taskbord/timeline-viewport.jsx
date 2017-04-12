@@ -49,6 +49,31 @@ const TimelineViewport = class TimelineViewport extends React.Component {
     this.setState({ taskList: transform.apply() })
   }
 
+  resizeTask(dragKey, requiredTime){
+    let dragBlock
+    this.props.taskList.document.nodes.map((block) => {
+      if (block.key == dragKey) dragBlock = block
+    })
+
+    if (dragBlock.data.get("requiredTime") == requiredTime) return
+
+    let resizedBlock = Block.create({
+      data: dragBlock.data.set("requiredTime", requiredTime),
+      isVoid: dragBlock.isVoid,
+      key: dragBlock.key,
+      nodes: dragBlock.nodes,
+      type: dragBlock.type
+    })
+
+    let transform = this.props.taskList.transform()
+      .removeNodeByKey(dragKey)
+      .insertNodeByKey(this.props.taskList.document.key, this.props.taskList.document.nodes.indexOf(dragBlock), resizedBlock)
+
+    // apply.
+    this.props.onUpdateTask(transform.apply())
+    this.setState({ taskList: transform.apply() })
+  }
+
   // when drag task and drop to other task.
   sortTask(dragKey, hoverKey){
     let dragBlock
@@ -160,6 +185,7 @@ const TimelineViewport = class TimelineViewport extends React.Component {
             block={block}
             nowMarkerTop={this.state.nowMarkerTop}
             moveTask={this.moveTask.bind(this)}
+            resizeTask={this.resizeTask.bind(this)}
           />
         )
       }
@@ -198,6 +224,7 @@ const TimelineViewport = class TimelineViewport extends React.Component {
                       key={i}
                       className={i % 2 == 0 ? "markercell marker-border" : "markercell"}
                       moveTask={this.moveTask.bind(this)}
+                      resizeTask={this.resizeTask.bind(this)}
                       positionTop={i*25}
                       style={style}
                     />
