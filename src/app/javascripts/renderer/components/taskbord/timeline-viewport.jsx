@@ -246,6 +246,9 @@ const TimelineViewport = class TimelineViewport extends React.Component {
       if (breaker) return
       if (Constants.showInTimeline.indexOf(block.type) >= 0 && block.text != "") displayTasks.push(block)
     })
+    displayTasks = _.sortBy(displayTasks, (task) => {
+      return task.data.get("positionTop")
+    })
 
     let taskComponents = []
     _.each(displayTasks, (block, i) => {

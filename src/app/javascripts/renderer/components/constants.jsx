@@ -14,7 +14,7 @@ export const heightPerHour = 50
 
 export const positionRange = () => {
   let range = []
-  _.each(_.range(0, 48), (p, i) => {
+  _.each(_.range(48, 0), (p, i) => {
     range.push([(p * 25), (p * 25) + 25])
   })
   return range

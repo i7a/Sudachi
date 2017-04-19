@@ -17,15 +17,17 @@
       content: ' ';
       display: inline-block;
       float: left;
-      margin: 1px 10px 0 -20px;
-      width: 14px;
-      height: 14px;
+      margin: -1px 10px 0 -20px;
+      width: 16px;
+      height: 16px;
       cursor: pointer;
       pointer-events: auto;
       background-image: url("../../images/not_done.png");
+      background-size: 16px 16px;
     }
     li.done::before {
       background-image: url("../../images/done.png");
+      background-size: 16px 16px;
     }
     li.done div {
       text-decoration: line-through;
