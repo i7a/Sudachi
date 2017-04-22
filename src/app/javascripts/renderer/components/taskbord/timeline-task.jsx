@@ -29,8 +29,9 @@ const taskTarget = {
     } else {
       const dragKey = monitor.getItem().taskKey
       const hoverKey = props.taskKey
-      let clientOffsetY = Math.floor(monitor.getClientOffset().y) - 80
+      let clientOffsetY = Math.floor(monitor.getClientOffset().y) - 80 + props.scrollTop()
       let moveTo = clientOffsetY - (clientOffsetY % 25)
+      if (moveTo == props.block.data.get("positionTop")) return
       props.moveTask(dragKey, moveTo)
     }
   }

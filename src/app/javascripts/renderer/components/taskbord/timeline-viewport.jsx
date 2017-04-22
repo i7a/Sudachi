@@ -7,6 +7,7 @@ import * as Constants from '../constants'
 import Task from './timeline-task'
 import Marker from './timeline-marker'
 import moment from 'moment'
+import { findDOMNode } from 'react-dom';
 
 const Operations = {
   UP: 'up',
@@ -232,6 +233,10 @@ const TimelineViewport = class TimelineViewport extends React.Component {
     return this.props.date == moment().format("YYYYMMDD")
   }
 
+  scrollTop(){
+    return findDOMNode(this.refs.timeline).scrollTop
+  }
+
   // make task panel html.
   renderTasks(){
     let displayTasks = []
@@ -240,6 +245,9 @@ const TimelineViewport = class TimelineViewport extends React.Component {
       if (block.type == "separator") breaker = true;
       if (breaker) return
       if (Constants.showInTimeline.indexOf(block.type) >= 0 && block.text != "") displayTasks.push(block)
+    })
+    displayTasks = _.sortBy(displayTasks, (task) => {
+      return task.data.get("positionTop")
     })
 
     let taskComponents = []
@@ -253,6 +261,7 @@ const TimelineViewport = class TimelineViewport extends React.Component {
           moveTask={this.moveTask.bind(this)}
           resizeTask={this.resizeTask.bind(this)}
           resizeTimelineWidth={this.resizeTimelineWidth.bind(this)}
+          scrollTop={this.scrollTop.bind(this)}
         />
       )
     })
@@ -273,7 +282,7 @@ const TimelineViewport = class TimelineViewport extends React.Component {
 
   render() {
     return (
-      <div id="timeline-viewport" className="col-md-5 col-sm-6 hidden-xs">
+      <div id="timeline-viewport" className="col-md-5 col-sm-6 hidden-xs" ref="timeline">
         <table>
           <tbody>
             <tr className="">
