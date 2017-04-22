@@ -28,6 +28,33 @@ const TaskViewport = class TaskViewport extends React.Component {
     }
   }
 
+  mainButtonsStyle(){
+    if (this.props.showBackButton) {
+      return { display: "none" }
+    } else {
+      return { display: "inline-block", color: "#bdbdbd"}
+    }
+  }
+
+  backButtonStyle(){
+    if (this.props.showBackButton) {
+      return { display: "inline-block"}
+    } else {
+      return { display: "none"}
+    }
+  }
+
+  editorTitle(){
+    if (!this.props.showBackButton) {
+      return (
+        moment([this.state.date.slice(0,4), this.state.date.slice(4,6), this.state.date.slice(6,8)].join("-"))
+        .format("YYYY.M.D ddd")
+      )
+    } else {
+      return "Howto"
+    }
+  }
+
   onClickEditorArea(e){
     e.preventDefault()
     if (e.target.className == "editor-area") {
@@ -42,7 +69,9 @@ const TaskViewport = class TaskViewport extends React.Component {
     return (
       <div id="task-viewport" className="col-md-5 col-sm-6">
         <div className="editor-area" onClick={this.onClickEditorArea.bind(this)}>
-          <div className="ace-line"><span>{moment([this.state.date.slice(0,4), this.state.date.slice(4,6), this.state.date.slice(6,8)].join("-")).format("YYYY.M.D ddd")}</span></div>
+          <div className="ace-line">
+            <span>{this.editorTitle()}</span>
+          </div>
           <TaskEditor
             date={this.state.date}
             taskList={this.props.taskList}
@@ -54,14 +83,28 @@ const TaskViewport = class TaskViewport extends React.Component {
           <MuiThemeProvider>
             <div>
               <FlatButton
-                label="<Yesterday"
-                className="yesterday"
+                label="<Prev"
+                labelStyle={{color: "#bdbdbd"}}
                 onTouchTap={this.onClickYesterday.bind(this)}
+                style={this.mainButtonsStyle()}
+              />
+              <span style={this.mainButtonsStyle()}>{"|"}</span>
+              <FlatButton
+                label="Next>"
+                labelStyle={{color: "#bdbdbd"}}
+                onTouchTap={this.onClickTomorrow.bind(this)}
+                style={this.mainButtonsStyle()}
               />
               <FlatButton
-                label="Tomorrow>"
-                className="tomorrow"
-                onTouchTap={this.onClickTomorrow.bind(this)}
+                label=" "
+                className="howto"
+                onTouchTap={this.props.onClickHowto}
+                style={this.mainButtonsStyle()}
+              />
+              <FlatButton
+                label="<Back"
+                onTouchTap={this.onClickYesterday.bind(this)}
+                style={this.backButtonStyle()}
               />
             </div>
           </MuiThemeProvider>

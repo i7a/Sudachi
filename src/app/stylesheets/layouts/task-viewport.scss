@@ -1,5 +1,5 @@
 #task-viewport {
-  padding: 60px 30px;
+  padding: 60px 30px 40px;
   outline: none;
   .editor-area {
     height: 90%;
@@ -61,8 +61,20 @@
     div {
       font-size: $font-small;
       cursor: pointer;
-      .yesterday {float: left}
-      .tomorrow {float: right}
+      text-align: center;
+      .howto {
+        float: right;
+        &::before {
+          content: "";
+          background-image: url(../../images/icon_howto.png);
+          background-size: 19px 19px;
+          height: 19px;
+          width: 19px;
+          display: inline-block;
+          vertical-align: middle;
+          text-align: right;
+        }
+      }
     }
   }
   div.separator-line {
