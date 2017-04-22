@@ -8,7 +8,10 @@ const TaskViewport = class TaskViewport extends React.Component {
 
   constructor(props){
     super(props)
-    this.state = { date: this.props.date }
+    this.state = {
+      date: this.props.date,
+      shouldCallFocus: false
+    }
   }
 
   onClickYesterday(){
@@ -25,15 +28,26 @@ const TaskViewport = class TaskViewport extends React.Component {
     }
   }
 
+  onClickEditorArea(e){
+    e.preventDefault()
+    if (e.target.className == "editor-area") {
+      this.setState(
+        { shouldCallFocus: true },
+        () => this.setState({ shouldCallFocus: false })
+      )
+    }
+  }
+
   render() {
     return (
       <div id="task-viewport" className="col-md-5 col-sm-6">
-        <div className="editor-area">
+        <div className="editor-area" onClick={this.onClickEditorArea.bind(this)}>
           <div className="ace-line"><span>{moment([this.state.date.slice(0,4), this.state.date.slice(4,6), this.state.date.slice(6,8)].join("-")).format("YYYY.M.D ddd")}</span></div>
           <TaskEditor
             date={this.state.date}
             taskList={this.props.taskList}
             callbackToTv={this.props.onUpdateTask}
+            shouldCallFocus={this.state.shouldCallFocus}
           />
         </div>
         <div className="task-viewport-buttons">
