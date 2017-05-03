@@ -264,7 +264,9 @@ const TaskEditor = class TaskEditor extends React.Component {
   componentDidUpdate(prevProps, prevState) {
     let size = this.state.state.document.nodes.size
     let prevSize = prevState.state.document.nodes.size
-    if (! this.state.state.startBlock.data.has("positionTop") || size > prevSize) {
+    let date = this.props.date
+    let prevDate = prevProps.date
+    if (! this.state.state.startBlock.data.has("positionTop") || (size > prevSize && date == prevDate)) {
 
       // get bottom task and it's required time.
       let bottom = 450
