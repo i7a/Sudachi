@@ -262,8 +262,6 @@ const TimelineViewport = class TimelineViewport extends React.Component {
           resizeTask={this.resizeTask.bind(this)}
           resizeTimelineWidth={this.resizeTimelineWidth.bind(this)}
           scrollTop={this.scrollTop.bind(this)}
-          onUpdateTask={this.props.onUpdateTask.bind(this)}
-          taskList={this.state.taskList}
         />
       )
     })
@@ -280,11 +278,6 @@ const TimelineViewport = class TimelineViewport extends React.Component {
         nowMarkerTop: this.nowMarkerTop()
       })
     }, 60000)
-  }
-
-  componentWillUpdate(nextProps, nextState){
-    console.log("component will update!")
-    // this.props.onUpdateTask(nextState.taskList)
   }
 
   render() {
