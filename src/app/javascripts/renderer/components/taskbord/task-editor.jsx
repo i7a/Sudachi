@@ -20,6 +20,7 @@ const TaskEditor = class TaskEditor extends React.Component {
       state: this.props.taskList,
       schema: {
         nodes: {
+          'paragraph': props => <div className="ace-line">{props.children}</div>,
           'block-quote': props => <blockquote>{props.children}</blockquote>,
           'bulleted-list': props => <ul>{props.children}</ul>,
           'heading-one': props => <h1>{props.children}</h1>,
@@ -29,9 +30,9 @@ const TaskEditor = class TaskEditor extends React.Component {
           'heading-five': props => <h5>{props.children}</h5>,
           'heading-six': props => <h6>{props.children}</h6>,
           'list-item': props => <li>{props.children}</li>,
-          'task-list-done' : props => <ul className="task-line" onClick={this.onClick.bind(this)}><li className="done"><div>{props.children}</div></li></ul>,
-          'task-list' : props => <ul className="task-line" onClick={this.onClick.bind(this)}><li><div>{props.children}</div></li></ul>,
-          'separator' : props => <div className="separator-line"><span className="separator"><span contentEditable={false}></span></span></div>
+          'task-list-done' : props => <ul className="ace-line task-line" onClick={this.onClick.bind(this)}><li className="done"><div>{props.children}</div></li></ul>,
+          'task-list' : props => <ul className="ace-line task-line" onClick={this.onClick.bind(this)}><li><div>{props.children}</div></li></ul>,
+          'separator' : props => <div className="separator-line" contentEditable={false}><span className="separator"><span></span></span></div>
         }
       }
     }
@@ -190,11 +191,17 @@ const TaskEditor = class TaskEditor extends React.Component {
 
     if (type == 'list-item') transform.wrapBlock('bulleted-list')
 
-    state = transform
-      .extendToStartOf(startBlock)
-      .delete()
-      .apply()
-
+    if (type == 'separator') {
+      state =  transform
+        .splitBlock()
+        .setBlock('paragraph')
+        .apply()
+    } else {
+      state = transform
+        .extendToStartOf(startBlock)
+        .delete()
+        .apply()
+    }
     return state
   }
 
@@ -212,7 +219,16 @@ const TaskEditor = class TaskEditor extends React.Component {
     if (state.startOffset != 0) return
     const { startBlock } = state
 
-    if (startBlock.type == 'paragraph') return
+    if (startBlock.type == 'paragraph') {
+      let previousBlock = state.document.getPreviousBlock(state.startBlock)
+      if (previousBlock.type == 'separator') {
+        let transform = state
+          .transform()
+          .removeNodeByKey(previousBlock.key)
+        return transform.apply()
+      }
+      return
+    }
     e.preventDefault()
 
     let transform = state
@@ -239,7 +255,6 @@ const TaskEditor = class TaskEditor extends React.Component {
     const { startBlock, startOffset, endOffset } = state
     if (startOffset == 0 && startBlock.length == 0) return this.onBackspace(e, state)
     if (endOffset != startBlock.length) return
-
     if (
       startBlock.type != 'heading-one' &&
       startBlock.type != 'heading-two' &&

@@ -17,7 +17,7 @@
       content: ' ';
       display: inline-block;
       float: left;
-      margin: -1px 10px 0 -20px;
+      margin: 4px 10px 0 -20px;
       width: 16px;
       height: 16px;
       cursor: pointer;
@@ -37,22 +37,17 @@
   .ace-line {
     pointer-events: none;
     color: $t-black;
-    line-height: 1.1;
+    line-height: 26px;
     font-size: $font-medium;
-    padding: 5px 0;
-    margin-left: 20px;
+    padding: 0;
+    margin: 0;
   }
-  div.ace-line:first-child {
+  div.title {
     font-size: $font-large;
     color: $t-black;
     margin: 20px 0 40px;
     font-weight: 500;
     line-height: 1.1;
-  }
-  div.ace-line:empty:before {
-    color: $light-gray;
-    content: attr(data-placeholder);
-    margin-left: 5px;
   }
   div.task-viewport-buttons {
     margin-top: 40px;
