@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import { DragSource, DropTarget } from "react-dnd";
-import * as Constants from '../constants'
-import Resizer from './timeline-resizer'
+import * as Constants from '../constants';
+import Resizer from './timeline-resizer';
 
 const taskSource = {
   beginDrag(props) {
@@ -25,10 +25,10 @@ const taskTarget = {
       if (tmp <= 0) tmp -= 25
       let nextRequiredTime = ((Math.floor(tmp / 25) + 1) * 30) + monitor.getItem().initialReqiredTime
       if (nextRequiredTime <= 0) nextRequiredTime = 30
+      if (nextRequiredTime == props.block.data.get("requiredTime")) return
       props.resizeTask(taskKey, nextRequiredTime)
     } else {
       const dragKey = monitor.getItem().taskKey
-      const hoverKey = props.taskKey
       let clientOffsetY = Math.floor(monitor.getClientOffset().y) - 80 + props.scrollTop()
       let moveTo = clientOffsetY - (clientOffsetY % 25)
       if (moveTo == props.block.data.get("positionTop")) return

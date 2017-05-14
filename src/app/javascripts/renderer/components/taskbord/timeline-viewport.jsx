@@ -48,7 +48,6 @@ const TimelineViewport = class TimelineViewport extends React.Component {
       .insertNodeByKey(this.props.taskList.document.key, this.props.taskList.document.nodes.indexOf(dragBlock), dropBlock)
 
     // apply.
-    this.props.onUpdateTask(transform.apply())
     this.setState({ taskList: transform.apply() })
   }
 
@@ -110,11 +109,13 @@ const TimelineViewport = class TimelineViewport extends React.Component {
         })
       }
     })
+    // save.
+    this.props.onUpdateTask(this.state.taskList)
   }
 
   resizeTaskWidth(taskKey, width, index) {
     let taskBlock
-    this.props.taskList.document.nodes.map((block) => {
+    this.state.taskList.document.nodes.map((block) => {
       if (block.key == taskKey) taskBlock = block
     })
 
@@ -128,12 +129,11 @@ const TimelineViewport = class TimelineViewport extends React.Component {
       type: taskBlock.type
     })
 
-    let transform = this.props.taskList.transform()
+    let transform = this.state.taskList.transform()
       .removeNodeByKey(taskKey)
       .insertNodeByKey(this.props.taskList.document.key, this.props.taskList.document.nodes.indexOf(taskBlock), resizedBlock)
 
     // apply.
-    this.props.onUpdateTask(transform.apply())
     this.setState({ taskList: transform.apply() })
   }
 
@@ -262,6 +262,8 @@ const TimelineViewport = class TimelineViewport extends React.Component {
           resizeTask={this.resizeTask.bind(this)}
           resizeTimelineWidth={this.resizeTimelineWidth.bind(this)}
           scrollTop={this.scrollTop.bind(this)}
+          onUpdateTask={this.props.onUpdateTask.bind(this)}
+          taskList={this.state.taskList}
         />
       )
     })
@@ -278,6 +280,11 @@ const TimelineViewport = class TimelineViewport extends React.Component {
         nowMarkerTop: this.nowMarkerTop()
       })
     }, 60000)
+  }
+
+  componentWillUpdate(nextProps, nextState){
+    console.log("component will update!")
+    // this.props.onUpdateTask(nextState.taskList)
   }
 
   render() {
