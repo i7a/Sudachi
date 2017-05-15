@@ -131,7 +131,7 @@ const TimelineViewport = class TimelineViewport extends React.Component {
 
     let transform = this.state.taskList.transform()
       .removeNodeByKey(taskKey)
-      .insertNodeByKey(this.props.taskList.document.key, this.props.taskList.document.nodes.indexOf(taskBlock), resizedBlock)
+      .insertNodeByKey(this.state.taskList.document.key, this.state.taskList.document.nodes.indexOf(taskBlock), resizedBlock)
 
     // apply.
     this.setState({ taskList: transform.apply() })
