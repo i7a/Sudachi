@@ -20,9 +20,8 @@ const TaskEditor = class TaskEditor extends React.Component {
       state: this.props.taskList,
       schema: {
         nodes: {
-          'paragraph': props => <div className="ace-line">{props.children}</div>,
           'block-quote': props => <blockquote>{props.children}</blockquote>,
-          'bulleted-list': props => <ul>{props.children}</ul>,
+          'bulleted-list': props => <ul className="list-style-disc">{props.children}</ul>,
           'heading-one': props => <h1>{props.children}</h1>,
           'heading-two': props => <h2>{props.children}</h2>,
           'heading-three': props => <h3>{props.children}</h3>,
@@ -106,6 +105,7 @@ const TaskEditor = class TaskEditor extends React.Component {
     return (
       <div className="editor">
         <Editor
+          className={"ace-line"}
           placeholder={"Time is an illusion..."}
           schema={this.state.schema}
           state={this.state.state}
@@ -221,7 +221,7 @@ const TaskEditor = class TaskEditor extends React.Component {
 
     if (startBlock.type == 'paragraph') {
       let previousBlock = state.document.getPreviousBlock(state.startBlock)
-      if (previousBlock.type == 'separator') {
+      if (previousBlock !== null && previousBlock.type == 'separator') {
         let transform = state
           .transform()
           .removeNodeByKey(previousBlock.key)
