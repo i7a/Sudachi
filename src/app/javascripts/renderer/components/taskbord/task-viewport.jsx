@@ -22,6 +22,10 @@ const TaskViewport = class TaskViewport extends React.Component {
     this.props.onUpdateDate(moment(this.state.date).add(1, 'd').format("YYYYMMDD"))
   }
 
+  onClickToday(){
+    this.props.onUpdateDate(moment(this.state.date).format("YYYYMMDD"))
+  }
+
   componentWillReceiveProps(nextProps){
     if (nextProps.date !== this.props.date) {
       this.setState({ date: nextProps.date })
@@ -29,7 +33,7 @@ const TaskViewport = class TaskViewport extends React.Component {
   }
 
   mainButtonsStyle(){
-    if (this.props.showBackButton) {
+    if (this.props.showHowto) {
       return { display: "none" }
     } else {
       return { display: "inline-block", color: "#bdbdbd"}
@@ -37,7 +41,7 @@ const TaskViewport = class TaskViewport extends React.Component {
   }
 
   backButtonStyle(){
-    if (this.props.showBackButton) {
+    if (this.props.showHowto) {
       return { display: "inline-block"}
     } else {
       return { display: "none"}
@@ -45,7 +49,7 @@ const TaskViewport = class TaskViewport extends React.Component {
   }
 
   editorTitle(){
-    if (!this.props.showBackButton) {
+    if (!this.props.showHowto) {
       return (
         moment([this.state.date.slice(0,4), this.state.date.slice(4,6), this.state.date.slice(6,8)].join("-"))
         .format("YYYY.M.D ddd")
@@ -77,6 +81,7 @@ const TaskViewport = class TaskViewport extends React.Component {
             taskList={this.props.taskList}
             callbackToTv={this.props.onUpdateTask}
             shouldCallFocus={this.state.shouldCallFocus}
+            showHowto={this.props.showHowto}
           />
         </div>
         <div className="task-viewport-buttons">
@@ -103,7 +108,7 @@ const TaskViewport = class TaskViewport extends React.Component {
               />
               <FlatButton
                 label="<Back"
-                onTouchTap={this.onClickYesterday.bind(this)}
+                onTouchTap={this.onClickToday.bind(this)}
                 style={this.backButtonStyle()}
               />
             </div>

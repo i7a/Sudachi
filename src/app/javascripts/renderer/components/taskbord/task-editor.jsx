@@ -39,7 +39,7 @@ const TaskEditor = class TaskEditor extends React.Component {
 
   // when props.date changed update task list
   componentWillReceiveProps(nextProps){
-    if (nextProps.date !== this.props.date) {
+    if (nextProps.date !== this.props.date || nextProps.showHowto !== this.props.showHowto) {
       let nextState = Raw.deserialize(this.getStateSync(nextProps.date), { terse: true })
       this.setState({state: nextState})
       this.props.callbackToTv(nextState)

@@ -48,7 +48,6 @@ class TaskBoard extends React.Component {
 
   showHowto(){
     this.setState({
-      date: moment(this.state.date).add(1, 'd').format("YYYYMMDD"),
       taskList: Raw.deserialize(Howto, { terse: true }),
       save: false
     })
@@ -63,6 +62,7 @@ class TaskBoard extends React.Component {
               date={this.state.date}
               taskList={this.state.taskList}
               onUpdateDate={this.onUpdateDate.bind(this)}
+              showHowto={!this.state.save}
             />
             <TaskViewport
               date={this.state.date}
@@ -70,7 +70,7 @@ class TaskBoard extends React.Component {
               onUpdateTask={this.onUpdateTask.bind(this)}
               onUpdateDate={this.onUpdateDate.bind(this)}
               onClickHowto={this.showHowto.bind(this)}
-              showBackButton={!this.state.save}
+              showHowto={!this.state.save}
             />
             <TimelineViewport
               date={this.state.date}
