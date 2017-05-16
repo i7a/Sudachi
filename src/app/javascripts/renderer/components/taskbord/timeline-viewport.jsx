@@ -48,7 +48,6 @@ const TimelineViewport = class TimelineViewport extends React.Component {
       .insertNodeByKey(this.props.taskList.document.key, this.props.taskList.document.nodes.indexOf(dragBlock), dropBlock)
 
     // apply.
-    this.props.onUpdateTask(transform.apply())
     this.setState({ taskList: transform.apply() })
   }
 
@@ -110,11 +109,13 @@ const TimelineViewport = class TimelineViewport extends React.Component {
         })
       }
     })
+    // save.
+    this.props.onUpdateTask(this.state.taskList)
   }
 
   resizeTaskWidth(taskKey, width, index) {
     let taskBlock
-    this.props.taskList.document.nodes.map((block) => {
+    this.state.taskList.document.nodes.map((block) => {
       if (block.key == taskKey) taskBlock = block
     })
 
@@ -128,12 +129,11 @@ const TimelineViewport = class TimelineViewport extends React.Component {
       type: taskBlock.type
     })
 
-    let transform = this.props.taskList.transform()
+    let transform = this.state.taskList.transform()
       .removeNodeByKey(taskKey)
-      .insertNodeByKey(this.props.taskList.document.key, this.props.taskList.document.nodes.indexOf(taskBlock), resizedBlock)
+      .insertNodeByKey(this.state.taskList.document.key, this.state.taskList.document.nodes.indexOf(taskBlock), resizedBlock)
 
     // apply.
-    this.props.onUpdateTask(transform.apply())
     this.setState({ taskList: transform.apply() })
   }
 

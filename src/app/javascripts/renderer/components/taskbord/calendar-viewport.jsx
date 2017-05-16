@@ -82,6 +82,7 @@ const CalendarViewport = class CalendarViewport extends React.Component {
   }
 
   componentWillReceiveProps(nextProps){
+    if(nextProps.showHowto) return
     if (nextProps.taskList !== this.props.taskList) {
       this.setState({
         dateList: this.nextDateList(nextProps.taskList, this.props.date)

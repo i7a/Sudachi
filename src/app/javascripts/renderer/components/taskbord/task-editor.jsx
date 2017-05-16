@@ -21,7 +21,7 @@ const TaskEditor = class TaskEditor extends React.Component {
       schema: {
         nodes: {
           'block-quote': props => <blockquote>{props.children}</blockquote>,
-          'bulleted-list': props => <ul>{props.children}</ul>,
+          'bulleted-list': props => <ul className="list-style-disc">{props.children}</ul>,
           'heading-one': props => <h1>{props.children}</h1>,
           'heading-two': props => <h2>{props.children}</h2>,
           'heading-three': props => <h3>{props.children}</h3>,
@@ -29,9 +29,9 @@ const TaskEditor = class TaskEditor extends React.Component {
           'heading-five': props => <h5>{props.children}</h5>,
           'heading-six': props => <h6>{props.children}</h6>,
           'list-item': props => <li>{props.children}</li>,
-          'task-list-done' : props => <ul className="task-line" onClick={this.onClick.bind(this)}><li className="done"><div>{props.children}</div></li></ul>,
-          'task-list' : props => <ul className="task-line" onClick={this.onClick.bind(this)}><li><div>{props.children}</div></li></ul>,
-          'separator' : props => <div className="separator-line"><span className="separator"><span contentEditable={false}></span></span></div>
+          'task-list-done' : props => <ul className="ace-line task-line" onClick={this.onClick.bind(this)}><li className="done"><div>{props.children}</div></li></ul>,
+          'task-list' : props => <ul className="ace-line task-line" onClick={this.onClick.bind(this)}><li><div>{props.children}</div></li></ul>,
+          'separator' : props => <div className="separator-line" contentEditable={false}><span className="separator"><span></span></span></div>
         }
       }
     }
@@ -39,7 +39,7 @@ const TaskEditor = class TaskEditor extends React.Component {
 
   // when props.date changed update task list
   componentWillReceiveProps(nextProps){
-    if (nextProps.date !== this.props.date) {
+    if (nextProps.date !== this.props.date || nextProps.showHowto !== this.props.showHowto) {
       let nextState = Raw.deserialize(this.getStateSync(nextProps.date), { terse: true })
       this.setState({state: nextState})
       this.props.callbackToTv(nextState)
@@ -105,6 +105,7 @@ const TaskEditor = class TaskEditor extends React.Component {
     return (
       <div className="editor">
         <Editor
+          className={"ace-line"}
           placeholder={"Time is an illusion..."}
           schema={this.state.schema}
           state={this.state.state}
@@ -190,11 +191,17 @@ const TaskEditor = class TaskEditor extends React.Component {
 
     if (type == 'list-item') transform.wrapBlock('bulleted-list')
 
-    state = transform
-      .extendToStartOf(startBlock)
-      .delete()
-      .apply()
-
+    if (type == 'separator') {
+      state =  transform
+        .splitBlock()
+        .setBlock('paragraph')
+        .apply()
+    } else {
+      state = transform
+        .extendToStartOf(startBlock)
+        .delete()
+        .apply()
+    }
     return state
   }
 
@@ -212,7 +219,16 @@ const TaskEditor = class TaskEditor extends React.Component {
     if (state.startOffset != 0) return
     const { startBlock } = state
 
-    if (startBlock.type == 'paragraph') return
+    if (startBlock.type == 'paragraph') {
+      let previousBlock = state.document.getPreviousBlock(state.startBlock)
+      if (previousBlock !== null && previousBlock.type == 'separator') {
+        let transform = state
+          .transform()
+          .removeNodeByKey(previousBlock.key)
+        return transform.apply()
+      }
+      return
+    }
     e.preventDefault()
 
     let transform = state
@@ -239,7 +255,6 @@ const TaskEditor = class TaskEditor extends React.Component {
     const { startBlock, startOffset, endOffset } = state
     if (startOffset == 0 && startBlock.length == 0) return this.onBackspace(e, state)
     if (endOffset != startBlock.length) return
-
     if (
       startBlock.type != 'heading-one' &&
       startBlock.type != 'heading-two' &&
@@ -264,7 +279,9 @@ const TaskEditor = class TaskEditor extends React.Component {
   componentDidUpdate(prevProps, prevState) {
     let size = this.state.state.document.nodes.size
     let prevSize = prevState.state.document.nodes.size
-    if (! this.state.state.startBlock.data.has("positionTop") || size > prevSize) {
+    let date = this.props.date
+    let prevDate = prevProps.date
+    if (! this.state.state.startBlock.data.has("positionTop") || (size > prevSize && date == prevDate)) {
 
       // get bottom task and it's required time.
       let bottom = 450

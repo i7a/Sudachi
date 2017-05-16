@@ -3,7 +3,7 @@
   "nodes":[
     {
       "data":{
-        "requiredTime":0
+        "requiredTime":60
       },
       "kind":"block",
       "type":"paragraph",
