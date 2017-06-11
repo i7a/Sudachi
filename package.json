@@ -1,10 +1,47 @@
 {
+  "name": "Sudachi-beta",
+  "version": "0.0.4",
+  "author": "ktp",
+  "repository": "https://github.com/kato1628/Sudachi",
+  "description": "Sudachi is a desktop application for daily personal scheduling.",
+  "build": {
+    "appId": "com.electron.beta.sudachi",
+    "productName": "Sudachi Beta",
+    "directories": {
+      "app": "src",
+      "output": "dist"
+    },
+    "artifactName": "${name}-${version}-for-${os}-installer.${ext}",
+    "mac": {
+      "category": "public.app-category.developer-tools",
+      "target": "dmg",
+      "publish": [
+        {
+          "provider": "github",
+          "owner": "kato1628"
+        }
+      ]
+    },
+    "win": {
+      "target": "nsis",
+      "publish": [
+        {
+          "provider": "github",
+          "owner": "kato1628"
+        }
+      ]
+    }
+  },
   "private": true,
   "devDependencies": {
-    "electron": "^1.6.2"
+    "electron": "^1.6.2",
+    "electron-builder": "^18.6.2"
   },
   "scripts": {
-    "start": "node_modules/.bin/electron src"
+    "start": "node_modules/.bin/electron src",
+    "pack": "npm run pack:mac && npm run pack:win",
+    "pack:mac": "./node_modules/.bin/build --mac --x64",
+    "pack:win": "./node_modules/.bin/build --win --x64 --ia32"
   },
   "main": "src/app/javascripts/main/main.jsx"
 }
