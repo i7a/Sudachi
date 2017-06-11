@@ -1,17 +1,24 @@
 
 "use strict";
 
-// Electronのモジュールをロードする
-const electron = require("electron");
-const app = electron.app;
-const BrowserWindow = electron.BrowserWindow;
-const initialData = require("../../data/initial.json")
-let mainWindow;
+// for auto update.
+const log = require('electron-log');
+const {autoUpdater} = require("electron-updater");
 
-// rennderer process との通信を行う
-const {ipcMain} = require('electron');
+// electron modules.
+const electron = require("electron");
+const {app, BrowserWindow, ipcMain, Menu} = require("electron");
+
+// initialData and storage for json file.
+const initialData = require("../../data/initial.json")
 const storage = require('electron-storage');
 
+// logging.
+autoUpdater.logger = log;
+autoUpdater.logger.transports.file.level = 'info';
+log.info('App starting...');
+
+// for ipc.
 ipcMain.on('getTaskList', (event, date) => {
   let path = 'taskList/' + date + '.json'
   storage.isPathExists(path, (itDoes) => {
@@ -62,16 +69,9 @@ ipcMain.on('getTaskListAsync', (event, date) => {
   })
 })
 
-// ウィンドウが全て閉じた時の挙動を定義
-app.on('window-all-closed', () => {
-  if (process.platform != 'darwin'){
-    app.quit();
-  }
-});
-
 app.on('ready', () => {
   const {width, height} = electron.screen.getPrimaryDisplay().workAreaSize
-  mainWindow = new BrowserWindow({
+  let mainWindow = new BrowserWindow({
     width,
     height,
     show: false,
@@ -92,7 +92,6 @@ app.on('ready', () => {
 });
 
 function installMenu() {
-  const { Menu } = require('electron')
   const template = [
     {
       label: 'Edit',
@@ -146,3 +145,33 @@ function installMenu() {
   const menu = Menu.buildFromTemplate(template)
   Menu.setApplicationMenu(menu)
 }
+
+app.on('window-all-closed', () => {
+  if (process.platform != 'darwin'){
+    app.quit();
+  }
+});
+
+// auto update.
+// autoUpdater.on('checking-for-update', () => {
+// })
+// autoUpdater.on('update-available', (ev, info) => {
+// })
+// autoUpdater.on('update-not-available', (ev, info) => {
+// })
+// autoUpdater.on('error', (ev, err) => {
+// })
+// autoUpdater.on('download-progress', (ev, progressObj) => {
+// })
+autoUpdater.on('update-downloaded', (ev, info) => {
+  // Wait 5 seconds, then quit and install
+  // In your application, you don't need to wait 5 seconds.
+  // You could call autoUpdater.quitAndInstall(); immediately
+  setTimeout(function() {
+    autoUpdater.quitAndInstall();
+  }, 5000)
+})
+
+app.on('ready', function()  {
+  autoUpdater.checkForUpdates();
+});
