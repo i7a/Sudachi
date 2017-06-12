@@ -41,7 +41,8 @@
     "start": "node_modules/.bin/electron src",
     "pack": "npm run pack:mac && npm run pack:win",
     "pack:mac": "./node_modules/.bin/build --mac --x64",
-    "pack:win": "./node_modules/.bin/build --win --x64 --ia32"
+    "pack:win": "./node_modules/.bin/build --win --x64 --ia32",
+    "publish" : "./node_modules/.bin/build --publish always"
   },
   "main": "src/app/javascripts/main/main.jsx"
 }
