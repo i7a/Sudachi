@@ -1,10 +1,10 @@
 {
   "name": "Sudachi-beta",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Sudachi is a desktop application for daily personal scheduling.",
   "main": "./app/javascripts/main/main.jsx",
   "author": "ktp",
-  "repository": "https://github.com/kato1628/Sudachi",
+  "repository": "http://github.com/kato1628/Sudachi",
   "dependencies": {
     "babel": "^6.5.2",
     "babel-plugin-transform-react-jsx": "^6.8.0",
@@ -26,7 +26,7 @@
     "lodash": "^4.17.2",
     "slate": "^0.19.2",
     "electron-log": "^2.2.6",
-    "electron-updater": "^2.1.2"
+    "electron-updater": "^2.3.0"
   },
   "babel": {
     "sourceMaps": "inline",
