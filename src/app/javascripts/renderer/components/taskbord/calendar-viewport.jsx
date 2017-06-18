@@ -108,6 +108,21 @@ const CalendarViewport = class CalendarViewport extends React.Component {
       )
       if (date.dateFull.substr(date.dateFull.length-3) == "Sun") {items.push(<Divider key={i+99999}/>)}
     })
+    // more button.
+    items.unshift(
+      <MenuItem
+        key={_.last(items).key + 1}
+        style={{minHeight: "25px", lineHeight: "25px"}}>
+        <div className="more up"/>
+      </MenuItem>
+    )
+    items.push(
+      <MenuItem
+        key={_.last(items).key + 2}
+        style={{minHeight: "25px", lineHeight: "25px"}}>
+        <div className="more down"/>
+      </MenuItem>
+    )
     return items
   }
 
@@ -129,7 +144,7 @@ const CalendarViewport = class CalendarViewport extends React.Component {
                 onTouchTap={this.handleToggle.bind(this)}
               />
             </div>
-            <div style={{overflow: "scroll", height: "100%"}}>
+            <div style={{overflow: "scroll", overflowStyle: "auto 25px", height: "calc(100% - 36px)"}}>
               {this.renderMenuItem()}
             </div>
           </Drawer>
