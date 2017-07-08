@@ -69,16 +69,24 @@ const CalendarViewport = class CalendarViewport extends React.Component {
     e.preventDefault()
   }
 
-  componentDidMount(){
+  setTaskCount(targetDateList){
     ipcRenderer.on('getTaskListAsync', (event, arg) => {
       let taskList = Raw.deserialize(arg.value, { terse: true })
       this.setState({
         dateList: this.nextDateList(taskList, arg.date)
       })
     })
-    _.map(_.range(1, 30), (d, i) => {
-      ipcRenderer.send('getTaskListAsync', moment().add(d - 15, 'd').format("YYYYMMDD"))
+    _.map(targetDateList, (d, i) => {
+      ipcRenderer.send('getTaskListAsync', d)
     })
+  }
+
+  componentDidMount(){
+    let targetDateList = []
+    _.map(this.state.dateList, (d, i) => {
+      targetDateList.push(d.date)
+    })
+    this.setTaskCount(targetDateList)
   }
 
   componentWillReceiveProps(nextProps){
@@ -88,6 +96,50 @@ const CalendarViewport = class CalendarViewport extends React.Component {
         dateList: this.nextDateList(nextProps.taskList, this.props.date)
       })
     }
+  }
+
+  clickMoreDown(e){
+    let dateList = this.state.dateList
+    let startDate = dateList[dateList.length - 1].date
+    let targetDateList = []
+    let momentDate
+    _.map(_.range(1, 5), (d, i) => {
+      momentDate = moment(startDate).add(+d, 'd')
+      dateList.push({
+        date: momentDate.format("YYYYMMDD"),
+        dateFull: momentDate.format("YYYY.M.D ddd"),
+        task: 0,
+        taskDone: 0,
+        complete: false
+      })
+      targetDateList.push(momentDate.format("YYYYMMDD"))
+    })
+    this.setState(
+      { dateList: dateList },
+      () => this.setTaskCount(targetDateList)
+    )
+  }
+
+  clickMoreUp(e){
+    let dateList = this.state.dateList
+    let startDate = dateList[0].date
+    let targetDateList = []
+    let momentDate
+    _.map(_.range(1, 5), (d, i) => {
+      momentDate = moment(startDate).add(-d, 'd')
+      dateList.unshift({
+        date: momentDate.format("YYYYMMDD"),
+        dateFull: momentDate.format("YYYY.M.D ddd"),
+        task: 0,
+        taskDone: 0,
+        complete: false
+      })
+      targetDateList.push(momentDate.format("YYYYMMDD"))
+    })
+    this.setState(
+      { dateList: dateList },
+      () => this.setTaskCount(targetDateList)
+    )
   }
 
   renderMenuItem() {
@@ -106,20 +158,35 @@ const CalendarViewport = class CalendarViewport extends React.Component {
           {taskCount}
         </MenuItem>
       )
-      if (date.dateFull.substr(date.dateFull.length-3) == "Sun") {items.push(<Divider key={i+99999}/>)}
+      if (date.dateFull.substr(date.dateFull.length-3) == "Sun") {
+        items.push(
+          <Divider
+            key={i+99999}
+            style={{
+              marginTop: "-2px",
+              marginButtom: "0px",
+              marginRight: "0px",
+              marginLeft: "0px",
+            }}
+          />
+        )
+      }
     })
+
     // more button.
     items.unshift(
       <MenuItem
         key={_.last(items).key + 1}
-        style={{minHeight: "25px", lineHeight: "25px"}}>
+        style={{minHeight: "25px", lineHeight: "25px"}}
+        onTouchTap={this.clickMoreUp.bind(this)}>
         <div className="more up"/>
       </MenuItem>
     )
     items.push(
       <MenuItem
         key={_.last(items).key + 2}
-        style={{minHeight: "25px", lineHeight: "25px"}}>
+        style={{minHeight: "25px", lineHeight: "25px"}}
+        onTouchTap={this.clickMoreDown.bind(this)}>
         <div className="more down"/>
       </MenuItem>
     )
@@ -144,7 +211,7 @@ const CalendarViewport = class CalendarViewport extends React.Component {
                 onTouchTap={this.handleToggle.bind(this)}
               />
             </div>
-            <div style={{overflow: "scroll", overflowStyle: "auto 25px", height: "calc(100% - 36px)"}}>
+            <div style={{overflow: "scroll", height: "calc(100% - 36px)"}}>
               {this.renderMenuItem()}
             </div>
           </Drawer>
