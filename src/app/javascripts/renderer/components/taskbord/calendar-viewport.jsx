@@ -81,6 +81,18 @@ const CalendarViewport = class CalendarViewport extends React.Component {
     })
   }
 
+  setTaskCountSync(targetDateList){
+    let taskList
+    let nextDateList
+    _.map(targetDateList, (d, i) => {
+      taskList = Raw.deserialize(ipcRenderer.sendSync('getTaskList', d), { terse: true })
+      nextDateList = this.nextDateList(taskList, d)
+    })
+    this.setState({
+      dateList: nextDateList
+    })
+  }
+
   componentDidMount(){
     let targetDateList = []
     _.map(this.state.dateList, (d, i) => {
@@ -116,7 +128,7 @@ const CalendarViewport = class CalendarViewport extends React.Component {
     })
     this.setState(
       { dateList: dateList },
-      () => this.setTaskCount(targetDateList)
+      () => this.setTaskCountSync(targetDateList)
     )
   }
 
@@ -138,7 +150,7 @@ const CalendarViewport = class CalendarViewport extends React.Component {
     })
     this.setState(
       { dateList: dateList },
-      () => this.setTaskCount(targetDateList)
+      () => this.setTaskCountSync(targetDateList)
     )
   }
 
