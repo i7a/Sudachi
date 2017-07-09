@@ -1,5 +1,5 @@
 {
-  "name": "Sudachi-beta",
+  "name": "Sudachi",
   "version": "0.0.5",
   "description": "Sudachi is a desktop application for daily personal scheduling.",
   "main": "./app/javascripts/main/main.jsx",
