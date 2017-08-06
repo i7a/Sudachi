@@ -23,4 +23,19 @@
       padding: 0 9px;
     }
   }
+  div.more {
+    content: " ";
+    height: 26px;
+    width: 29px;
+    text-align: center;
+    margin: 0 auto;
+  }
+  div.up {
+    background: url("../../images/arrow_up.png") no-repeat center center;
+    background-size: 27px 7px;
+  }
+  div.down {
+    background: url("../../images/arrow_down.png") no-repeat center center;
+    background-size: 27px 7px;
+  }
 }

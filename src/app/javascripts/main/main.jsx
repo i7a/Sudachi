@@ -4,10 +4,11 @@
 // for auto update.
 const log = require('electron-log');
 const {autoUpdater} = require("electron-updater");
+autoUpdater.autoDownload = false
 
 // electron modules.
 const electron = require("electron");
-const {app, BrowserWindow, ipcMain, Menu} = require("electron");
+const {app, BrowserWindow, ipcMain, Menu, dialog} = require("electron");
 
 // initialData and storage for json file.
 const initialData = require("../../data/initial.json")
@@ -153,23 +154,34 @@ app.on('window-all-closed', () => {
 });
 
 // auto update.
-// autoUpdater.on('checking-for-update', () => {
-// })
-// autoUpdater.on('update-available', (ev, info) => {
-// })
-// autoUpdater.on('update-not-available', (ev, info) => {
-// })
-// autoUpdater.on('error', (ev, err) => {
-// })
-// autoUpdater.on('download-progress', (ev, progressObj) => {
-// })
+autoUpdater.on('update-available', (info) => {
+  dialog.showMessageBox({
+    type: 'info',
+    title: 'Found Updates',
+    message: 'Found updates, do you want latest version ' + info.version + ' download now? The download takes place in background.',
+    buttons: ['Sure', 'No']
+  }, (buttonIndex) => {
+    if (buttonIndex === 0) {
+      autoUpdater.downloadUpdate()
+    }
+  })
+})
+
+autoUpdater.on('error', (ev, err) => {
+  dialog.showErrorBox('Error: ', err == null ? "unknown" : (err.stack || err).toString())
+})
+
+autoUpdater.on('download-progress', (progressObj) => {
+  log.info("percent: " + progressObj.percent + " %")
+})
+
 autoUpdater.on('update-downloaded', (ev, info) => {
-  // Wait 5 seconds, then quit and install
-  // In your application, you don't need to wait 5 seconds.
-  // You could call autoUpdater.quitAndInstall(); immediately
-  setTimeout(function() {
-    autoUpdater.quitAndInstall();
-  }, 5000)
+  dialog.showMessageBox({
+    title: 'Install Updates',
+    message: 'Updates downloaded, application will be quit for update...'
+  }, () => {
+    autoUpdater.quitAndInstall()
+  })
 })
 
 app.on('ready', function()  {
