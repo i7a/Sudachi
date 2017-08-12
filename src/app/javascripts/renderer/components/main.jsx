@@ -13,6 +13,21 @@ import TaskViewport from './taskbord/task-viewport';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 injectTapEventPlugin();
 
+const HowtoContents = Raw.deserialize(Howto, { terse: true })
+
+const taskBoardReducer = (state = { date: "", taskList: {}, save: false}, action) => {
+  switch (action.type) {
+    case 'UPDATE_TASK':
+      return { taskList: action.taskList, save: true };
+    case 'UPDATE_DATE':
+      return { taskList: action.taskList, date: action.date, save: true };
+    case 'SHOW_HOWTO':
+      return { taskList: HowtoContents, save: false };
+    default:
+      return state;
+  }
+}
+
 class TaskBoard extends React.Component {
 
   constructor(props){
@@ -25,32 +40,32 @@ class TaskBoard extends React.Component {
     this.storage = new taskListStorage()
   }
 
+  dispatch(action){
+    this.setState(prevState => taskBoardReducer(prevState, action))
+  }
+
+  updateTask(taskList){
+    this.dispatch({ type: 'UPDATE_TASK', taskList: taskList })
+    if (this.state.save){
+      this.storage.set(this.state.date, Raw.serialize(taskList).document)
+    }
+  }
+
+  updateDate(date){
+    this.dispatch({ type: 'UPDATE_DATE', date: date, taskList: this.getTaskListByDate(date) })
+  }
+
+  showHowto(){
+    this.dispatch({ type: 'SHOW_HOWTO' })
+  }
+
   // get state via main process in sync.
   getStateSync(date){
     return ipcRenderer.sendSync('getTaskList', date)
   }
 
-  // called child component when task changed.
-  onUpdateTask(state) {
-    this.setState({taskList: state});
-    if (this.state.save){
-      this.storage.set(this.state.date, Raw.serialize(state).document)
-    }
-  }
-
-  // called child component when date changed.
-  onUpdateDate(date) {
-    this.setState({
-      date: date,
-      save: true
-    })
-  }
-
-  showHowto(){
-    this.setState({
-      taskList: Raw.deserialize(Howto, { terse: true }),
-      save: false
-    })
+  getTaskListByDate(date){
+    return Raw.deserialize(this.getStateSync(date), { terse: true })
   }
 
   render() {
@@ -61,21 +76,21 @@ class TaskBoard extends React.Component {
             <CalendarViewport
               date={this.state.date}
               taskList={this.state.taskList}
-              onUpdateDate={this.onUpdateDate.bind(this)}
+              onUpdateDate={this.updateDate.bind(this)}
               showHowto={!this.state.save}
             />
             <TaskViewport
               date={this.state.date}
               taskList={this.state.taskList}
-              onUpdateTask={this.onUpdateTask.bind(this)}
-              onUpdateDate={this.onUpdateDate.bind(this)}
+              onUpdateTask={this.updateTask.bind(this)}
+              onUpdateDate={this.updateDate.bind(this)}
               onClickHowto={this.showHowto.bind(this)}
               showHowto={!this.state.save}
             />
             <TimelineViewport
               date={this.state.date}
               taskList={this.state.taskList}
-              onUpdateTask={this.onUpdateTask.bind(this)}
+              onUpdateTask={this.updateTask.bind(this)}
             />
           </div>
         </div>
@@ -85,9 +100,6 @@ class TaskBoard extends React.Component {
 }
 
 module.exports = class MainContent extends React.Component {
-  componentDidMount() {
-
-  }
   render() {
     return(
       <div className="window">
