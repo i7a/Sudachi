@@ -47,20 +47,6 @@ const TaskEditor = class TaskEditor extends React.Component {
     if (nextProps.taskList !== this.props.taskList) {
       this.setState({state: nextProps.taskList})
     }
-    if (nextProps.shouldCallFocus !== this.props.shouldCallFocus) {
-      this.focusLastBlock()
-    }
-  }
-
-  focusLastBlock(){
-    const lastBlock = this.state.state.document.getBlocks().last()
-    const transform = this.state.state
-      .transform()
-      .moveToRangeOf(lastBlock)
-      .moveOffsetsTo(lastBlock.length, lastBlock.length)
-      .focus()
-
-    this.setState({state: transform.apply()})
   }
 
   // get task list json data via main process
@@ -308,13 +294,11 @@ const TaskEditor = class TaskEditor extends React.Component {
 
       // apply.
       this.props.callbackToTv(transform.apply())
-      this.setState({ state: transform.apply() })
     }
   }
 
   componentDidMount() {
-    this.props.callbackToTv(this.state.state)
-    this.focusLastBlock()
+    this.props.callbackToTv(this.props.focusLastBlock())
   }
 }
 
