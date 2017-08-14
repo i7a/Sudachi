@@ -10,6 +10,8 @@ export const showInTimeline = [
   "task-list-done"
 ]
 
+export const initialPositionTop = 450
+
 export const heightPerHour = 50
 
 export const positionRange = () => {

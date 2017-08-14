@@ -71,6 +71,7 @@ const TaskViewport = class TaskViewport extends React.Component {
           <TaskEditor
             date={this.props.date}
             taskList={this.props.taskList}
+            nextTaskPositionTop={this.props.nextTaskPositionTop}
             callbackToTv={this.props.onUpdateTask}
             focusLastBlock={this.focusLastBlock.bind(this)}
             showHowto={this.props.showHowto}

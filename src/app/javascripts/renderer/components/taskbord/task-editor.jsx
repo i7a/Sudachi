@@ -41,7 +41,6 @@ const TaskEditor = class TaskEditor extends React.Component {
   componentWillReceiveProps(nextProps){
     if (nextProps.date !== this.props.date || nextProps.showHowto !== this.props.showHowto) {
       let nextState = Raw.deserialize(this.getStateSync(nextProps.date), { terse: true })
-      this.setState({state: nextState})
       this.props.callbackToTv(nextState)
     }
     if (nextProps.taskList !== this.props.taskList) {
@@ -94,7 +93,7 @@ const TaskEditor = class TaskEditor extends React.Component {
           className={"ace-line"}
           placeholder={"Time is an illusion..."}
           schema={this.state.schema}
-          state={this.state.state}
+          state={this.props.taskList}
           onChange={this.onChange.bind(this)}
           onKeyDown={this.onKeyDown.bind(this)}
           ref='editor'
@@ -105,7 +104,6 @@ const TaskEditor = class TaskEditor extends React.Component {
 
   // On change, update the app's React state with the new editor state.
   onChange(state){
-    this.setState({ state })
     this.props.callbackToTv(state);
   }
 
@@ -120,7 +118,6 @@ const TaskEditor = class TaskEditor extends React.Component {
 
     e.preventDefault()
     this.props.callbackToTv(transform.apply())
-    this.setState({ state: transform.apply() })
   }
 
   /**
@@ -165,15 +162,20 @@ const TaskEditor = class TaskEditor extends React.Component {
       if (inputTime !== null) time = Number(inputTime[0])
     }
 
+    let data = Data.create({
+      requiredTime: time,
+      done: type == 'task-list-done'
+    })
+    if ( ! startBlock.data.has("positionTop")) {
+      data = data.set("positionTop", this.props.nextTaskPositionTop)
+    } else {
+      data = data.set("positionTop", startBlock.data.get("positionTop"))
+    }
+
     let transform = state
       .transform()
       .setBlock(type)
-      .setBlock({
-        data: Data.create({
-          requiredTime: time,
-          done: type == 'task-list-done'
-        })
-      })
+      .setBlock({ data: data })
 
     if (type == 'list-item') transform.wrapBlock('bulleted-list')
 
@@ -248,53 +250,26 @@ const TaskEditor = class TaskEditor extends React.Component {
       startBlock.type != 'heading-four' &&
       startBlock.type != 'heading-five' &&
       startBlock.type != 'heading-six' &&
-      startBlock.type != 'block-quote'
+      startBlock.type != 'block-quote' &&
+      startBlock.type != 'task-list' &&
+      startBlock.type != 'task-list-done' &&
+      startBlock.type != 'list-item'
     ) {
       return
     }
-
     e.preventDefault()
     return state
       .transform()
       .splitBlock()
-      .setBlock('paragraph')
-      .apply()
-  }
-
-  // set timeline posion top.
-  componentDidUpdate(prevProps, prevState) {
-    let size = this.state.state.document.nodes.size
-    let prevSize = prevState.state.document.nodes.size
-    let date = this.props.date
-    let prevDate = prevProps.date
-    if (! this.state.state.startBlock.data.has("positionTop") || (size > prevSize && date == prevDate)) {
-
-      // get bottom task and it's required time.
-      let bottom = 450
-      let requiredTime = 0
-      let breaker = false
-      this.state.state.document.nodes.map((block) => {
-        if (block.type == "separator") breaker = true
-        if (breaker) return
-        if (Constants.showInTimeline.indexOf(block.type) >= 0 && block.text != "") {
-          if (block.data.get("positionTop") >= bottom) {
-            bottom = block.data.get("positionTop")
-            requiredTime = block.data.get("requiredTime")
-          }
-        }
+      .setBlock(startBlock.type)
+      .setBlock({
+        data: Data.create({
+          positionTop: this.props.nextTaskPositionTop,
+          requiredTime: startBlock.data.get("requiredTime"),
+          done: false
+        })
       })
-      if (bottom > 1200) bottom = 1200
-
-      // set position top of current task.
-      let nextTop = bottom + (Constants.heightPerHour * (requiredTime / 60))
-      let state = this.state.state
-      let transform = state
-        .transform()
-        .setBlock({data: state.startBlock.data.set("positionTop", nextTop)})
-
-      // apply.
-      this.props.callbackToTv(transform.apply())
-    }
+      .apply()
   }
 
   componentDidMount() {
