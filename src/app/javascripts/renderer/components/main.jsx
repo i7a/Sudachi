@@ -21,7 +21,8 @@ const taskBoardDefaultState = {
   taskList: {},
   save: true,
   taskCount: 0,
-  nextTaskPositionTop: Constants.initialPositionTop
+  nextTaskPositionTop: Constants.initialPositionTop,
+  markerPositionTop: Constants.markerPositionTop()
 }
 
 const taskBoardReducer = (state = taskBoardDefaultState, action) => {
@@ -40,6 +41,10 @@ const taskBoardReducer = (state = taskBoardDefaultState, action) => {
         taskCount: action.taskCount,
         nextTaskPositionTop: action.nextTaskPositionTop,
         save: true
+      };
+    case 'UPDATE_MARKER':
+      return {
+        markerPositionTop: Constants.markerPositionTop()
       };
     case 'SHOW_HOWTO':
       return {
@@ -86,6 +91,12 @@ class TaskBoard extends React.Component {
       taskList: nextTaskList,
       taskCount: nextTaskCount,
       nextTaskPositionTop: this.getNextTaskPositionTop(nextTaskList, nextTaskCount, date)
+    })
+  }
+
+  updateMarker(){
+    this.dispatch({
+      type: 'UPDATE_MARKER'
     })
   }
 
@@ -138,6 +149,10 @@ class TaskBoard extends React.Component {
     return bottom + (Constants.heightPerHour * (requiredTime / 60))
   }
 
+  componentDidMount(){
+    setInterval(() => { this.updateMarker() }, 60000)
+  }
+
   render() {
     return (
       <div id="task-board" className="wrapper">
@@ -161,6 +176,7 @@ class TaskBoard extends React.Component {
             <TimelineViewport
               date={this.state.date}
               taskList={this.state.taskList}
+              markerPositionTop={this.state.markerPositionTop}
               onUpdateTask={this.updateTask.bind(this)}
             />
           </div>

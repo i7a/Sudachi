@@ -18,14 +18,6 @@ const PositionRange = Constants.positionRange()
 
 const TimelineViewport = class TimelineViewport extends React.Component {
 
-  constructor(props){
-    super(props)
-    this.state = {
-      taskList: this.props.taskList,
-      nowMarkerTop: this.nowMarkerTop()
-    }
-  }
-
   // when drag task and drop to timeline marker
   moveTask(dragKey, moveTo){
     let dragBlock
@@ -48,7 +40,7 @@ const TimelineViewport = class TimelineViewport extends React.Component {
       .insertNodeByKey(this.props.taskList.document.key, this.props.taskList.document.nodes.indexOf(dragBlock), dropBlock)
 
     // apply.
-    this.setState({ taskList: transform.apply() })
+    this.props.onUpdateTask(transform.apply())
   }
 
   resizeTask(dragKey, requiredTime){
@@ -73,13 +65,12 @@ const TimelineViewport = class TimelineViewport extends React.Component {
 
     // apply.
     this.props.onUpdateTask(transform.apply())
-    this.setState({ taskList: transform.apply() })
   }
 
   resizeTimelineWidth(){
     let displayTasks = []
     let breaker = false
-    this.state.taskList.document.nodes.map((block, i) => {
+    this.props.taskList.document.nodes.map((block, i) => {
       if (block.type == "separator") breaker = true;
       if (breaker) return
       if (Constants.showInTimeline.indexOf(block.type) >= 0 && block.text != "") displayTasks.push(block)
@@ -109,13 +100,11 @@ const TimelineViewport = class TimelineViewport extends React.Component {
         })
       }
     })
-    // save.
-    this.props.onUpdateTask(this.state.taskList)
   }
 
   resizeTaskWidth(taskKey, width, index) {
     let taskBlock
-    this.state.taskList.document.nodes.map((block) => {
+    this.props.taskList.document.nodes.map((block) => {
       if (block.key == taskKey) taskBlock = block
     })
 
@@ -129,12 +118,12 @@ const TimelineViewport = class TimelineViewport extends React.Component {
       type: taskBlock.type
     })
 
-    let transform = this.state.taskList.transform()
+    let transform = this.props.taskList.transform()
       .removeNodeByKey(taskKey)
-      .insertNodeByKey(this.state.taskList.document.key, this.state.taskList.document.nodes.indexOf(taskBlock), resizedBlock)
+      .insertNodeByKey(this.props.taskList.document.key, this.props.taskList.document.nodes.indexOf(taskBlock), resizedBlock)
 
     // apply.
-    this.setState({ taskList: transform.apply() })
+    this.props.onUpdateTask(transform.apply())
   }
 
   // when drag task and drop to other task.
@@ -220,13 +209,6 @@ const TimelineViewport = class TimelineViewport extends React.Component {
 
     // apply.
     this.props.onUpdateTask(transform.apply())
-    this.setState({ taskList: transform.apply() })
-  }
-
-  componentWillReceiveProps(nextProps){
-    if (nextProps.taskList !== this.props.taskList) {
-      this.setState({ taskList: nextProps.taskList })
-    }
   }
 
   isTodayTimeline(){
@@ -241,7 +223,7 @@ const TimelineViewport = class TimelineViewport extends React.Component {
   renderTasks(){
     let displayTasks = []
     let breaker = false
-    this.state.taskList.document.nodes.map((block, i) => {
+    this.props.taskList.document.nodes.map((block, i) => {
       if (block.type == "separator") breaker = true;
       if (breaker) return
       if (Constants.showInTimeline.indexOf(block.type) >= 0 && block.text != "") displayTasks.push(block)
@@ -257,7 +239,7 @@ const TimelineViewport = class TimelineViewport extends React.Component {
           key={i}
           taskKey={block.key}
           block={block}
-          nowMarkerTop={this.state.nowMarkerTop}
+          nowMarkerTop={this.props.markerPositionTop}
           moveTask={this.moveTask.bind(this)}
           resizeTask={this.resizeTask.bind(this)}
           resizeTimelineWidth={this.resizeTimelineWidth.bind(this)}
@@ -293,7 +275,7 @@ const TimelineViewport = class TimelineViewport extends React.Component {
               </td>
               <td className="tv-task tv-marker">
                 {_.map(_.range(1, 50), (m, i) => {
-                  let style = (this.state.nowMarkerTop > (i+1)*25) && this.isTodayTimeline() ? {backgroundColor: "rgba(250,250,250,0.7)"} : {}
+                  let style = (this.props.markerPositionTop > (i+1)*25) && this.isTodayTimeline() ? {backgroundColor: "rgba(250,250,250,0.7)"} : {}
                   return (
                     <Marker
                       key={i}
@@ -309,7 +291,7 @@ const TimelineViewport = class TimelineViewport extends React.Component {
                 <div
                   className="nowmarker"
                   style={{
-                    top: this.state.nowMarkerTop.toString() + 'px',
+                    top: this.props.markerPositionTop.toString() + 'px',
                     display: this.isTodayTimeline() ? "inherit" : "none"
                   }}
                 />

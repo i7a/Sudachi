@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import moment from 'moment';
 
 export const Types = {
   TASK: "task"
@@ -20,4 +21,8 @@ export const positionRange = () => {
     range.push([(p * 25), (p * 25) + 25])
   })
   return range
+}
+
+export const markerPositionTop = () => {
+  return (parseInt(moment().format("H")) + parseFloat(moment().format("m") / 60)) * heightPerHour
 }
