@@ -250,18 +250,6 @@ const TimelineViewport = class TimelineViewport extends React.Component {
     return taskComponents.length > 0 ? taskComponents : null
   }
 
-  nowMarkerTop(){
-    return (parseInt(moment().format("H")) + parseFloat(moment().format("m") / 60)) * Constants.heightPerHour
-  }
-
-  componentDidMount(){
-    setInterval(() => {
-      this.setState({
-        nowMarkerTop: this.nowMarkerTop()
-      })
-    }, 60000)
-  }
-
   render() {
     return (
       <div id="timeline-viewport" className="col-md-5 col-sm-6 hidden-xs" ref="timeline">
