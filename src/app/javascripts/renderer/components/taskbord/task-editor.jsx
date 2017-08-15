@@ -37,17 +37,6 @@ const TaskEditor = class TaskEditor extends React.Component {
     }
   }
 
-  // when props.date changed update task list
-  componentWillReceiveProps(nextProps){
-    if (nextProps.date !== this.props.date || nextProps.showHowto !== this.props.showHowto) {
-      let nextState = Raw.deserialize(this.getStateSync(nextProps.date), { terse: true })
-      this.props.callbackToTv(nextState)
-    }
-    if (nextProps.taskList !== this.props.taskList) {
-      this.setState({state: nextProps.taskList})
-    }
-  }
-
   // get task list json data via main process
   getStateSync(date){
     return ipcRenderer.sendSync('getTaskList', date)
@@ -104,7 +93,7 @@ const TaskEditor = class TaskEditor extends React.Component {
 
   // On change, update the app's React state with the new editor state.
   onChange(state){
-    this.props.callbackToTv(state);
+    this.props.onUpdateTask(state);
   }
 
   // On click toggle task list status.
@@ -117,7 +106,7 @@ const TaskEditor = class TaskEditor extends React.Component {
       .setBlock({ data: state.startBlock.data.set('done', type == 'task-list-done') })
 
     e.preventDefault()
-    this.props.callbackToTv(transform.apply())
+    this.props.onUpdateTask(transform.apply())
   }
 
   /**
@@ -273,7 +262,7 @@ const TaskEditor = class TaskEditor extends React.Component {
   }
 
   componentDidMount() {
-    this.props.callbackToTv(this.props.focusLastBlock())
+    this.props.onUpdateTask(this.props.focusLastBlock())
   }
 }
 
