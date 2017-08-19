@@ -12,56 +12,9 @@ import FlatButton from 'material-ui/FlatButton';
 import darkBaseTheme from 'material-ui/styles/baseThemes/darkBaseTheme';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import * as dateListUtil from '../../../utils/date-list.jsx'
 
 const CalendarViewport = class CalendarViewport extends React.Component {
-
-  constructor(props) {
-    super(props)
-    this.state = {
-      open: false,
-      dateList: this.initialDateList()
-    }
-  }
-
-  initialDateList() {
-    let dateList = []
-    _.map(_.range(1, 30), (d, i) => {
-      dateList.push({
-        date: moment().add(d - 15, 'd').format("YYYYMMDD"),
-        dateFull: moment().add(d - 15, 'd').format("YYYY.M.D ddd"),
-        task: 0,
-        taskDone: 0,
-        complete: false
-      })
-    })
-    return dateList
-  }
-
-  nextDateList(taskList, date){
-    let task = 0
-    let taskDone = 0
-    taskList.document.nodes.map((block) => {
-      if (block.type == "task-list") {
-        task++
-      } else if (block.type == "task-list-done") {
-        taskDone++
-      }
-    })
-    let dateList = this.state.dateList
-    let targetIndex = _.findIndex(this.state.dateList, {date: date})
-    dateList[targetIndex] = {
-      date: date,
-      dateFull: this.state.dateList[targetIndex].dateFull,
-      task: task,
-      taskDone: taskDone,
-      complete: (task + taskDone) == taskDone
-    }
-    return dateList
-  }
-
-  handleToggle() {
-    this.setState({ open: !this.state.open });
-  }
 
   updateDate(e) {
     let date = e.currentTarget.childNodes[0].childNodes[1].childNodes[3].innerHTML
@@ -69,95 +22,32 @@ const CalendarViewport = class CalendarViewport extends React.Component {
     e.preventDefault()
   }
 
-  setTaskCount(targetDateList){
-    ipcRenderer.on('getTaskListAsync', (event, arg) => {
-      let taskList = Raw.deserialize(arg.value, { terse: true })
-      this.setState({
-        dateList: this.nextDateList(taskList, arg.date)
-      })
-    })
-    _.map(targetDateList, (d, i) => {
-      ipcRenderer.send('getTaskListAsync', d)
-    })
-  }
-
-  setTaskCountSync(targetDateList){
-    let taskList
-    let nextDateList
-    _.map(targetDateList, (d, i) => {
-      taskList = Raw.deserialize(ipcRenderer.sendSync('getTaskList', d), { terse: true })
-      nextDateList = this.nextDateList(taskList, d)
-    })
-    this.setState({
-      dateList: nextDateList
-    })
-  }
-
-  componentDidMount(){
-    let targetDateList = []
-    _.map(this.state.dateList, (d, i) => {
-      targetDateList.push(d.date)
-    })
-    this.setTaskCount(targetDateList)
-  }
-
-  componentWillReceiveProps(nextProps){
-    if(nextProps.showHowto) return
-    if (nextProps.taskList !== this.props.taskList) {
-      this.setState({
-        dateList: this.nextDateList(nextProps.taskList, this.props.date)
-      })
-    }
-  }
-
   clickMoreDown(e){
-    let dateList = this.state.dateList
+    let dateList = this.props.dateList
     let startDate = dateList[dateList.length - 1].date
-    let targetDateList = []
-    let momentDate
+    let date
     _.map(_.range(1, 5), (d, i) => {
-      momentDate = moment(startDate).add(+d, 'd')
-      dateList.push({
-        date: momentDate.format("YYYYMMDD"),
-        dateFull: momentDate.format("YYYY.M.D ddd"),
-        task: 0,
-        taskDone: 0,
-        complete: false
-      })
-      targetDateList.push(momentDate.format("YYYYMMDD"))
+      date = moment(startDate).add(+d, 'd').format("YYYYMMDD")
+      dateList.push(dateListUtil.getDateWithTaskCount(date))
     })
-    this.setState(
-      { dateList: dateList },
-      () => this.setTaskCountSync(targetDateList)
-    )
+    this.props.onUpdateDateList(dateList)
   }
 
   clickMoreUp(e){
-    let dateList = this.state.dateList
+    let dateList = this.props.dateList
     let startDate = dateList[0].date
-    let targetDateList = []
-    let momentDate
+    let date
     _.map(_.range(1, 5), (d, i) => {
-      momentDate = moment(startDate).add(-d, 'd')
-      dateList.unshift({
-        date: momentDate.format("YYYYMMDD"),
-        dateFull: momentDate.format("YYYY.M.D ddd"),
-        task: 0,
-        taskDone: 0,
-        complete: false
-      })
-      targetDateList.push(momentDate.format("YYYYMMDD"))
+      date = moment(startDate).add(-d, 'd').format("YYYYMMDD")
+      dateList.unshift(dateListUtil.getDateWithTaskCount(date))
     })
-    this.setState(
-      { dateList: dateList },
-      () => this.setTaskCountSync(targetDateList)
-    )
+    this.props.onUpdateDateList(dateList)
   }
 
   renderMenuItem() {
     let items = []
     let innerDivStyle = {}
-    this.state.dateList.map((date, i) => {
+    this.props.dateList.map((date, i) => {
       innerDivStyle = date.date == this.props.date ? {fontWeight: "bold", backgroundColor: "rgba(123, 199, 175, 0.2)"} : {}
       let taskCount = date.task > 0 ? <div className="task-count"><span>{date.task}</span></div> : ""
       items.push(
@@ -184,7 +74,6 @@ const CalendarViewport = class CalendarViewport extends React.Component {
         )
       }
     })
-
     // more button.
     items.unshift(
       <MenuItem
@@ -212,15 +101,15 @@ const CalendarViewport = class CalendarViewport extends React.Component {
         <div id="calendar-viewport" className="col-md-2 hidden-sm hidden-xs">
           <RaiseButton
             label="history"
-            onTouchTap={this.handleToggle.bind(this)}
+            onTouchTap={this.props.showHistoryMenu.bind(this)}
           />
           <Drawer
-            open={this.state.open}
+            open={this.props.showHistory}
             containerStyle={{overflow: "hidden"}}>
             <div style={{textAlign: "right"}}>
               <FlatButton
                 label="close ✕"
-                onTouchTap={this.handleToggle.bind(this)}
+                onTouchTap={this.props.hideHistoryMenu.bind(this)}
               />
             </div>
             <div style={{overflow: "scroll", height: "calc(100% - 36px)"}}>

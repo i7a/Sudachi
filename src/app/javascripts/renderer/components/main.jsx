@@ -1,6 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
-import moment from 'moment'
+import moment from 'moment';
 import { Raw } from 'slate';
 import { ipcRenderer } from 'electron';
 import Howto from '../../../data/howto.json';
@@ -12,17 +12,21 @@ import CalendarViewport from './taskbord/calendar-viewport';
 import TaskViewport from './taskbord/task-viewport';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import * as Constants from './constants'
+import * as dateListUtil from '../../utils/date-list.jsx'
+import * as taskListUtil from '../../utils/task-list.jsx'
 injectTapEventPlugin();
 
 const HowtoContents = Raw.deserialize(Howto, { terse: true })
 const today = moment().format("YYYYMMDD")
+const storage = new taskListStorage()
 const taskBoardDefaultState = {
   date: today,
-  taskList: {},
+  taskList: taskListUtil.getTaskListByDate(moment().format("YYYYMMDD")),
   save: true,
-  taskCount: 0,
   nextTaskPositionTop: Constants.initialPositionTop,
-  markerPositionTop: Constants.markerPositionTop()
+  markerPositionTop: Constants.markerPositionTop(),
+  showHistory: false,
+  dateList: dateListUtil.getDateListWithTaskCount(Constants.initialDateList())
 }
 
 const taskBoardReducer = (state = taskBoardDefaultState, action) => {
@@ -30,26 +34,38 @@ const taskBoardReducer = (state = taskBoardDefaultState, action) => {
     case 'UPDATE_TASK':
       return {
         taskList: action.taskList,
-        taskCount: action.taskCount,
         nextTaskPositionTop: action.nextTaskPositionTop,
+        dateList: action.dateList,
         save: true
       };
     case 'UPDATE_DATE':
       return {
         date: action.date,
         taskList: action.taskList,
-        taskCount: action.taskCount,
         nextTaskPositionTop: action.nextTaskPositionTop,
+        dateList: action.dateList,
         save: true
       };
     case 'UPDATE_MARKER':
       return {
         markerPositionTop: Constants.markerPositionTop()
       };
+    case 'UPDATE_DATE_LIST':
+      return {
+        dateList: action.dateList
+      }
     case 'SHOW_HOWTO':
       return {
         taskList: HowtoContents,
         save: false
+      };
+    case 'SHOW_HISTORY':
+      return {
+        showHistory: true
+      };
+    case 'HIDE_HISTORY':
+      return {
+        showHistory: false
       };
     default:
       return state;
@@ -61,77 +77,66 @@ class TaskBoard extends React.Component {
   constructor(props){
     super(props);
     this.state = taskBoardDefaultState;
-    this.state.taskList = Raw.deserialize(this.getStateSync(moment().format("YYYYMMDD")), { terse: true });
-    this.storage = new taskListStorage();
   }
 
   dispatch(action){
+    console.log(action.type)
     this.setState(prevState => taskBoardReducer(prevState, action))
   }
 
   updateTask(taskList){
-    let nextTaskCount = this.getTaskCount(taskList)
     this.dispatch({
       type: 'UPDATE_TASK',
       taskList: taskList,
-      taskCount: nextTaskCount,
-      nextTaskPositionTop: this.getNextTaskPositionTop(taskList, nextTaskCount, this.state.date)
+      nextTaskPositionTop: this.getNextTaskPositionTop(taskList, this.state.date),
+      dateList: dateListUtil.getDateListWithTaskCountByDate(this.state.dateList, taskList, this.state.date)
     })
-    if (this.state.save){
-      this.storage.set(this.state.date, Raw.serialize(taskList).document)
-    }
+    if (this.state.save) storage.set(this.state.date, Raw.serialize(taskList).document)
   }
 
   updateDate(date){
-    let nextTaskList = this.getTaskListByDate(date)
-    let nextTaskCount = this.getTaskCount(nextTaskList)
+    let nextTaskList = taskListUtil.getTaskListByDate(date)
     this.dispatch({
       type: 'UPDATE_DATE',
       date: date,
       taskList: nextTaskList,
-      taskCount: nextTaskCount,
-      nextTaskPositionTop: this.getNextTaskPositionTop(nextTaskList, nextTaskCount, date)
+      nextTaskPositionTop: this.getNextTaskPositionTop(nextTaskList, date),
+      dateList: dateListUtil.getDateListWithTaskCountByDate(this.state.dateList, nextTaskList, date)
+    })
+  }
+
+  updateDateList(dateList){
+    this.dispatch({
+      type: 'UPDATE_DATE_LIST',
+      dateList: dateList
     })
   }
 
   updateMarker(){
-    this.dispatch({
-      type: 'UPDATE_MARKER'
-    })
+    this.dispatch({ type: 'UPDATE_MARKER' })
   }
 
   showHowto(){
-    this.dispatch({
-      type: 'SHOW_HOWTO'
-    })
+    this.dispatch({ type: 'SHOW_HOWTO' })
   }
 
-  getStateSync(date){
-    return ipcRenderer.sendSync('getTaskList', date)
+  showHistoryMenu(){
+    this.dispatch({ type: 'SHOW_HISTORY' })
   }
 
-  getTaskListByDate(date){
-    return Raw.deserialize(this.getStateSync(date), { terse: true })
+  hideHistoryMenu(){
+    this.dispatch({ type: 'HIDE_HISTORY' })
   }
 
-  getTaskCount(taskList){
-    let taskCount = 0
-    let breaker = false
-    taskList.document.nodes.map((block) => {
-      if (block.type == "separator") breaker = true
-      if (breaker) return
-      if (Constants.showInTimeline.includes(block.type) >= 0 && block.text != "") taskCount++
-    })
-    return taskCount
-  }
-
-  getNextTaskPositionTop(taskList, taskCount, date){
+  getNextTaskPositionTop(taskList, date){
     let bottom = 450
     let requiredTime = 0
     let breaker = false
-    if (taskCount == 0) {
+    let showInTimelineTaskCount = this.getShowInTimelineTaskCount(taskList)
+    let prevShowInTimelineTaskCount = this.getShowInTimelineTaskCount(this.state.taskList)
+    if (showInTimelineTaskCount == 0) {
       return Constants.initialPositionTop
-    } else if (taskCount == this.state.taskCount && date == this.state.date) {
+    } else if (showInTimelineTaskCount == prevShowInTimelineTaskCount && date == this.state.date) {
       return this.state.nextTaskPositionTop
     } else {
       taskList.document.nodes.map((block) => {
@@ -149,6 +154,17 @@ class TaskBoard extends React.Component {
     return bottom + (Constants.heightPerHour * (requiredTime / 60))
   }
 
+  getShowInTimelineTaskCount(taskList){
+    let taskCount = 0
+    let breaker = false
+    taskList.document.nodes.map((block) => {
+      if (block.type == "separator") breaker = true
+      if (breaker) return
+      if (Constants.showInTimeline.includes(block.type) >= 0 && block.text != "") taskCount++
+    })
+    return taskCount
+  }
+
   componentDidMount(){
     setInterval(() => { this.updateMarker() }, 60000)
   }
@@ -162,7 +178,12 @@ class TaskBoard extends React.Component {
               date={this.state.date}
               taskList={this.state.taskList}
               onUpdateDate={this.updateDate.bind(this)}
+              onUpdateDateList={this.updateDateList.bind(this)}
+              showHistoryMenu={this.showHistoryMenu.bind(this)}
+              hideHistoryMenu={this.hideHistoryMenu.bind(this)}
+              dateList={this.state.dateList}
               showHowto={!this.state.save}
+              showHistory={this.state.showHistory}
             />
             <TaskViewport
               date={this.state.date}

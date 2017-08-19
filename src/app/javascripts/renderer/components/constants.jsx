@@ -13,6 +13,20 @@ export const showInTimeline = [
 
 export const initialPositionTop = 450
 
+export const initialDateList = () => {
+  let dateList = []
+  _.map(_.range(1, 30), (d, i) => {
+    dateList.push({
+      date: moment().add(d - 15, 'd').format("YYYYMMDD"),
+      dateFull: moment().add(d - 15, 'd').format("YYYY.M.D ddd"),
+      task: 0,
+      taskDone: 0,
+      complete: false
+    })
+  })
+  return dateList
+}
+
 export const heightPerHour = 50
 
 export const positionRange = () => {
