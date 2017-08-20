@@ -12,8 +12,8 @@ import CalendarViewport from './taskbord/calendar-viewport';
 import TaskViewport from './taskbord/task-viewport';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import * as Constants from './constants'
-import * as dateListUtil from '../../utils/date-list.jsx'
-import * as taskListUtil from '../../utils/task-list.jsx'
+import * as dateListUtil from '../../utils/date-list'
+import * as taskListUtil from '../../utils/task-list'
 injectTapEventPlugin();
 
 const HowtoContents = Raw.deserialize(Howto, { terse: true })
@@ -106,10 +106,7 @@ class TaskBoard extends React.Component {
   }
 
   updateDateList(dateList){
-    this.dispatch({
-      type: 'UPDATE_DATE_LIST',
-      dateList: dateList
-    })
+    this.dispatch({ type: 'UPDATE_DATE_LIST', dateList: dateList })
   }
 
   updateMarker(){
@@ -132,8 +129,8 @@ class TaskBoard extends React.Component {
     let bottom = 450
     let requiredTime = 0
     let breaker = false
-    let showInTimelineTaskCount = this.getShowInTimelineTaskCount(taskList)
-    let prevShowInTimelineTaskCount = this.getShowInTimelineTaskCount(this.state.taskList)
+    let showInTimelineTaskCount = taskListUtil.getShowInTimelineTaskCount(taskList)
+    let prevShowInTimelineTaskCount = taskListUtil.getShowInTimelineTaskCount(this.state.taskList)
     if (showInTimelineTaskCount == 0) {
       return Constants.initialPositionTop
     } else if (showInTimelineTaskCount == prevShowInTimelineTaskCount && date == this.state.date) {
@@ -152,17 +149,6 @@ class TaskBoard extends React.Component {
       if (bottom > 1200) bottom = 1200
     }
     return bottom + (Constants.heightPerHour * (requiredTime / 60))
-  }
-
-  getShowInTimelineTaskCount(taskList){
-    let taskCount = 0
-    let breaker = false
-    taskList.document.nodes.map((block) => {
-      if (block.type == "separator") breaker = true
-      if (breaker) return
-      if (Constants.showInTimeline.includes(block.type) >= 0 && block.text != "") taskCount++
-    })
-    return taskCount
   }
 
   componentDidMount(){
