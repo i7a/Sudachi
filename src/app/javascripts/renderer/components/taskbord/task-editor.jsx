@@ -8,38 +8,28 @@ import * as Constants from '../constants'
 const TaskEditor = class TaskEditor extends React.Component {
 
   /**
-   * Deserialize the raw initial state.
+   * Get the schema.
    *
-   * @type {Object}
+   * @return {Object} nodes
    */
 
-  // Set the initial state when the app is first constructed.
-  constructor(props){
-    super(props);
-    this.state = {
-      state: this.props.taskList,
-      schema: {
-        nodes: {
-          'block-quote': props => <blockquote>{props.children}</blockquote>,
-          'bulleted-list': props => <ul className="list-style-disc">{props.children}</ul>,
-          'heading-one': props => <h1>{props.children}</h1>,
-          'heading-two': props => <h2>{props.children}</h2>,
-          'heading-three': props => <h3>{props.children}</h3>,
-          'heading-four': props => <h4>{props.children}</h4>,
-          'heading-five': props => <h5>{props.children}</h5>,
-          'heading-six': props => <h6>{props.children}</h6>,
-          'list-item': props => <li>{props.children}</li>,
-          'task-list-done' : props => <ul className="ace-line task-line" onClick={this.onClick.bind(this)}><li className="done"><div>{props.children}</div></li></ul>,
-          'task-list' : props => <ul className="ace-line task-line" onClick={this.onClick.bind(this)}><li><div>{props.children}</div></li></ul>,
-          'separator' : props => <div className="separator-line" contentEditable={false}><span className="separator"><span></span></span></div>
-        }
+  getSchema(){
+    return {
+      nodes: {
+        'block-quote': props => <blockquote>{props.children}</blockquote>,
+        'bulleted-list': props => <ul className="list-style-disc">{props.children}</ul>,
+        'heading-one': props => <h1>{props.children}</h1>,
+        'heading-two': props => <h2>{props.children}</h2>,
+        'heading-three': props => <h3>{props.children}</h3>,
+        'heading-four': props => <h4>{props.children}</h4>,
+        'heading-five': props => <h5>{props.children}</h5>,
+        'heading-six': props => <h6>{props.children}</h6>,
+        'list-item': props => <li>{props.children}</li>,
+        'task-list-done' : props => <ul className="ace-line task-line" onClick={this.onClickCheckBox.bind(this)}><li className="done"><div>{props.children}</div></li></ul>,
+        'task-list' : props => <ul className="ace-line task-line" onClick={this.onClickCheckBox.bind(this)}><li><div>{props.children}</div></li></ul>,
+        'separator' : props => <div className="separator-line" contentEditable={false}><span className="separator"><span></span></span></div>
       }
     }
-  }
-
-  // get task list json data via main process
-  getStateSync(date){
-    return ipcRenderer.sendSync('getTaskList', date)
   }
 
   /**
@@ -81,7 +71,7 @@ const TaskEditor = class TaskEditor extends React.Component {
         <Editor
           className={"ace-line"}
           placeholder={"Time is an illusion..."}
-          schema={this.state.schema}
+          schema={this.getSchema()}
           state={this.props.taskList}
           onChange={this.onChange.bind(this)}
           onKeyDown={this.onKeyDown.bind(this)}
@@ -97,8 +87,8 @@ const TaskEditor = class TaskEditor extends React.Component {
   }
 
   // On click toggle task list status.
-  onClick(e){
-    let state = this.state.state
+  onClickCheckBox(e){
+    let state = this.props.taskList
     let type = state.startBlock.type == 'task-list' ? 'task-list-done' : 'task-list'
     let transform = state
       .transform()
