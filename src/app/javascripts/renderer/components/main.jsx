@@ -35,8 +35,7 @@ const taskBoardReducer = (state = taskBoardDefaultState, action) => {
       return {
         taskList: action.taskList,
         nextTaskPositionTop: action.nextTaskPositionTop,
-        dateList: action.dateList,
-        save: true
+        dateList: action.dateList
       };
     case 'UPDATE_DATE':
       return {
