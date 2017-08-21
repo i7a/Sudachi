@@ -28,7 +28,7 @@ const timelineResizer = class TimelineResizer extends React.Component {
     const { isDragging, connectDragSource } = this.props
 
     return connectDragSource(
-      <div className={this.props.className}>=</div>
+      <div className="resizer">=</div>
     )
   }
 }

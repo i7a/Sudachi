@@ -52,18 +52,8 @@ function targetCollect(connect){
 
 const timelineTask = class TimelineTask extends React.Component {
 
-  constructor(props){
-    super(props)
-    this.state = {
-      style: {},
-      class: "",
-      classResizer: "resizer"
-    }
-  }
-
   setTaskClass(block) {
-    let taskClass = this.state.class
-    taskClass = "task"
+    let taskClass = "task"
     if ( block.data.get("done", false) == true) {
       taskClass += " done"
     } else if ( block.data.get("positionTop", 500) >= 925 ) {
@@ -72,7 +62,7 @@ const timelineTask = class TimelineTask extends React.Component {
     let top = block.data.get("positionTop", 500)
     let height = Constants.heightPerHour * block.data.get("requiredTime", 60) / 60
     if (this.props.nowMarkerTop > (top + height) && !block.data.get("done")) taskClass += " past"
-    this.setState({class: taskClass})
+    return taskClass
   }
 
   setTaskStyle(block) {
@@ -80,37 +70,13 @@ const timelineTask = class TimelineTask extends React.Component {
     let height = Constants.heightPerHour * block.data.get("requiredTime", 60) / 60
     let width = block.data.get("width", 55)
     let marginLeft = block.data.get("marginLeft", 0)
-    let style = {
+    let taskStyle = {
       top: top.toString() + 'px',
       height: height.toString() + 'px',
       width: width.toString() + '%',
       marginLeft: marginLeft.toString() + '%'
     };
-    this.setState({style: style})
-  }
-
-  componentWillMount() {
-    this.setTaskStyle(this.props.block)
-    this.setTaskClass(this.props.block)
-  }
-
-  componentWillReceiveProps(nextProps) {
-    this.setTaskStyle(nextProps.block)
-    this.setTaskClass(nextProps.block)
-  }
-
-  onMouseOverTask() {
-    this.setState({
-      class: this.state.class += " over",
-      classResizer: this.state.classResizer += " hover"
-    })
-  }
-
-  onMouseOutTask() {
-    this.setState({
-      class: this.state.class.replace( /\ over/g , ""),
-      classResizer: this.state.classResizer.replace( /\ hover/g , "")
-    })
+    return taskStyle
   }
 
   render() {
@@ -118,13 +84,10 @@ const timelineTask = class TimelineTask extends React.Component {
 
     return connectDragSource(connectDropTarget(
       <div
-        className={this.state.class}
-        style={this.state.style}
-        onMouseOver={this.onMouseOverTask.bind(this)}
-        onMouseOut={this.onMouseOutTask.bind(this)}>
+        className={this.setTaskClass(this.props.block)}
+        style={this.setTaskStyle(this.props.block)}>
         <span>{this.props.block.text}</span>
         <Resizer
-          className={this.state.classResizer}
           taskKey={this.props.taskKey}
           block={this.props.block}
           resizeTask={this.props.resizeTask}
