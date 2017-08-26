@@ -226,7 +226,7 @@ const TaskEditor = class TaskEditor extends React.Component {
     if (state.isExpanded) return
     if (state.startOffset != 0) return
     const { startBlock } = state
-
+    
     if (startBlock.type == 'paragraph') {
       let previousBlock = state.document.getPreviousBlock(state.startBlock)
       if (previousBlock !== null && previousBlock.type == 'separator') {
@@ -243,7 +243,7 @@ const TaskEditor = class TaskEditor extends React.Component {
       .transform()
       .setBlock('paragraph')
 
-    if (startBlock.type == 'list-item') transform.unwrapBlock('bulleted-list')
+    if (/list-item/.test(startBlock.type)) transform.unwrapBlock('bulleted-list')
 
     state = transform.apply()
     return state
