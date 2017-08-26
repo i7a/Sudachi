@@ -62,6 +62,13 @@ const TaskEditor = class TaskEditor extends React.Component {
     }
   }
 
+  /**
+   * Get the indent block type for a series of auto-markdown shortcut `chars`.
+   *
+   * @param {String} listItemChars
+   * @return {String} block
+   */
+
   getIndentType(listItemChars){
     switch (true) {
       case /list-item-indent4/.test(listItemChars): return 'list-item-indent4'
@@ -70,7 +77,24 @@ const TaskEditor = class TaskEditor extends React.Component {
       case /list-item-indent1/.test(listItemChars): return 'list-item-indent2'
       case /list-item/.test(listItemChars): return 'list-item-indent1'
       default: return listItemChars
+    }
+  }
 
+  /**
+   * Get the indent block type for a series of auto-markdown shortcut `chars`.
+   *
+   * @param {String} listItemChars
+   * @return {String} block
+   */
+
+  getIndentTypeWithShift(listItemChars){
+    switch (true) {
+      case /list-item-indent4/.test(listItemChars): return 'list-item-indent3'
+      case /list-item-indent3/.test(listItemChars): return 'list-item-indent2'
+      case /list-item-indent2/.test(listItemChars): return 'list-item-indent1'
+      case /list-item-indent1/.test(listItemChars): return 'list-item'
+      case /list-item/.test(listItemChars): return 'list-item'
+      default: return listItemChars
     }
   }
 
@@ -129,7 +153,7 @@ const TaskEditor = class TaskEditor extends React.Component {
       case 'space': return this.onSpace(e, state)
       case 'backspace': return this.onBackspace(e, state)
       case 'enter': return this.onEnter(e, state)
-      case 'tab': return this.onTab(e, state)
+      case 'tab': return this.onTab(e, data.isShift, state)
     }
   }
 
@@ -273,17 +297,19 @@ const TaskEditor = class TaskEditor extends React.Component {
    * create indented block.
    *
    * @param {Event} e
+   * @param {Boolean} isSift
    * @param {State} state
    * @return {State or Null} state
    */
 
-  onTab(e, state){
+  onTab(e, isShift, state){
     e.preventDefault()
     let type = state.startBlock.type
     if (/list-item/.test(type)){
+      let nextType = isShift ? this.getIndentTypeWithShift(type) : this.getIndentType(type)
       state = state
         .transform()
-        .setBlock(this.getIndentType(type))
+        .setBlock(nextType)
         .apply()
     }
     return state
