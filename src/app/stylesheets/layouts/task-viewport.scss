@@ -41,6 +41,20 @@
     padding: 0;
     margin: 0;
   }
+  .indent1 {
+    margin-left: 2em;
+    list-style-type: circle;
+  }
+  .indent2 {
+    margin-left: 4em;
+  }
+  .indent3 {
+    margin-left: 6em;
+    list-style-type: circle;
+  }
+  .indent4 {
+    margin-left: 8em;
+  }
   div.title {
     font-size: $font-large;
     color: $t-black;

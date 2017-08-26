@@ -25,6 +25,10 @@ const TaskEditor = class TaskEditor extends React.Component {
         'heading-five': props => <h5>{props.children}</h5>,
         'heading-six': props => <h6>{props.children}</h6>,
         'list-item': props => <li>{props.children}</li>,
+        'list-item-indent1': props => <li className="indent1">{props.children}</li>,
+        'list-item-indent2': props => <li className="indent2">{props.children}</li>,
+        'list-item-indent3': props => <li className="indent3">{props.children}</li>,
+        'list-item-indent4': props => <li className="indent4">{props.children}</li>,
         'task-list-done' : props => <ul className="ace-line task-line" onClick={this.onClickCheckBox.bind(this)}><li className="done"><div>{props.children}</div></li></ul>,
         'task-list' : props => <ul className="ace-line task-line" onClick={this.onClickCheckBox.bind(this)}><li><div>{props.children}</div></li></ul>,
         'separator' : props => <div className="separator-line" contentEditable={false}><span className="separator"><span></span></span></div>
@@ -55,6 +59,18 @@ const TaskEditor = class TaskEditor extends React.Component {
       case /##/.test(chars): return 'heading-two'
       case /#/.test(chars): return 'heading-one'
       default: return null
+    }
+  }
+
+  getIndentType(listItemChars){
+    switch (true) {
+      case /list-item-indent4/.test(listItemChars): return 'list-item-indent4'
+      case /list-item-indent3/.test(listItemChars): return 'list-item-indent4'
+      case /list-item-indent2/.test(listItemChars): return 'list-item-indent3'
+      case /list-item-indent1/.test(listItemChars): return 'list-item-indent2'
+      case /list-item/.test(listItemChars): return 'list-item-indent1'
+      default: return listItemChars
+
     }
   }
 
@@ -113,6 +129,7 @@ const TaskEditor = class TaskEditor extends React.Component {
       case 'space': return this.onSpace(e, state)
       case 'backspace': return this.onBackspace(e, state)
       case 'enter': return this.onEnter(e, state)
+      case 'tab': return this.onTab(e, state)
     }
   }
 
@@ -249,6 +266,27 @@ const TaskEditor = class TaskEditor extends React.Component {
         })
       })
       .apply()
+  }
+
+  /**
+   * On tab, if block type is list-item,
+   * create indented block.
+   *
+   * @param {Event} e
+   * @param {State} state
+   * @return {State or Null} state
+   */
+
+  onTab(e, state){
+    e.preventDefault()
+    let type = state.startBlock.type
+    if (/list-item/.test(type)){
+      state = state
+        .transform()
+        .setBlock(this.getIndentType(type))
+        .apply()
+    }
+    return state
   }
 
   componentDidMount() {
