@@ -56,18 +56,17 @@
     margin: 0;
   }
   .list-style-disc {
-    .indent1 {
-      list-style-type: circle;
-    }
+    .indent1 {}
     .indent2 {
-      margin-left: calc(20px + 2em);
+      margin-left: 2em;
+      list-style-type: circle;
     }
     .indent3 {
       margin-left: 4em;
-      list-style-type: circle;
     }
     .indent4 {
       margin-left: 6em;
+      list-style-type: circle;
     }
     .indent5 {
       margin-left: 8em;

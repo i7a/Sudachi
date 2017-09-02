@@ -32,7 +32,7 @@ const CheckListItem = class CheckListItem extends React.Component {
   /**
    * get className for check list item.
    *
-   * @param {node} node
+   * @param {Block} node
    * @return {String}
    */
 

@@ -24,11 +24,7 @@ const TaskEditor = class TaskEditor extends React.Component {
         'heading-four': props => <h4>{props.children}</h4>,
         'heading-five': props => <h5>{props.children}</h5>,
         'heading-six': props => <h6>{props.children}</h6>,
-        'list-item': props => <li>{props.children}</li>,
-        'list-item-indent1': props => <li className="indent1">{props.children}</li>,
-        'list-item-indent2': props => <li className="indent2">{props.children}</li>,
-        'list-item-indent3': props => <li className="indent3">{props.children}</li>,
-        'list-item-indent4': props => <li className="indent4">{props.children}</li>,
+        'list-item': props => <li className={'indent' + props.node.data.get('indent')}>{props.children}</li>,
         'check-list-item': CheckListItem,
         'separator' : props => <div className="separator-line" contentEditable={false}><span className="separator"><span></span></span></div>
       }
@@ -58,42 +54,6 @@ const TaskEditor = class TaskEditor extends React.Component {
       case /##/.test(chars): return 'heading-two'
       case /#/.test(chars): return 'heading-one'
       default: return null
-    }
-  }
-
-  /**
-   * Get the indent block type for a series of auto-markdown shortcut `chars`.
-   *
-   * @param {String} listItemChars
-   * @return {String} block
-   */
-
-  getIndentType(listItemChars){
-    switch (true) {
-      case /list-item-indent4/.test(listItemChars): return 'list-item-indent4'
-      case /list-item-indent3/.test(listItemChars): return 'list-item-indent4'
-      case /list-item-indent2/.test(listItemChars): return 'list-item-indent3'
-      case /list-item-indent1/.test(listItemChars): return 'list-item-indent2'
-      case /list-item/.test(listItemChars): return 'list-item-indent1'
-      default: return listItemChars
-    }
-  }
-
-  /**
-   * Get the indent block type for a series of auto-markdown shortcut `chars`.
-   *
-   * @param {String} listItemChars
-   * @return {String} block
-   */
-
-  getIndentTypeWithShift(listItemChars){
-    switch (true) {
-      case /list-item-indent4/.test(listItemChars): return 'list-item-indent3'
-      case /list-item-indent3/.test(listItemChars): return 'list-item-indent2'
-      case /list-item-indent2/.test(listItemChars): return 'list-item-indent1'
-      case /list-item-indent1/.test(listItemChars): return 'list-item'
-      case /list-item/.test(listItemChars): return 'list-item'
-      default: return listItemChars
     }
   }
 
@@ -292,7 +252,7 @@ const TaskEditor = class TaskEditor extends React.Component {
   onTab(e, isShift, state){
     e.preventDefault()
     let type = state.startBlock.type
-    if (/check-list-item/.test(type)) {
+    if (/list-item/.test(type)) {
       let indent = state.startBlock.data.get('indent')
       if (indent < 5 && ! isShift) indent++
       if (indent > 1 && isShift) indent--
@@ -301,12 +261,6 @@ const TaskEditor = class TaskEditor extends React.Component {
         .setBlock({
           data: state.startBlock.data.set('indent', indent)
         })
-        .apply()
-    } else if (/list-item/.test(type)){
-      const nextType = isShift ? this.getIndentTypeWithShift(type) : this.getIndentType(type)
-      state = state
-        .transform()
-        .setBlock(nextType)
         .apply()
     }
 
