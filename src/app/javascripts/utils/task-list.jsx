@@ -23,7 +23,7 @@ export const getTaskListByDate = (date) => {
 export const getTaskCount = (taskList) => {
   let task = 0
   taskList.document.nodes.map((block) => {
-    if (block.type == "task-list") task++
+    if (block.type == "check-list-item" && ! block.data.get('done')) task++
   })
   return task
 }
@@ -38,14 +38,14 @@ export const getTaskCount = (taskList) => {
 export const getDoneTaskCount = (taskList) => {
   let taskDone = 0
   taskList.document.nodes.map((block) => {
-    if (block.type == "task-list-done") taskDone++
+    if (block.type == "check-list-item" && block.data.get('done')) taskDone++
   })
   return taskDone
 }
 
 /**
  * get task count which show in time line.
- * 
+ *
  * @param  {State} taskList
  * @return {Number}
  */
