@@ -4,6 +4,13 @@ import { Raw } from 'slate';
 import { ipcRenderer } from 'electron';
 import * as taskListUtil from './task-list';
 
+/**
+ * get array dateList with task count.
+ *
+ * @param  {Array} dateList
+ * @return {Array} dateList with task count
+ */
+
 export const getDateListWithTaskCount = (dateList) => {
   let taskList = {}
   let dateListWithTaskCount = dateList
@@ -13,6 +20,16 @@ export const getDateListWithTaskCount = (dateList) => {
   })
   return dateListWithTaskCount
 }
+
+/**
+ * get array dateList with task count.
+ * count task and doneTask of param taskList, and update task count of the day.
+ *
+ * @param  {Array} dateList
+ * @param  {State} taskList
+ * @param  {String} date     YYYYMMDD
+ * @return {Array}
+ */
 
 export const getDateListWithTaskCountByDate = (dateList, taskList, date) => {
   let task = taskListUtil.getTaskCount(taskList)
@@ -27,6 +44,13 @@ export const getDateListWithTaskCountByDate = (dateList, taskList, date) => {
   }
   return dateList
 }
+
+/**
+ * get date with task count.
+ *
+ * @param  {String} date YYYYMMDD
+ * @return {Onject}  date object with task info.
+ */
 
 export const getDateWithTaskCount = (date) => {
   let taskList = taskListUtil.getTaskListByDate(date)

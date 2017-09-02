@@ -7,8 +7,7 @@ export const Types = {
 
 export const showInTimeline = [
   "paragraph",
-  "task-list",
-  "task-list-done"
+  "check-list-item"
 ]
 
 export const initialPositionTop = 450
@@ -26,6 +25,9 @@ export const initialDateList = () => {
   })
   return dateList
 }
+
+export const minIndent = 1
+export const maxIndent = 5
 
 export const heightPerHour = 50
 
