@@ -193,7 +193,7 @@ const TaskEditor = class TaskEditor extends React.Component {
       .transform()
       .setBlock('paragraph')
 
-    if (/list-item/.test(startBlock.type)) transform.unwrapBlock('bulleted-list')
+    if (startBlock.type == 'list-item') transform.unwrapBlock('bulleted-list')
 
     state = transform.apply()
     return state
@@ -220,8 +220,8 @@ const TaskEditor = class TaskEditor extends React.Component {
       startBlock.type != 'heading-four' &&
       startBlock.type != 'heading-five' &&
       startBlock.type != 'heading-six' &&
-      startBlock.type != 'block-quote' &&
-      startBlock.type != 'list-item'
+      startBlock.type != 'check-list-item' &&
+      startBlock.type != 'block-quote'
     ) {
       return
     }
@@ -234,6 +234,7 @@ const TaskEditor = class TaskEditor extends React.Component {
         data: Data.create({
           positionTop: this.props.nextTaskPositionTop,
           requiredTime: startBlock.data.get("requiredTime"),
+          indent: startBlock.data.get("indent"),
           done: false
         })
       })
