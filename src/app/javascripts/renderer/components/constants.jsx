@@ -7,8 +7,7 @@ export const Types = {
 
 export const showInTimeline = [
   "paragraph",
-  "task-list",
-  "task-list-done"
+  "check-list-item"
 ]
 
 export const initialPositionTop = 450

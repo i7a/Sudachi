@@ -1,8 +1,8 @@
 import React from 'react';
-import { Editor, Raw } from 'slate'
-import { Data } from 'slate'
+import { Editor, Raw, Data } from 'slate'
 import moment from 'moment'
 import { ipcRenderer } from 'electron'
+import CheckListItem from './check-lists'
 import * as Constants from '../constants'
 
 const TaskEditor = class TaskEditor extends React.Component {
@@ -29,8 +29,7 @@ const TaskEditor = class TaskEditor extends React.Component {
         'list-item-indent2': props => <li className="indent2">{props.children}</li>,
         'list-item-indent3': props => <li className="indent3">{props.children}</li>,
         'list-item-indent4': props => <li className="indent4">{props.children}</li>,
-        'task-list-done' : props => <ul className="ace-line task-line" onClick={this.onClickCheckBox.bind(this)}><li className="done"><div>{props.children}</div></li></ul>,
-        'task-list' : props => <ul className="ace-line task-line" onClick={this.onClickCheckBox.bind(this)}><li><div>{props.children}</div></li></ul>,
+        'check-list-item': CheckListItem,
         'separator' : props => <div className="separator-line" contentEditable={false}><span className="separator"><span></span></span></div>
       }
     }
@@ -49,8 +48,8 @@ const TaskEditor = class TaskEditor extends React.Component {
       case /\*/.test(chars):
       case /-/.test(chars):
       case /\+/.test(chars): return 'list-item'
-      case /\[\]/.test(chars): return 'task-list'
-      case /\[X\]/.test(chars): return 'task-list-done'
+      case /\[\]/.test(chars): return 'check-list-item'
+      case /\[X\]/.test(chars): return 'checked-list-item'
       case />/.test(chars): return 'block-quote'
       case /######/.test(chars): return 'heading-six'
       case /#####/.test(chars): return 'heading-five'
@@ -126,19 +125,6 @@ const TaskEditor = class TaskEditor extends React.Component {
     this.props.onUpdateTask(state);
   }
 
-  // On click toggle task list status.
-  onClickCheckBox(e){
-    let state = this.props.taskList
-    let type = state.startBlock.type == 'task-list' ? 'task-list-done' : 'task-list'
-    let transform = state
-      .transform()
-      .setBlock(type)
-      .setBlock({ data: state.startBlock.data.set('done', type == 'task-list-done') })
-
-    e.preventDefault()
-    this.props.onUpdateTask(transform.apply())
-  }
-
   /**
    * On key down, check for our specific key shortcuts.
    *
@@ -170,28 +156,31 @@ const TaskEditor = class TaskEditor extends React.Component {
     if (state.isExpanded) return
     const { startBlock, startOffset } = state
     const chars = startBlock.text.slice(0, startOffset).replace(/\s*/g, '')
-    const type = this.getType(chars)
+    let type = this.getType(chars)
 
     if (!type) return
     if (type == 'list-item' && startBlock.type == 'list-item') return
     e.preventDefault()
 
     let time = 60
-    if (type == 'task-list' || type == 'task-list-done'){
+    if (type == 'check-list-item'){
       let inputTime = chars.match(/\d{1,3}/)
       if (inputTime !== null) time = Number(inputTime[0])
     }
 
     let data = Data.create({
       requiredTime: time,
-      done: type == 'task-list-done'
+      done: type == 'checked-list-item',
+      indent: 1
     })
+
     if ( ! startBlock.data.has("positionTop")) {
       data = data.set("positionTop", this.props.nextTaskPositionTop)
     } else {
       data = data.set("positionTop", startBlock.data.get("positionTop"))
     }
 
+    type = type == 'checked-list-item' ? 'check-list-item' : type
     let transform = state
       .transform()
       .setBlock(type)
@@ -226,7 +215,7 @@ const TaskEditor = class TaskEditor extends React.Component {
     if (state.isExpanded) return
     if (state.startOffset != 0) return
     const { startBlock } = state
-    
+
     if (startBlock.type == 'paragraph') {
       let previousBlock = state.document.getPreviousBlock(state.startBlock)
       if (previousBlock !== null && previousBlock.type == 'separator') {
@@ -271,8 +260,6 @@ const TaskEditor = class TaskEditor extends React.Component {
       startBlock.type != 'heading-five' &&
       startBlock.type != 'heading-six' &&
       startBlock.type != 'block-quote' &&
-      startBlock.type != 'task-list' &&
-      startBlock.type != 'task-list-done' &&
       startBlock.type != 'list-item'
     ) {
       return
@@ -305,13 +292,24 @@ const TaskEditor = class TaskEditor extends React.Component {
   onTab(e, isShift, state){
     e.preventDefault()
     let type = state.startBlock.type
-    if (/list-item/.test(type)){
-      let nextType = isShift ? this.getIndentTypeWithShift(type) : this.getIndentType(type)
+    if (/check-list-item/.test(type)) {
+      let indent = state.startBlock.data.get('indent')
+      if (indent < 5 && ! isShift) indent++
+      if (indent > 1 && isShift) indent--
+      state = state
+        .transform()
+        .setBlock({
+          data: state.startBlock.data.set('indent', indent)
+        })
+        .apply()
+    } else if (/list-item/.test(type)){
+      const nextType = isShift ? this.getIndentTypeWithShift(type) : this.getIndentType(type)
       state = state
         .transform()
         .setBlock(nextType)
         .apply()
     }
+
     return state
   }
 
