@@ -4,6 +4,7 @@ import moment from 'moment'
 import { ipcRenderer } from 'electron'
 import CheckListItem from './check-lists'
 import * as Constants from '../constants'
+import * as TaskEditorUtil from '../../../utils/task-editor'
 
 const TaskEditor = class TaskEditor extends React.Component {
 
@@ -131,7 +132,7 @@ const TaskEditor = class TaskEditor extends React.Component {
     let data = Data.create({
       requiredTime: time,
       done: type == 'checked-list-item',
-      indent: 1
+      indent: Constants.minIndent
     })
 
     if ( ! startBlock.data.has("positionTop")) {
@@ -254,12 +255,10 @@ const TaskEditor = class TaskEditor extends React.Component {
     let type = state.startBlock.type
     if (/list-item/.test(type)) {
       let indent = state.startBlock.data.get('indent')
-      if (indent < 5 && ! isShift) indent++
-      if (indent > 1 && isShift) indent--
       state = state
         .transform()
         .setBlock({
-          data: state.startBlock.data.set('indent', indent)
+          data: state.startBlock.data.set('indent', TaskEditorUtil.getIndent(indent, isShift))
         })
         .apply()
     }

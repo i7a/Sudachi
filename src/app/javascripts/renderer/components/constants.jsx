@@ -26,6 +26,9 @@ export const initialDateList = () => {
   return dateList
 }
 
+export const minIndent = 1
+export const maxIndent = 5
+
 export const heightPerHour = 50
 
 export const positionRange = () => {
