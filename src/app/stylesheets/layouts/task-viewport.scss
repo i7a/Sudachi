@@ -9,6 +9,12 @@
   ul.task-line {
     pointer-events: none;
     font-size: $font-medium;
+    &.current-line {
+      background-color: $ligh-gray-line;
+    }
+    &.current-task {
+      background-color: $indigo-lighter;
+    }
     li {
       div { pointer-events: none }
     }
@@ -51,8 +57,8 @@
   .ace-line {
     color: $t-black;
     line-height: 26px;
+    padding: 4px 0px 4px 4px;
     font-size: $font-medium;
-    padding: 0;
     margin: 0;
   }
   .list-style-disc {

@@ -1,6 +1,7 @@
 import { Editor, Raw } from 'slate'
 import React from 'react'
 import classNames from 'classnames'
+import * as TaskEditorUtil from '../../../utils/task-editor'
 
 /**
  * Check list item.
@@ -30,13 +31,31 @@ const CheckListItem = class CheckListItem extends React.Component {
   }
 
   /**
+   * get className for ul dom.
+   * @param  {block} node
+   * @param  {String} focusKey focused block key.
+   * @return {String}
+   */
+
+  getClassNameForUl(node, focusKey) {
+    return classNames(
+      {
+        'current-task': TaskEditorUtil.isCurrentTask(node),
+        'current-line': TaskEditorUtil.isFocusedTask(node.key, focusKey),
+      },
+      'ace-line',
+      'task-line'
+    )
+  }
+
+  /**
    * get className for check list item.
    *
    * @param {Block} node
    * @return {String}
    */
 
-  getClassName(node){
+  getClassNameForLi(node){
     return classNames(
       { done: node.data.get('done') },
       'indent' + node.data.get('indent')
@@ -50,14 +69,14 @@ const CheckListItem = class CheckListItem extends React.Component {
    */
 
   render () {
-    const { attributes, children, node} = this.props
+    const { attributes, children, node, state} = this.props
     return (
       <ul
-        className="ace-line task-line"
+        className={ this.getClassNameForUl(node, state.focusKey) }
         onClick={this.onClickCheckListItem.bind(this)}
         {...attributes}
       >
-        <li className={ this.getClassName(node) } >
+        <li className={ this.getClassNameForLi(node) } >
           <div>
             {children}
           </div>

@@ -75,6 +75,7 @@ const TaskEditor = class TaskEditor extends React.Component {
           state={this.props.taskList}
           onChange={this.onChange.bind(this)}
           onKeyDown={this.onKeyDown.bind(this)}
+          markerPositionTop={this.props.markerPositionTop}
           ref='editor'
         />
       </div>
