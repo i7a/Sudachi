@@ -178,6 +178,7 @@ class TaskBoard extends React.Component {
               onUpdateDate={this.updateDate.bind(this)}
               onClickHowto={this.showHowto.bind(this)}
               showHowto={!this.state.save}
+              markerPositionTop={this.state.markerPositionTop}
             />
             <TimelineViewport
               date={this.state.date}
