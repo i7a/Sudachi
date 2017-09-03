@@ -30,9 +30,19 @@ const CheckListItem = class CheckListItem extends React.Component {
     editor.onChange(state)
   }
 
-  getClassNameForUl(node) {
+  /**
+   * get className for url dom.
+   * @param  {block} node
+   * @param  {String} focusKey focused block key.
+   * @return {String}
+   */
+
+  getClassNameForUl(node, focusKey) {
     return classNames(
-      { now: TaskEditorUtil.isCurrentTask(node) },
+      {
+        'current-task': TaskEditorUtil.isCurrentTask(node),
+        'current-line': TaskEditorUtil.isFocusedTask(node.key, focusKey),
+      },
       'ace-line',
       'task-line'
     )
@@ -59,10 +69,10 @@ const CheckListItem = class CheckListItem extends React.Component {
    */
 
   render () {
-    const { attributes, children, node} = this.props
+    const { attributes, children, node, state} = this.props
     return (
       <ul
-        className={ this.getClassNameForUl(node) }
+        className={ this.getClassNameForUl(node, state.focusKey) }
         onClick={this.onClickCheckListItem.bind(this)}
         {...attributes}
       >

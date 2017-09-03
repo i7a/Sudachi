@@ -9,7 +9,10 @@
   ul.task-line {
     pointer-events: none;
     font-size: $font-medium;
-    &.now {
+    &.current-line {
+      background-color: $ligh-gray-line;
+    }
+    &.current-task {
       background-color: $indigo-lighter;
     }
     li {

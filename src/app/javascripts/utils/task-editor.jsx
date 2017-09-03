@@ -28,3 +28,14 @@ export const isCurrentTask = (node) => {
   const markerPositionTop = Constants.markerPositionTop()
   return markerPositionTop >= top && markerPositionTop <= buttom
 }
+
+ /**
+  * check whether focus block or not.
+  * @param  {String}  nodeKey  target block key
+  * @param  {String}  focusKey focused block key
+  * @return {Boolean}
+  */
+
+export const isFocusedTask = (nodeKey, focusKey) => {
+  return parseInt(nodeKey) - 1 == parseInt(focusKey)
+}
