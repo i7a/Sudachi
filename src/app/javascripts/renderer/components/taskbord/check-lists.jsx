@@ -31,7 +31,7 @@ const CheckListItem = class CheckListItem extends React.Component {
   }
 
   /**
-   * get className for url dom.
+   * get className for ul dom.
    * @param  {block} node
    * @param  {String} focusKey focused block key.
    * @return {String}
