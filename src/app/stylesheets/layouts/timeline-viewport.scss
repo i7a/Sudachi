@@ -42,7 +42,7 @@
         color: #FFF;
         border: 1px solid $white;
         &.past { background-color: $primary-indigo-past }
-        &.over { background-color: $primary-indigo-over }
+        &:hover { background-color: $primary-indigo-over }
         &.done {
           background-color: $indigo-lighter;
           color: #777777;
@@ -53,7 +53,7 @@
           background-color:$caution;
           border-radius: 0px;
           padding: 0px;
-          &.over { background-color: $caution-over }
+          &:hover { background-color: $caution-over }
         }
         span {
           display: block;
@@ -73,7 +73,7 @@
           text-align: center;
           cursor: ns-resize;
           opacity: 0;
-          &.hover { opacity: 1}
+          &:hover { opacity: 1}
         }
       }
       .nowmarker {
