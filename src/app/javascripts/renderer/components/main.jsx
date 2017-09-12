@@ -79,7 +79,6 @@ class TaskBoard extends React.Component {
   }
 
   dispatch(action){
-    console.log(action.type)
     this.setState(prevState => taskBoardReducer(prevState, action))
   }
 
@@ -102,6 +101,17 @@ class TaskBoard extends React.Component {
       nextTaskPositionTop: this.getNextTaskPositionTop(nextTaskList, date),
       dateList: dateListUtil.getDateListWithTaskCountByDate(this.state.dateList, nextTaskList, date)
     })
+  }
+
+  updateDateAndTask(date, taskList){
+    this.dispatch({
+      type: 'UPDATE_DATE',
+      date: date,
+      taskList: taskList,
+      nextTaskPositionTop: this.getNextTaskPositionTop(taskList, date),
+      dateList: dateListUtil.getDateListWithTaskCountByDate(this.state.dateList, taskList, date)
+    })
+    if (this.state.save) storage.set(date, Raw.serialize(taskList).document)
   }
 
   updateDateList(dateList){
@@ -176,6 +186,7 @@ class TaskBoard extends React.Component {
               nextTaskPositionTop={this.state.nextTaskPositionTop}
               onUpdateTask={this.updateTask.bind(this)}
               onUpdateDate={this.updateDate.bind(this)}
+              onUpdateDateAndTask={this.updateDateAndTask.bind(this)}
               onClickHowto={this.showHowto.bind(this)}
               showHowto={!this.state.save}
               markerPositionTop={this.state.markerPositionTop}
