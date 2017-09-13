@@ -1,6 +1,7 @@
 import { Raw } from 'slate';
 import { ipcRenderer } from 'electron';
 import * as Constants from '../renderer/components/constants';
+const initialData = require("../../data/initial.json")
 const log = require('electron-log');
 
 /**
@@ -91,7 +92,12 @@ export const getTaskListWithoutDoneTask = (taskList) => {
       transform = transform.removeNodeByKey(block.key)
     }
   })
-  return transform.apply()
+  let taskListWithoutDoneTask = transform.apply()
+  if (taskListWithoutDoneTask.document.nodes.size != 0) {
+    return taskListWithoutDoneTask
+  } else {
+    return Raw.deserialize(initialData, { terse: true })
+  }
 }
 
 /**
@@ -107,5 +113,10 @@ export const getTaskListOnlyDoneTask = (taskList) => {
       transform = transform.removeNodeByKey(block.key)
     }
   })
-  return transform.apply()
+  let taskListWithoutDoneTask = transform.apply()
+  if (taskListWithoutDoneTask.document.nodes.size != 0) {
+    return taskListWithoutDoneTask
+  } else {
+    return Raw.deserialize(initialData, { terse: true })
+  }
 }
