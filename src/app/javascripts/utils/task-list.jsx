@@ -1,6 +1,7 @@
 import { Raw } from 'slate';
 import { ipcRenderer } from 'electron';
 import * as Constants from '../renderer/components/constants';
+const log = require('electron-log');
 
 /**
  * whether is done task block or not.
@@ -20,7 +21,13 @@ export const isDoneTask = (block) => {
  */
 
 export const getTaskListByDate = (date) => {
-  return Raw.deserialize(ipcRenderer.sendSync('getTaskList', date), { terse: true })
+  try {
+    return Raw.deserialize(ipcRenderer.sendSync('getTaskList', date), { terse: true })
+  } catch(error) {
+    log.error('deserialize failure.')
+    log.error('date: ' + date)
+    log.error(error)
+  }
 }
 
 /**
