@@ -29,10 +29,10 @@ const TaskViewport = class TaskViewport extends React.Component {
     const taskListWithoutDoneTask = taskListUtil.getTaskListWithoutDoneTask(this.props.taskList)
     storage.set(this.props.date, Raw.serialize(taskListOnlyDoneTask).document)
     let transform = tomorrowTaskList.transform()
-    taskListWithoutDoneTask.document.nodes.forEach((block) => {
+    taskListWithoutDoneTask.document.nodes.forEach((block, index) => {
       transform = transform.insertNodeByKey(
         tomorrowTaskList.document.key,
-        (tomorrowTaskList.document.nodes.size + 1),
+        (tomorrowTaskList.document.nodes.size + index),
         block
       )
     })
