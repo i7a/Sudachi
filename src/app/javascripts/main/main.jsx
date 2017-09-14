@@ -26,7 +26,7 @@ ipcMain.on('getTaskList', (event, date) => {
     if (itDoes) {
       storage.get(path, (err, data) => {
         if (err) {
-          console.error(err)
+          log.error(err)
         } else {
           // success.
           event.returnValue = data;
@@ -35,7 +35,7 @@ ipcMain.on('getTaskList', (event, date) => {
     } else {
       storage.set(path, initialData, (err) => {
         if (err) {
-          console.error(err)
+          log.error(err)
         } else {
           // success.
           event.returnValue = initialData;

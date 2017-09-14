@@ -1,8 +1,13 @@
 import React from 'react';
+import { Raw } from 'slate';
 import TaskEditor from './task-editor';
 import moment from 'moment';
+import { dialog, remote } from 'electron';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import FlatButton from 'material-ui/FlatButton';
+import taskListStorage from '../../../modules/task-list-storage';
+import * as taskListUtil from '../../../utils/task-list'
+const storage = new taskListStorage()
 
 const TaskViewport = class TaskViewport extends React.Component {
 
@@ -18,11 +23,38 @@ const TaskViewport = class TaskViewport extends React.Component {
     this.props.onUpdateDate(moment(this.props.date).format("YYYYMMDD"))
   }
 
+  onClickCarryOver(){
+    remote.dialog.showMessageBox(
+      remote.getCurrentWindow(),{
+      type: 'question',
+      title: 'Carring Over Unchecked Task?',
+      message: 'Carring over today\'s unchecked task to tomorrow?',
+      buttons: ['Sure', 'No']
+    }, (buttonIndex) => {
+      if (buttonIndex === 0) {
+        const tomorrow = moment(this.props.date).add(1, 'd').format("YYYYMMDD")
+        const tomorrowTaskList = taskListUtil.getTaskListByDate(tomorrow)
+        const taskListOnlyDoneTask = taskListUtil.getTaskListOnlyDoneTask(this.props.taskList)
+        const taskListWithoutDoneTask = taskListUtil.getTaskListWithoutDoneTask(this.props.taskList)
+        storage.set(this.props.date, Raw.serialize(taskListOnlyDoneTask).document)
+        let transform = tomorrowTaskList.transform()
+        taskListWithoutDoneTask.document.nodes.forEach((block, index) => {
+          transform = transform.insertNodeByKey(
+            tomorrowTaskList.document.key,
+            (tomorrowTaskList.document.nodes.size + index),
+            block
+          )
+        })
+        this.props.onUpdateDateAndTask(tomorrow, transform.apply())
+      }
+    })
+  }
+
   mainButtonsStyle(){
     if (this.props.showHowto) {
       return { display: "none" }
     } else {
-      return { display: "inline-block", color: "#bdbdbd"}
+      return { display: "inline-block", color: "#bdbdbd", minWidth: "50px"}
     }
   }
 
@@ -97,6 +129,12 @@ const TaskViewport = class TaskViewport extends React.Component {
                 label=" "
                 className="howto"
                 onTouchTap={this.props.onClickHowto}
+                style={this.mainButtonsStyle()}
+              />
+              <FlatButton
+                label=" "
+                className="carry-over"
+                onTouchTap={this.onClickCarryOver.bind(this)}
                 style={this.mainButtonsStyle()}
               />
               <FlatButton
