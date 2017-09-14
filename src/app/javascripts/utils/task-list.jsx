@@ -15,6 +15,16 @@ export const isDoneTask = (block) => {
 }
 
 /**
+ * whether is not done task block or not.
+ * @param  {Block}  block
+ * @return {Boolean}
+ */
+
+export const isNotDoneTask = (block) => {
+  return block.type == "check-list-item" && ! block.data.get('done')
+}
+
+/**
  * get taskList by date.
  *
  * @param  {String} date YYYYMMDD
@@ -41,7 +51,7 @@ export const getTaskListByDate = (date) => {
 export const getTaskCount = (taskList) => {
   let task = 0
   taskList.document.nodes.map((block) => {
-    if (isDoneTask(block)) task++
+    if (isNotDoneTask(block)) task++
   })
   return task
 }
