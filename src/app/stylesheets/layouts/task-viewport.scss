@@ -106,6 +106,19 @@
           text-align: right;
         }
       }
+      .carry-over {
+        float: right;
+        &::before {
+          content: "";
+          background-image: url(../../images/icon_carry_over.png);
+          background-size: 19px 19px;
+          height: 19px;
+          width: 19px;
+          display: inline-block;
+          vertical-align: middle;
+          text-align: right;
+        }
+      }
     }
   }
   div.separator-line {
