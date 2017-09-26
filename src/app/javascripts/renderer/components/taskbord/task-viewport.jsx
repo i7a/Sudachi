@@ -67,10 +67,9 @@ const TaskViewport = class TaskViewport extends React.Component {
   }
 
   editorTitle(){
-    if (!this.props.showHowto) {
+    if (! this.props.showHowto) {
       return (
-        moment([this.props.date.slice(0,4), this.props.date.slice(4,6), this.props.date.slice(6,8)].join("-"))
-        .format("YYYY.M.D ddd")
+        moment([this.props.date.slice(0,4), this.props.date.slice(4,6), this.props.date.slice(6,8)].join("-")).format("YYYY.M.D ddd")
       )
     } else {
       return "Howto"
@@ -106,7 +105,6 @@ const TaskViewport = class TaskViewport extends React.Component {
             nextTaskPositionTop={this.props.nextTaskPositionTop}
             onUpdateTask={this.props.onUpdateTask}
             focusLastBlock={this.focusLastBlock.bind(this)}
-            showHowto={this.props.showHowto}
           />
         </div>
         <div className="task-viewport-buttons">
@@ -128,7 +126,7 @@ const TaskViewport = class TaskViewport extends React.Component {
               <FlatButton
                 label=" "
                 className="howto"
-                onTouchTap={this.props.onClickHowto}
+                onTouchTap={this.props.onClickShowHowto}
                 style={this.mainButtonsStyle()}
               />
               <FlatButton
