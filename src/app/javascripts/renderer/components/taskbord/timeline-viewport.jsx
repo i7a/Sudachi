@@ -70,11 +70,16 @@ const TimelineViewport = class TimelineViewport extends React.Component {
   resizeTimelineWidth(){
     let displayTasks = []
     let breaker = false
-    this.props.taskList.document.nodes.map((block, i) => {
+    let taskList = this.props.taskList
+    // get display task array
+    taskList.document.nodes.map((block, i) => {
       if (block.type == "separator") breaker = true;
       if (breaker) return
       if (Constants.showInTimeline.indexOf(block.type) >= 0 && block.text != "") displayTasks.push(block)
     })
+    // get task position range object
+    // key: block key
+    // value: [top, bottom]
     let taskPositionRange = {}
     _.each(displayTasks, (block, i) => {
       taskPositionRange[block.key] = [
@@ -83,10 +88,12 @@ const TimelineViewport = class TimelineViewport extends React.Component {
       ]
     })
     let prTop, prBottom, tprTop, tprBottom
+    // position range roop
     _.each(PositionRange, (pr) => {
       let resizeWidthKeyList = []
       prTop = pr[0]
       prBottom = pr[1]
+      // get same position task key list
       _.map(taskPositionRange, (value, key) => {
         tprTop = value[0]
         tprBottom = value[1]
@@ -94,21 +101,23 @@ const TimelineViewport = class TimelineViewport extends React.Component {
           resizeWidthKeyList.push(key)
         }
       })
+      // resize same position task width
       if (resizeWidthKeyList.length >= 1) {
         _.each(resizeWidthKeyList, (key, i) => {
-          this.resizeTaskWidth(key, 55/resizeWidthKeyList.length, i)
+          taskList = this.resizeTaskWidth(taskList, key, 55/resizeWidthKeyList.length, i)
         })
       }
     })
+    this.props.onUpdateTask(taskList)
   }
 
-  resizeTaskWidth(taskKey, width, index) {
+  resizeTaskWidth(taskList, taskKey, width, index) {
     let taskBlock
-    this.props.taskList.document.nodes.map((block) => {
+    taskList.document.nodes.map((block) => {
       if (block.key == taskKey) taskBlock = block
     })
 
-    if (taskBlock.data.get("width", 0) == width) return
+    if (taskBlock.data.get("width", 0) == width) return taskList
 
     let resizedBlock = Block.create({
       data: taskBlock.data.set("width", width).set("marginLeft", width * index),
@@ -118,12 +127,12 @@ const TimelineViewport = class TimelineViewport extends React.Component {
       type: taskBlock.type
     })
 
-    let transform = this.props.taskList.transform()
+    let transform = taskList.transform()
       .removeNodeByKey(taskKey)
-      .insertNodeByKey(this.props.taskList.document.key, this.props.taskList.document.nodes.indexOf(taskBlock), resizedBlock)
+      .insertNodeByKey(taskList.document.key, taskList.document.nodes.indexOf(taskBlock), resizedBlock)
 
     // apply.
-    this.props.onUpdateTask(transform.apply())
+    return transform.apply()
   }
 
   // when drag task and drop to other task.
