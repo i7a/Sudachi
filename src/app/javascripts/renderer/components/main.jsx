@@ -22,7 +22,7 @@ const storage = new taskListStorage()
 const taskBoardDefaultState = {
   date: today,
   taskList: taskListUtil.getTaskListByDate(moment().format("YYYYMMDD")),
-  save: true,
+  showHowto: false,
   nextTaskPositionTop: Constants.initialPositionTop,
   markerPositionTop: Constants.markerPositionTop(),
   showHistory: false,
@@ -43,7 +43,7 @@ const taskBoardReducer = (state = taskBoardDefaultState, action) => {
         taskList: action.taskList,
         nextTaskPositionTop: action.nextTaskPositionTop,
         dateList: action.dateList,
-        save: true
+        showHowto: false
       };
     case 'UPDATE_MARKER':
       return {
@@ -56,7 +56,7 @@ const taskBoardReducer = (state = taskBoardDefaultState, action) => {
     case 'SHOW_HOWTO':
       return {
         taskList: HowtoContents,
-        save: false
+        showHowto: true
       };
     case 'SHOW_HISTORY':
       return {
@@ -79,6 +79,7 @@ class TaskBoard extends React.Component {
   }
 
   dispatch(action){
+    console.log(action.type)
     this.setState(prevState => taskBoardReducer(prevState, action))
   }
 
@@ -87,9 +88,9 @@ class TaskBoard extends React.Component {
       type: 'UPDATE_TASK',
       taskList: taskList,
       nextTaskPositionTop: this.getNextTaskPositionTop(taskList, this.state.date),
-      dateList: dateListUtil.getDateListWithTaskCountByDate(this.state.dateList, taskList, this.state.date)
+      dateList: this.getNextDateList(taskList, this.state.date)
     })
-    if (this.state.save) storage.set(this.state.date, Raw.serialize(taskList).document)
+    if (! this.state.showHowto) storage.set(this.state.date, Raw.serialize(taskList).document)
   }
 
   updateDate(date){
@@ -99,7 +100,7 @@ class TaskBoard extends React.Component {
       date: date,
       taskList: nextTaskList,
       nextTaskPositionTop: this.getNextTaskPositionTop(nextTaskList, date),
-      dateList: dateListUtil.getDateListWithTaskCountByDate(this.state.dateList, nextTaskList, date)
+      dateList: this.getNextDateList(nextTaskList, date)
     })
   }
 
@@ -109,9 +110,9 @@ class TaskBoard extends React.Component {
       date: date,
       taskList: taskList,
       nextTaskPositionTop: this.getNextTaskPositionTop(taskList, date),
-      dateList: dateListUtil.getDateListWithTaskCountByDate(this.state.dateList, taskList, date)
+      dateList: this.getNextDateList(taskList, date)
     })
-    if (this.state.save) storage.set(date, Raw.serialize(taskList).document)
+    if (! this.state.showHowto) storage.set(date, Raw.serialize(taskList).document)
   }
 
   updateDateList(dateList){
@@ -122,7 +123,7 @@ class TaskBoard extends React.Component {
     this.dispatch({ type: 'UPDATE_MARKER' })
   }
 
-  showHowto(){
+  showHowtoContent(){
     this.dispatch({ type: 'SHOW_HOWTO' })
   }
 
@@ -160,6 +161,10 @@ class TaskBoard extends React.Component {
     return bottom + (Constants.heightPerHour * (requiredTime / 60))
   }
 
+  getNextDateList(taskList, date){
+    return this.state.showHowto ? this.state.dateList : dateListUtil.getDateListWithTaskCountByDate(this.state.dateList, taskList, date)
+  }
+
   componentDidMount(){
     setInterval(() => { this.updateMarker() }, 60000)
   }
@@ -177,7 +182,6 @@ class TaskBoard extends React.Component {
               showHistoryMenu={this.showHistoryMenu.bind(this)}
               hideHistoryMenu={this.hideHistoryMenu.bind(this)}
               dateList={this.state.dateList}
-              showHowto={!this.state.save}
               showHistory={this.state.showHistory}
             />
             <TaskViewport
@@ -187,8 +191,8 @@ class TaskBoard extends React.Component {
               onUpdateTask={this.updateTask.bind(this)}
               onUpdateDate={this.updateDate.bind(this)}
               onUpdateDateAndTask={this.updateDateAndTask.bind(this)}
-              onClickHowto={this.showHowto.bind(this)}
-              showHowto={!this.state.save}
+              onClickShowHowto={this.showHowtoContent.bind(this)}
+              showHowto={this.state.showHowto}
               markerPositionTop={this.state.markerPositionTop}
             />
             <TimelineViewport
