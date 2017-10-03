@@ -68,6 +68,7 @@ const TaskEditor = class TaskEditor extends React.Component {
         {this.renderBlockButton('block-quote', 'format_quote')}
         {this.renderBlockButton('heading-one', 'looks_one')}
         {this.renderBlockButton('heading-two', 'looks_two')}
+        {this.renderBlockButton('heading-three', 'looks_3')}
       </div>
     )
   }
