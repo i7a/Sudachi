@@ -73,7 +73,17 @@ const TaskEditor = class TaskEditor extends React.Component {
   }
 
   renderBlockButton(type, icon){
-    const isActive = this.hasBlock(type)
+    let isActive
+    if (type == 'bulleted-list' || type == 'numbered-list') {
+      const state = this.props.taskList
+      isActive = state.blocks.some((block) => {
+        return !!state.document.getClosest(block.key, parent => parent.type == type)
+      })
+
+    } else {
+      isActive = this.hasBlock(type)
+    }
+
     const onMouseDown = e => this.onClickBlock(e, type)
     return (
       <span className="button" onMouseDown={onMouseDown} data-active={isActive}>
