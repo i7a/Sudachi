@@ -19,6 +19,7 @@ const TaskEditor = class TaskEditor extends React.Component {
       nodes: {
         'block-quote': props => <blockquote>{props.children}</blockquote>,
         'bulleted-list': props => <ul className="list-style-disc">{props.children}</ul>,
+        'numbered-list': props => <ol className="list-style-decimal">{props.children}</ol>,
         'heading-one': props => <h1>{props.children}</h1>,
         'heading-two': props => <h2>{props.children}</h2>,
         'heading-three': props => <h3>{props.children}</h3>,
@@ -58,6 +59,29 @@ const TaskEditor = class TaskEditor extends React.Component {
     }
   }
 
+  renderToolbar(){
+    return (
+      <div className="menu toolbar-menu">
+        {this.renderBlockButton('check-list-item', 'check_box')}
+        {this.renderBlockButton('bulleted-list', 'format_list_bulleted')}
+        {this.renderBlockButton('numbered-list', 'format_list_numbered')}
+        {this.renderBlockButton('block-quote', 'format_quote')}
+        {this.renderBlockButton('heading-one', 'looks_one')}
+        {this.renderBlockButton('heading-two', 'looks_two')}
+      </div>
+    )
+  }
+
+  renderBlockButton(type, icon){
+    const isActive = this.hasBlock(type)
+    const onMouseDown = e => this.onClickBlock(e, type)
+    return (
+      <span className="button" onMouseDown={onMouseDown} data-active={isActive}>
+        <span className="material-icons">{icon}</span>
+      </span>
+    )
+  }
+
   /**
    *
    * Render the example.
@@ -68,6 +92,7 @@ const TaskEditor = class TaskEditor extends React.Component {
   render() {
     return (
       <div className="editor">
+        {this.renderToolbar()}
         <Editor
           className={"ace-line"}
           placeholder={"Time is an illusion..."}
@@ -82,9 +107,75 @@ const TaskEditor = class TaskEditor extends React.Component {
     )
   }
 
+  /**
+   * Check if the any of the currently selected blocks are of `type`.
+   *
+   * @param  {String}  type
+   * @return {Boolean}
+   */
+
+  hasBlock(type) {
+    const state = this.props.taskList
+    return state.blocks.some(node => node.type == type)
+  }
+
   // On change, update the app's React state with the new editor state.
   onChange(state){
     this.props.onUpdateTask(state);
+  }
+
+  /**
+   * When a block button is clicked, toggle the block type.
+   * @param  {Event} e
+   * @param  {String} type
+   */
+
+  onClickBlock(e, type){
+    e.preventDefault()
+    const state = this.props.taskList
+    let transform = state.transform()
+
+    if (type != 'bulleted-list' && type != 'numbered-list') {
+
+      const isActive = this.hasBlock(type)
+      const isList = this.hasBlock('list-item')
+
+      if (isList) {
+        transform = transform
+          .setBlock(isActive ? DEFAULT_NODE : type)
+          .unwrapBlock('bulleted-list')
+          .unwrapBlock('numbered-list')
+
+      } else {
+        transform = transform.setBlock(isActive ? Constants.default_node : type)
+      }
+
+    } else {
+      const isList = this.hasBlock('list-item')
+      const isType = state.blocks.some((block) => {
+        return !!state.document.getClosest(block.key, parent => parent.type == type)
+      })
+
+      if (isList && isType) {
+        transform = transform
+          .setBlock(Constants.default_node)
+          .unwrapBlock('bulleted-list')
+          .unwrapBlock('numbered-list')
+
+      } else if (isList) {
+        transform = transform
+          .unwrapBlock(type == 'bulleted-list' ? 'numbered-list' : 'bulleted-list')
+          .wrapBlock(type)
+
+      } else {
+        transform = transform
+          .setBlock('list-item')
+          .wrapBlock(type)
+
+      }
+    }
+
+    this.onChange(transform.apply())
   }
 
   /**
@@ -194,7 +285,10 @@ const TaskEditor = class TaskEditor extends React.Component {
       .transform()
       .setBlock('paragraph')
 
-    if (startBlock.type == 'list-item') transform.unwrapBlock('bulleted-list')
+    if (startBlock.type == 'list-item') {
+      transform.unwrapBlock('bulleted-list')
+      transform.unwrapBlock('numbered-list')
+    }
 
     state = transform.apply()
     return state
