@@ -58,7 +58,7 @@ const CheckListItem = class CheckListItem extends React.Component {
   getClassNameForLi(node){
     return classNames(
       { done: node.data.get('done') },
-      'indent' + node.data.get('indent')
+      'indent' + (node.data.has('indent') ? node.data.get('indent') : 1)
     )
   }
 

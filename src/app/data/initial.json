@@ -4,7 +4,8 @@
   "nodes":[{
     "data":{
       "requiredTime":60,
-      "positionTop":450
+      "positionTop":450,
+      "indent":1
     },
     "kind":"block",
     "isVoid":false,

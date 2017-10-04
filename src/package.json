@@ -1,6 +1,6 @@
 {
   "name": "Sudachi",
-  "version": "0.0.72",
+  "version": "0.1.1",
   "description": "Sudachi is a desktop application for daily personal scheduling.",
   "main": "./app/javascripts/main/main.jsx",
   "author": "ktp",

@@ -1,6 +1,17 @@
 #task-viewport {
   padding: 60px 30px 40px;
   outline: none;
+  .menu {
+    margin-bottom: 30px;
+    color: $light-gray;
+    .material-icons {
+      font-size: 26px;
+      margin-right: 18px;
+    }
+  }
+  .button[data-active="true"] {
+    color: $dark-gray;
+  }
   .editor-area {
     height: 90%;
     overflow-y: scroll;
@@ -78,10 +89,17 @@
       margin-left: 8em;
     }
   }
+  .list-style-decimal {
+    .indent1 {}
+    .indent2 { margin-left: 2em }
+    .indent3 { margin-left: 4em }
+    .indent4 { margin-left: 6em }
+    .indent5 { margin-left: 8em }
+  }
   div.title {
     font-size: $font-large;
     color: $t-black;
-    margin: 20px 0 40px;
+    margin: 20px 0 30px;
     font-weight: 500;
     line-height: 1.1;
   }

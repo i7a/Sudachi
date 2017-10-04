@@ -5,6 +5,8 @@ export const Types = {
   TASK: "task"
 }
 
+export const default_node = 'paragraph'
+
 export const showInTimeline = [
   "paragraph",
   "check-list-item"

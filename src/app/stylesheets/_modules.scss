@@ -1,3 +1,6 @@
+.button {
+  cursor: pointer;
+}
 .btn {
   &.btn-primary {
     background-color: #4285f4;
@@ -8,5 +11,10 @@
 }
 .list-style-disc {
   list-style: disc;
+  -webkit-padding-start: 25px;
+}
+
+.list-style-decimal {
+  list-style: decimal;
   -webkit-padding-start: 25px;
 }
