@@ -23,6 +23,7 @@
     },
     "win": {
       "target": "nsis",
+      "publisherName": "ktp",
       "publish": [
         {
           "provider": "github",
