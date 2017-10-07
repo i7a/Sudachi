@@ -11,7 +11,13 @@ const taskSource = {
     };
   },
   endDrag(props, monitor) {
+    const dragKey = monitor.getItem().taskKey
+    let clientOffsetY = Math.floor(monitor.getDropResult().y) - 115 + props.scrollTop()
+    let moveTo = clientOffsetY - (clientOffsetY % 25)
+    if (moveTo == props.block.data.get("positionTop")) return
+    props.moveTask(dragKey, moveTo)
     props.resizeTimelineWidth()
+    props.showDragTargetTime(Constants.initialDragTargetPositionTop)
   }
 }
 
@@ -28,12 +34,14 @@ const taskTarget = {
       if (nextRequiredTime == props.block.data.get("requiredTime")) return
       props.resizeTask(taskKey, nextRequiredTime)
     } else {
-      const dragKey = monitor.getItem().taskKey
-      let clientOffsetY = Math.floor(monitor.getClientOffset().y) - 80 + props.scrollTop()
+      let clientOffsetY = Math.floor(monitor.getClientOffset().y) - 115 + props.scrollTop()
       let moveTo = clientOffsetY - (clientOffsetY % 25)
-      if (moveTo == props.block.data.get("positionTop")) return
-      props.moveTask(dragKey, moveTo)
+      if (moveTo == props.dragTargetPositionTop) return
+      props.showDragTargetTime(moveTo)
     }
+  },
+  drop(props, monitor, component) {
+    return monitor.getClientOffset()
   }
 }
 

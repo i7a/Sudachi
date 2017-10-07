@@ -8,6 +8,7 @@ import Task from './timeline-task'
 import Marker from './timeline-marker'
 import moment from 'moment'
 import { findDOMNode } from 'react-dom';
+import * as timelineUtil from '../../../utils/timeline'
 
 const Operations = {
   UP: 'up',
@@ -17,6 +18,10 @@ const Operations = {
 const PositionRange = Constants.positionRange()
 
 const TimelineViewport = class TimelineViewport extends React.Component {
+
+  showDragTargetTime(dragTargetPositionTop){
+    this.props.updateDragTargetPositionTop(dragTargetPositionTop)
+  }
 
   // when drag task and drop to timeline marker
   moveTask(dragKey, moveTo){
@@ -249,6 +254,8 @@ const TimelineViewport = class TimelineViewport extends React.Component {
           taskKey={block.key}
           block={block}
           nowMarkerTop={this.props.markerPositionTop}
+          dragTargetPositionTop={this.props.dragTargetPositionTop}
+          showDragTargetTime={this.showDragTargetTime.bind(this)}
           moveTask={this.moveTask.bind(this)}
           resizeTask={this.resizeTask.bind(this)}
           resizeTimelineWidth={this.resizeTimelineWidth.bind(this)}
@@ -269,6 +276,12 @@ const TimelineViewport = class TimelineViewport extends React.Component {
                 {_.map(_.range(0, 25), (t, i) => {
                   return <div key={i} className="time">{t + ":" + "00"}</div>
                 })}
+                <div
+                  className="dragTargetTime"
+                  style={{
+                    top: this.props.dragTargetPositionTop.toString() + 'px'
+                  }}
+                ><span>{timelineUtil.positionTopToTime(this.props.dragTargetPositionTop)}</span></div>
               </td>
               <td className="tv-task tv-marker">
                 {_.map(_.range(1, 50), (m, i) => {
@@ -277,8 +290,10 @@ const TimelineViewport = class TimelineViewport extends React.Component {
                     <Marker
                       key={i}
                       className={i % 2 == 0 ? "markercell marker-border" : "markercell"}
+                      showDragTargetTime={this.showDragTargetTime.bind(this)}
                       moveTask={this.moveTask.bind(this)}
                       resizeTask={this.resizeTask.bind(this)}
+                      dragTargetPositionTop={this.props.dragTargetPositionTop}
                       positionTop={i*25}
                       style={style}
                     />

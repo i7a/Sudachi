@@ -1,5 +1,5 @@
 #timeline-viewport {
-  margin-top: 80px;
+  margin-top: 115px;
   padding: 0 0 0 70px;
   overflow-y: scroll;
   overflow-x: hidden;
@@ -10,12 +10,11 @@
       position: absolute;
       width: 100%;
       .markercell {
-        width: 60%;
+        width: 70%;
         height: 25px;
         font-size: 1px;
       }
       .marker-border {
-        border-bottom: 1px dotted #efefef;
         border-top: 1px solid #efefef;
       }
     }
@@ -24,10 +23,19 @@
       position: relative;
       vertical-align: top;
       .time {
-        color: $t-light;
+        width: 35px;
+        color: $t-gray;
         text-align: right;
         height: 50px;
-        font-size: $font-small;
+        font-size: $font-xsmall;
+      }
+      .dragTargetTime {
+        width: 35px;
+        color: $primary-indigo;
+        text-align: right;
+        height: 50px;
+        font-size: $font-xsmall;
+        position: absolute;
       }
     }
     tr td.tv-task {
@@ -41,6 +49,7 @@
         background-color: $primary-indigo;
         color: #FFF;
         border: 1px solid $white;
+        border-radius: 3px;
         &.past { background-color: $primary-indigo-past }
         &:hover { background-color: $primary-indigo-over }
         &.done {

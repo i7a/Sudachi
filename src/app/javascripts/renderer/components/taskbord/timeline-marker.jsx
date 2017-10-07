@@ -15,8 +15,12 @@ const markerTarget = {
       if (nextRequiredTime <= 0) nextRequiredTime = 30
       props.resizeTask(taskKey, nextRequiredTime)
     } else {
-      props.moveTask(taskKey, props.positionTop)
+      if (props.dragTargetPositionTop == props.positionTop) return
+      props.showDragTargetTime(props.positionTop)
     }
+  },
+  drop(props, monitor, component) {
+    return monitor.getClientOffset()
   }
 }
 
